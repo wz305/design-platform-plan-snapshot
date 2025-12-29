@@ -25,6 +25,10 @@ var runtimeState = {
   lastUploadAt: 0,
   lastUploadFile: "",
   lastUploadSize: 0,
+  lastObjectUploadAt: 0,
+  lastObjectUploadFile: "",
+  lastObjectUploadSize: 0,
+  lastObjectUploadCount: 0,
   lastEventAt: 0,
   lastEventName: "",
   lastCommandAt: 0,
@@ -124,7 +128,8 @@ function saveReportFile(baseDir, jsonText) {
     "-" + ("0" + ts.getDate()).slice(-2) +
     "_" + ("0" + ts.getHours()).slice(-2) +
     "-" + ("0" + ts.getMinutes()).slice(-2) +
-    "-" + ("0" + ts.getSeconds()).slice(-2);
+    "-" + ("0" + ts.getSeconds()).slice(-2) +
+    "-" + ("00" + ts.getMilliseconds()).slice(-3);
 
   var filename = "environment-probe-report-" + stamp + ".json";
   var savedAs = path.join(baseDir, filename);
@@ -134,6 +139,30 @@ function saveReportFile(baseDir, jsonText) {
   runtimeState.lastUploadAt = Date.now();
   runtimeState.lastUploadFile = savedAs;
   runtimeState.lastUploadSize = Buffer.byteLength(jsonText, "utf8");
+
+  return savedAs;
+}
+
+function saveObjectsFile(baseDir, jsonText) {
+  ensureDir(baseDir);
+
+  var ts = new Date();
+  var stamp =
+    ts.getFullYear() +
+    "-" + ("0" + (ts.getMonth() + 1)).slice(-2) +
+    "-" + ("0" + ts.getDate()).slice(-2) +
+    "_" + ("0" + ts.getHours()).slice(-2) +
+    "-" + ("0" + ts.getMinutes()).slice(-2) +
+    "-" + ("0" + ts.getSeconds()).slice(-2);
+
+  var filename = "object-index-" + stamp + ".json";
+  var savedAs = path.join(baseDir, filename);
+
+  fs.writeFileSync(savedAs, jsonText, "utf8");
+
+  runtimeState.lastObjectUploadAt = Date.now();
+  runtimeState.lastObjectUploadFile = savedAs;
+  runtimeState.lastObjectUploadSize = Buffer.byteLength(jsonText, "utf8");
 
   return savedAs;
 }
@@ -354,6 +383,67 @@ var server = http.createServer(function (req, res) {
           savedAs: savedAs,
           path: savedAs,
           size: runtimeState.lastUploadSize
+        });
+        return;
+      } catch (e2) {
+        sendJson(res, 500, {
+          ok: false,
+          error: { code: "WRITE_FAILED", message: String(e2) }
+        });
+        return;
+      }
+    });
+    return;
+  }
+
+  if (req.method === "POST" && pathname === "/api/upload-objects") {
+    readBody(req, function (err, bodyText) {
+      if (err) {
+        sendJson(res, 500, {
+          ok: false,
+          error: { code: "READ_BODY_FAILED", message: String(err) }
+        });
+        return;
+      }
+
+      var reportObj = null;
+      try {
+        reportObj = JSON.parse(bodyText || "{}");
+      } catch (e1) {
+        sendJson(res, 400, {
+          ok: false,
+          error: { code: "BAD_JSON", message: String(e1) }
+        });
+        return;
+      }
+
+      try {
+        var reportsDir = path.resolve(__dirname, "..", "reports");
+        var savedAs = saveObjectsFile(reportsDir, bodyText);
+        var count = 0;
+        try {
+          if (reportObj && reportObj.payload && typeof reportObj.payload.count === "number") {
+            count = reportObj.payload.count;
+          } else if (reportObj && reportObj.payload && reportObj.payload.items && reportObj.payload.items.length) {
+            count = reportObj.payload.items.length;
+          }
+        } catch (eCount) {}
+
+        runtimeState.lastObjectUploadCount = count;
+
+        broadcastSSE("objects_uploaded", {
+          savedAs: savedAs,
+          uploadedAt: runtimeState.lastObjectUploadAt,
+          size: runtimeState.lastObjectUploadSize,
+          count: count
+        });
+
+        sendJson(res, 200, {
+          ok: true,
+          savedAs: savedAs,
+          path: savedAs,
+          size: runtimeState.lastObjectUploadSize,
+          count: count
         });
         return;
       } catch (e2) {

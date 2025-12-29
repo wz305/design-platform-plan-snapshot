@@ -1916,6 +1916,392 @@ function 测试_AD_Spec_0_1_一键验证() {
         }
     }
 
+    function _resolveLayerName(layerId) {
+        if (typeof StackMap !== "undefined" && StackMap && StackMap.getNormalizedLayerName) {
+            var name = StackMap.getNormalizedLayerName(layerId);
+            if (name) return name;
+        }
+        if (typeof eTopLayer !== "undefined" && layerId === eTopLayer) return "TopLayer";
+        if (typeof eBottomLayer !== "undefined" && layerId === eBottomLayer) return "BottomLayer";
+        if (typeof eMultiLayer !== "undefined" && layerId === eMultiLayer) return "MultiLayer";
+        return null;
+    }
+
+    function _normalizeHandleToNumber(v) {
+        var diag = { rawType: typeof v, rawString: null };
+        if (v === null || v === undefined) return { ok: false, num: 0, diag: diag };
+        if (typeof v === "number") {
+            if (v !== 0 && isFinite(v)) return { ok: true, num: v, diag: diag };
+            return { ok: false, num: 0, diag: diag };
+        }
+        try {
+            var s = String(v);
+            diag.rawString = s;
+            var n = (s.indexOf("0x") === 0 || s.indexOf("0X") === 0) ? parseInt(s, 16) : parseInt(s, 10);
+            if (!isNaN(n) && n !== 0) return { ok: true, num: n, diag: diag };
+        } catch (e1) {}
+        try {
+            var n2 = Number(v);
+            if (!isNaN(n2) && n2 !== 0) return { ok: true, num: n2, diag: diag };
+        } catch (e2) {}
+        return { ok: false, num: 0, diag: diag };
+    }
+
+    function _readHandleNumber(obj) {
+        if (!obj) return null;
+        var raw = null;
+        try {
+            if (obj.I_ObjectAddress !== undefined && obj.I_ObjectAddress !== null) {
+                var t = typeof obj.I_ObjectAddress;
+                try { raw = obj.I_ObjectAddress; } catch (eAddr1) {}
+                if (typeof raw === "function") {
+                    try { raw = raw(); } catch (eAddr2) {}
+                }
+                if ((raw === null || raw === undefined || raw === 0) && (t === "function" || t === "unknown")) {
+                    raw = obj.I_ObjectAddress();
+                }
+            }
+        } catch (e1) {}
+        if (raw === null || raw === undefined || raw === 0) {
+            try {
+                if (obj.ObjectAddress !== undefined && obj.ObjectAddress !== null) {
+                    raw = obj.ObjectAddress;
+                }
+            } catch (e2) {}
+        }
+        var norm = _normalizeHandleToNumber(raw);
+        return norm.ok ? norm.num : null;
+    }
+
+    function _readBounds(obj) {
+        if (!obj) return null;
+        var br = null;
+        try {
+            if (obj.BoundingRectangle !== undefined && obj.BoundingRectangle !== null) {
+                if (typeof obj.BoundingRectangle === "function" || typeof obj.BoundingRectangle === "unknown") {
+                    br = obj.BoundingRectangle();
+                } else {
+                    br = obj.BoundingRectangle;
+                }
+            }
+        } catch (e1) {}
+        if (!br) return null;
+        return {
+            x1: br.Left,
+            y1: br.Bottom,
+            x2: br.Right,
+            y2: br.Top
+        };
+    }
+
+    function _readObjectIdInfo(obj) {
+        var oid = null;
+        var oidStr = "";
+        if (!obj) return { oid: null, oidStr: "" };
+        try { oid = obj.ObjectId; } catch (eObjId) {}
+        try { if (obj.ObjectIDString !== undefined) oidStr = String(obj.ObjectIDString); } catch (eObjStr) {}
+        if (!oidStr) {
+            try { if (obj.ObjectIdString !== undefined) oidStr = String(obj.ObjectIdString); } catch (eObjStr2) {}
+        }
+        return { oid: oid, oidStr: oidStr };
+    }
+
+    function _buildIndexItem(obj, options) {
+        var info = _readObjectIdInfo(obj);
+        var layerId = null;
+        var layerName = null;
+        var includeLayerName = !(options && options.includeLayerName === false);
+        var includeBounds = !(options && options.includeBounds === false);
+        var includeHandle = !(options && options.includeHandle === false);
+        try { layerId = obj.Layer; } catch (e1) {}
+        if (includeLayerName) {
+            var cache = options && options.layerNameCache;
+            if (cache && layerId !== null && layerId !== undefined) {
+                var cacheKey = String(layerId);
+                if (cache.hasOwnProperty(cacheKey)) {
+                    layerName = cache[cacheKey];
+                } else {
+                    layerName = _resolveLayerName(layerId);
+                    cache[cacheKey] = layerName;
+                }
+            } else {
+                layerName = _resolveLayerName(layerId);
+            }
+        }
+        var item = {
+            objectId: info.oid,
+            objectIdString: info.oidStr,
+            layerId: layerId
+        };
+        if (includeLayerName) item.layerName = layerName;
+        if (includeHandle) item.handle = _readHandleNumber(obj);
+        if (includeBounds) item.bounds = _readBounds(obj);
+        return item;
+    }
+
+    function _collectObjectIndex(board, maxItems) {
+        var res = { ok: false, items: [], total: 0, truncated: false, error: "" };
+        if (!board || typeof board.BoardIterator_Create === "undefined") {
+            res.error = "BoardIterator_Create not available";
+            return res;
+        }
+        var it = null;
+        try { it = board.BoardIterator_Create(); } catch (e1) { it = null; }
+        if (!it) {
+            res.error = "iterator create failed";
+            return res;
+        }
+
+        function _iterFirst(it) {
+            var p = null;
+            try {
+                if (typeof it.FirstPCBObject !== "undefined") {
+                    p = it.FirstPCBObject();
+                } else if (typeof it.First !== "undefined") {
+                    p = (typeof it.First === "function") ? it.First() : it.First;
+                }
+            } catch (e2) { p = null; }
+            return p || null;
+        }
+
+        function _iterNext(it) {
+            var p = null;
+            try {
+                if (typeof it.NextPCBObject !== "undefined") {
+                    p = it.NextPCBObject();
+                } else if (typeof it.Next !== "undefined") {
+                    p = (typeof it.Next === "function") ? it.Next() : it.Next;
+                }
+            } catch (e3) { p = null; }
+            return p || null;
+        }
+
+        try {
+            if (typeof it.AddFilter_LayerSet !== "undefined" && typeof AllLayers !== "undefined") {
+                it.AddFilter_LayerSet(AllLayers);
+            }
+            if (typeof it.AddFilter_Method !== "undefined" && typeof eProcessAll !== "undefined") {
+                it.AddFilter_Method(eProcessAll);
+            }
+        } catch (e4) {}
+
+        var cursor = _iterFirst(it);
+        while (cursor) {
+            res.total++;
+            if (!maxItems || res.items.length < maxItems) {
+                res.items.push(_buildIndexItem(cursor));
+            } else {
+                res.truncated = true;
+            }
+            cursor = _iterNext(it);
+        }
+
+        try {
+            if (typeof board.BoardIterator_Destroy !== "undefined") {
+                board.BoardIterator_Destroy(it);
+            }
+        } catch (e5) {}
+
+        res.ok = true;
+        return res;
+    }
+
+    function _streamObjectIndexUpload(board, options) {
+        var res = {
+            ok: false,
+            total: 0,
+            truncated: false,
+            error: "",
+            uploadOk: false,
+            uploadBatches: 0,
+            uploadOkBatches: 0
+        };
+        if (!board || typeof board.BoardIterator_Create === "undefined") {
+            res.error = "BoardIterator_Create not available";
+            return res;
+        }
+        var it = null;
+        try { it = board.BoardIterator_Create(); } catch (e1) { it = null; }
+        if (!it) {
+            res.error = "iterator create failed";
+            return res;
+        }
+
+        function _iterFirst(it) {
+            var p = null;
+            try {
+                if (typeof it.FirstPCBObject !== "undefined") {
+                    p = it.FirstPCBObject();
+                } else if (typeof it.First !== "undefined") {
+                    p = (typeof it.First === "function") ? it.First() : it.First;
+                }
+            } catch (e2) { p = null; }
+            return p || null;
+        }
+
+        function _iterNext(it) {
+            var p = null;
+            try {
+                if (typeof it.NextPCBObject !== "undefined") {
+                    p = it.NextPCBObject();
+                } else if (typeof it.Next !== "undefined") {
+                    p = (typeof it.Next === "function") ? it.Next() : it.Next;
+                }
+            } catch (e3) { p = null; }
+            return p || null;
+        }
+
+        try {
+            if (typeof it.AddFilter_LayerSet !== "undefined" && typeof AllLayers !== "undefined") {
+                it.AddFilter_LayerSet(AllLayers);
+            }
+            if (typeof it.AddFilter_Method !== "undefined" && typeof eProcessAll !== "undefined") {
+                it.AddFilter_Method(eProcessAll);
+            }
+        } catch (e4) {}
+
+        var batchSize = options && options.batchSize ? options.batchSize : 0;
+        if (!batchSize || batchSize <= 0) batchSize = 5000;
+        var maxItems = options && options.maxItems ? options.maxItems : 0;
+        var includeBounds = !(options && options.includeBounds === false);
+        var includeLayerName = !(options && options.includeLayerName === false);
+        var includeHandle = !(options && options.includeHandle === false);
+        var layerNameCache = includeLayerName ? {} : null;
+        var client = options && options.client ? options.client : null;
+        var baseUrl = options && options.baseUrl ? options.baseUrl : "";
+        var boardName = options && options.boardName ? options.boardName : "";
+        var canRequest = client && client.request ? true : false;
+
+        var batchItems = [];
+        var batchIndex = 0;
+        var sentCount = 0;
+        var uploadOk = true;
+
+        function _sendBatch(isFinal) {
+            if (!batchItems || batchItems.length === 0) return;
+            batchIndex++;
+            var payload = {
+                boardName: boardName,
+                count: batchItems.length,
+                truncated: res.truncated,
+                offset: sentCount,
+                batchIndex: batchIndex,
+                batchCount: isFinal ? batchIndex : 0,
+                isFinal: isFinal,
+                items: batchItems
+            };
+            if (isFinal) {
+                payload.total = res.total;
+            }
+            var objectReportId = "ad.object.index-" + String(new Date().getTime()) + "-" + String(batchIndex);
+            var objectReport = {
+                schema: "spec/0.1",
+                type: "ad.object.index",
+                id: objectReportId,
+                payload: payload,
+                meta: {
+                    ts: new Date().getTime(),
+                    source: "AD",
+                    rev: 0.1,
+                    detail: { schema: "spec/0.1", build: "ad21-js" }
+                }
+            };
+
+            if (canRequest) {
+                var bodyObjects = _safeJson(objectReport);
+                var respObjects = client.request("POST", baseUrl + "/api/upload-objects", bodyObjects, { "Content-Type": "application/json" });
+                var okBatch = respObjects && respObjects.ok;
+                if (okBatch) res.uploadOkBatches++;
+                if (!okBatch) uploadOk = false;
+                uiInfo("UPLOAD_OBJECTS", {
+                    ok: okBatch,
+                    status: respObjects ? respObjects.status : 0,
+                    count: batchItems.length,
+                    offset: sentCount,
+                    total: isFinal ? res.total : null,
+                    truncated: res.truncated,
+                    batchIndex: batchIndex,
+                    batchCount: isFinal ? batchIndex : 0,
+                    isFinal: isFinal
+                }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+            } else {
+                uploadOk = false;
+                uiWarn("UPLOAD_OBJECTS", {
+                    ok: false,
+                    reason: "request not available",
+                    batchIndex: batchIndex,
+                    batchCount: isFinal ? batchIndex : 0,
+                    isFinal: isFinal
+                }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+            }
+
+            sentCount += batchItems.length;
+            res.uploadBatches = batchIndex;
+            batchItems = [];
+        }
+
+        try {
+            var cursor = _iterFirst(it);
+            if (!cursor) {
+                res.total = 0;
+            }
+            while (cursor) {
+                res.total++;
+                if (maxItems && res.total > maxItems) {
+                    res.truncated = true;
+                    break;
+                }
+                batchItems.push(_buildIndexItem(cursor, {
+                    includeBounds: includeBounds,
+                    includeLayerName: includeLayerName,
+                    includeHandle: includeHandle,
+                    layerNameCache: layerNameCache
+                }));
+
+                var next = _iterNext(it);
+                var isLast = !next;
+                if (maxItems && res.total >= maxItems) {
+                    res.truncated = true;
+                    isLast = true;
+                }
+                if (batchItems.length >= batchSize || isLast) {
+                    _sendBatch(isLast);
+                }
+                if (isLast) break;
+                cursor = next;
+            }
+        } catch (eIter) {
+            res.error = String(eIter);
+        }
+
+        try {
+            if (typeof board.BoardIterator_Destroy !== "undefined") {
+                board.BoardIterator_Destroy(it);
+            }
+        } catch (e5) {}
+
+        if (!res.error) {
+            res.ok = true;
+        }
+        res.uploadOk = uploadOk && res.ok;
+        if (res.total === 0) {
+            res.uploadOk = true;
+            res.uploadBatches = 0;
+            uiInfo("UPLOAD_OBJECTS", {
+                ok: true,
+                status: 0,
+                count: 0,
+                offset: 0,
+                total: 0,
+                truncated: false,
+                batchIndex: 0,
+                batchCount: 0,
+                isFinal: true
+            }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+        }
+        return res;
+    }
+
     function _adObjectGet(params) {
         var poolId = params && params.poolId;
         var handle = params && params.handle;
@@ -2091,6 +2477,7 @@ function 测试_AD_Spec_0_1_一键验证() {
         var it = null;
         var nativeObj = null;
         var padCandidate = null;
+        var firstSeen = null;
         var diag = {
             hasBoard: !!board,
             hasIterator: (typeof board.BoardIterator_Create !== "undefined"),
@@ -2098,17 +2485,28 @@ function 测试_AD_Spec_0_1_一键验证() {
             hasTrackConst: (typeof eTrackObject !== "undefined"),
             hasViaConst: (typeof eViaObject !== "undefined"),
             hasPadConst: (typeof ePadObject !== "undefined"),
+            hasArcConst: (typeof eArcObject !== "undefined"),
+            hasPolyConst: (typeof ePolyObject !== "undefined"),
+            hasBoardOutlineConst: (typeof eBoardOutlineObject !== "undefined"),
             hasTrackWrapper: (typeof TrackWrapper !== "undefined"),
             hasViaWrapper: (typeof ViaWrapper !== "undefined"),
             hasPadWrapper: (typeof PadWrapper !== "undefined"),
+            hasArcWrapper: (typeof ArcWrapper !== "undefined"),
+            hasPolygonWrapper: (typeof PolygonWrapper !== "undefined"),
+            hasBoardOutlineWrapper: (typeof BoardOutlineWrapper !== "undefined"),
             hasAllLayers: (typeof AllLayers !== "undefined"),
             hasProcessAll: (typeof eProcessAll !== "undefined"),
             trackConst: (typeof eTrackObject !== "undefined") ? eTrackObject : null,
             viaConst: (typeof eViaObject !== "undefined") ? eViaObject : null,
             padConst: (typeof ePadObject !== "undefined") ? ePadObject : null,
+            arcConst: (typeof eArcObject !== "undefined") ? eArcObject : null,
+            polyConst: (typeof ePolyObject !== "undefined") ? ePolyObject : null,
+            boardOutlineConst: (typeof eBoardOutlineObject !== "undefined") ? eBoardOutlineObject : null,
             loopCount: 0,
             padCandidateUsed: false,
-            fallbackTrack: false
+            fallbackTrack: false,
+            firstSeenFallback: false,
+            boardOutlineFallback: false
         };
         try {
             it = board.BoardIterator_Create();
@@ -2126,12 +2524,16 @@ function 测试_AD_Spec_0_1_一键验证() {
             }
 
             if (typeof it.AddFilter_ObjectSet !== "undefined") {
-                if (typeof MkSet === "function" && typeof eTrackObject !== "undefined" && typeof eViaObject !== "undefined") {
-                    it.AddFilter_ObjectSet(MkSet(eTrackObject, eViaObject));
-                } else if (typeof MkSet === "function" && typeof eTrackObject !== "undefined") {
-                    it.AddFilter_ObjectSet(MkSet(eTrackObject));
-                } else if (typeof MkSet === "function" && typeof eViaObject !== "undefined") {
-                    it.AddFilter_ObjectSet(MkSet(eViaObject));
+                if (typeof MkSet === "function") {
+                    var setArgs = [];
+                    if (typeof eTrackObject !== "undefined") setArgs.push(eTrackObject);
+                    if (typeof eViaObject !== "undefined") setArgs.push(eViaObject);
+                    if (typeof ePadObject !== "undefined") setArgs.push(ePadObject);
+                    if (typeof eArcObject !== "undefined") setArgs.push(eArcObject);
+                    if (typeof ePolyObject !== "undefined") setArgs.push(ePolyObject);
+                    if (setArgs.length > 0) {
+                        it.AddFilter_ObjectSet(MkSet.apply(null, setArgs));
+                    }
                 } else {
                     // MkSet/常量缺失时跳过对象过滤，直接取第一个对象
                 }
@@ -2147,6 +2549,9 @@ function 测试_AD_Spec_0_1_一键验证() {
             var maxLoop = 50;
             var scanCount = 0;
             var cursor = _iterFirst(it);
+            if (cursor && !firstSeen) {
+                firstSeen = cursor;
+            }
             try {
                 uiInfo("WRAP_DIAG_FIRST", {
                     hasIterator: !!it,
@@ -2179,7 +2584,11 @@ function 测试_AD_Spec_0_1_一键验证() {
                 if (
                     (typeof eTrackObject !== "undefined" && oid === eTrackObject) ||
                     (typeof eViaObject !== "undefined" && oid === eViaObject) ||
-                    oidStr === "Track" || oidStr === "Via"
+                    (typeof ePadObject !== "undefined" && oid === ePadObject) ||
+                    (typeof eArcObject !== "undefined" && oid === eArcObject) ||
+                    (typeof ePolyObject !== "undefined" && oid === ePolyObject) ||
+                    (typeof eBoardOutlineObject !== "undefined" && oid === eBoardOutlineObject) ||
+                    oidStr === "Track" || oidStr === "Via" || oidStr === "Pad" || oidStr === "Arc" || oidStr === "Polygon" || oidStr === "BoardOutline"
                 ) {
                     nativeObj = cursor;
                     try {
@@ -2245,6 +2654,29 @@ function 测试_AD_Spec_0_1_一键验证() {
                     padCandidateUsed: true
                 }, "global-events.js", "_createWrapperFromBoard");
             } catch (eWrapDiagFound2) {}
+        }
+        if (!nativeObj && board && board.BoardOutline) {
+            nativeObj = board.BoardOutline;
+            diag.boardOutlineFallback = true;
+            try {
+                uiInfo("WRAP_DIAG_FOUND", {
+                    objectId: (nativeObj && nativeObj.ObjectId !== undefined) ? nativeObj.ObjectId : null,
+                    objectIdString: (nativeObj && nativeObj.ObjectIDString !== undefined) ? String(nativeObj.ObjectIDString) : "BoardOutline",
+                    boardOutlineFallback: true
+                }, "global-events.js", "_createWrapperFromBoard");
+            } catch (eWrapDiagFound2b) {}
+        }
+        if (!nativeObj && firstSeen) {
+            nativeObj = firstSeen;
+            diag.firstSeenFallback = true;
+            try {
+                var firstOidInfo2 = _readObjectIdInfo(firstSeen);
+                uiInfo("WRAP_DIAG_FOUND", {
+                    objectId: firstOidInfo2.oid,
+                    objectIdString: firstOidInfo2.oidStr || "",
+                    firstSeenFallback: true
+                }, "global-events.js", "_createWrapperFromBoard");
+            } catch (eWrapDiagFound3) {}
         }
         if (!nativeObj) return null;
 
@@ -2481,6 +2913,65 @@ function 测试_AD_Spec_0_1_一键验证() {
                             }
                         };
                     }
+                    if (t === "Arc") {
+                        var cx = null, cy = null, radius = null, sa = null, ea = null, width2 = null, layerId2 = null;
+                        try { cx = obj.XCenter; } catch (e17) {}
+                        try { cy = obj.YCenter; } catch (e18) {}
+                        try { radius = obj.Radius; } catch (e19) {}
+                        try { sa = obj.StartAngle; } catch (e20) {}
+                        try { ea = obj.EndAngle; } catch (e21) {}
+                        try { width2 = obj.LineWidth; } catch (e22) {}
+                        try { layerId2 = obj.Layer; } catch (e23) {}
+                        var layerName2 = null;
+                        try {
+                            if (typeof StackMap !== "undefined" && StackMap && StackMap.getNormalizedLayerName) {
+                                layerName2 = StackMap.getNormalizedLayerName(layerId2);
+                            }
+                        } catch (e24) {}
+                        return {
+                            schema: "spec/0.1",
+                            type: "arc",
+                            handle: w.handle || null,
+                            address: w.address || null,
+                            payload: {
+                                common: {
+                                    centerX: cx, centerY: cy, radius: radius,
+                                    startAngle: sa, endAngle: ea,
+                                    width: width2,
+                                    layer: layerName2,
+                                    net: null
+                                }
+                            }
+                        };
+                    }
+                    if (t === "Polygon") {
+                        var layerId3 = null;
+                        try { layerId3 = obj.Layer; } catch (e25) {}
+                        var layerName3 = null;
+                        try {
+                            if (typeof StackMap !== "undefined" && StackMap && StackMap.getNormalizedLayerName) {
+                                layerName3 = StackMap.getNormalizedLayerName(layerId3);
+                            }
+                        } catch (e26) {}
+                        return {
+                            schema: "spec/0.1",
+                            type: "polygon",
+                            handle: w.handle || null,
+                            address: w.address || null,
+                            payload: {
+                                layer: layerName3
+                            }
+                        };
+                    }
+                    if (t === "BoardOutline") {
+                        return {
+                            schema: "spec/0.1",
+                            type: "board.outline",
+                            handle: w.handle || null,
+                            address: w.address || null,
+                            payload: {}
+                        };
+                    }
                     return { schema: "spec/0.1", type: "unknown", payload: {} };
                 }
             };
@@ -2526,6 +3017,15 @@ function 测试_AD_Spec_0_1_一键验证() {
             } else if (typeof ePadObject !== "undefined" && objectId === ePadObject && typeof PadWrapper !== "undefined") {
                 wrapperStage = "PadWrapper.create";
                 wrapper = PadWrapper.create ? PadWrapper.create({ nativeObject: nativeObj }) : PadWrapper({ nativeObject: nativeObj });
+            } else if (typeof eArcObject !== "undefined" && objectId === eArcObject && typeof ArcWrapper !== "undefined") {
+                wrapperStage = "ArcWrapper.create";
+                wrapper = ArcWrapper.create ? ArcWrapper.create({ nativeObject: nativeObj }) : ArcWrapper({ nativeObject: nativeObj });
+            } else if (typeof ePolyObject !== "undefined" && objectId === ePolyObject && typeof PolygonWrapper !== "undefined") {
+                wrapperStage = "PolygonWrapper.create";
+                wrapper = PolygonWrapper.create ? PolygonWrapper.create({ nativeObject: nativeObj }) : PolygonWrapper({ nativeObject: nativeObj });
+            } else if (typeof eBoardOutlineObject !== "undefined" && objectId === eBoardOutlineObject && typeof BoardOutlineWrapper !== "undefined") {
+                wrapperStage = "BoardOutlineWrapper.create";
+                wrapper = BoardOutlineWrapper.create ? BoardOutlineWrapper.create({ nativeObject: nativeObj }) : BoardOutlineWrapper({ nativeObject: nativeObj });
             } else if (objectIdString) {
                 if (objectIdString === "Track" && typeof TrackWrapper !== "undefined") {
                     wrapperStage = "TrackWrapper.create:ObjectIDString";
@@ -2536,6 +3036,15 @@ function 测试_AD_Spec_0_1_一键验证() {
                 } else if (objectIdString === "Pad" && typeof PadWrapper !== "undefined") {
                     wrapperStage = "PadWrapper.create:ObjectIDString";
                     wrapper = PadWrapper.create ? PadWrapper.create({ nativeObject: nativeObj }) : PadWrapper({ nativeObject: nativeObj });
+                } else if (objectIdString === "Arc" && typeof ArcWrapper !== "undefined") {
+                    wrapperStage = "ArcWrapper.create:ObjectIDString";
+                    wrapper = ArcWrapper.create ? ArcWrapper.create({ nativeObject: nativeObj }) : ArcWrapper({ nativeObject: nativeObj });
+                } else if (objectIdString === "Polygon" && typeof PolygonWrapper !== "undefined") {
+                    wrapperStage = "PolygonWrapper.create:ObjectIDString";
+                    wrapper = PolygonWrapper.create ? PolygonWrapper.create({ nativeObject: nativeObj }) : PolygonWrapper({ nativeObject: nativeObj });
+                } else if (objectIdString === "BoardOutline" && typeof BoardOutlineWrapper !== "undefined") {
+                    wrapperStage = "BoardOutlineWrapper.create:ObjectIDString";
+                    wrapper = BoardOutlineWrapper.create ? BoardOutlineWrapper.create({ nativeObject: nativeObj }) : BoardOutlineWrapper({ nativeObject: nativeObj });
                 }
             } else if (typeof PCBObjectFactory !== "undefined" && PCBObjectFactory && PCBObjectFactory.createWrapper) {
                 wrapperStage = "PCBObjectFactory.createWrapper";
@@ -2575,6 +3084,9 @@ function 测试_AD_Spec_0_1_一键验证() {
             if (typeof eTrackObject !== "undefined" && objectId === eTrackObject) tLite = "Track";
             if (typeof eViaObject !== "undefined" && objectId === eViaObject) tLite = "Via";
             if (typeof ePadObject !== "undefined" && objectId === ePadObject) tLite = "Pad";
+            if (typeof eArcObject !== "undefined" && objectId === eArcObject) tLite = "Arc";
+            if (typeof ePolyObject !== "undefined" && objectId === ePolyObject) tLite = "Polygon";
+            if (typeof eBoardOutlineObject !== "undefined" && objectId === eBoardOutlineObject) tLite = "BoardOutline";
             wrapper = _createLiteWrapper(nativeObj, tLite);
             if (wrapper) {
                 diag.liteWrapper = true;
@@ -2714,6 +3226,32 @@ function 测试_AD_Spec_0_1_一键验证() {
         uiInfo("BOARD_SUMMARY", boardSummary, "global-events.js", "测试_AD_Spec_0_1_一键验证");
 
         var resolved = _resolveBoardRef();
+        var objectIndexResult = null;
+        var uploadObjectsOk = false;
+        var uploadObjectsBatches = 0;
+        var uploadObjectsOkBatches = 0;
+        var objectIndexBatchSize = 5000;
+        var objectIndexIncludeBounds = false;
+        var objectIndexIncludeLayerName = true;
+        try {
+            objectIndexResult = _streamObjectIndexUpload(resolved.board, {
+                client: client,
+                baseUrl: baseUrl,
+                boardName: boardSummary ? boardSummary.name : "",
+                batchSize: objectIndexBatchSize,
+                includeBounds: objectIndexIncludeBounds,
+                includeLayerName: objectIndexIncludeLayerName
+            });
+        } catch (eObjIdx) {
+            objectIndexResult = { ok: false, error: String(eObjIdx) };
+        }
+        if (objectIndexResult && objectIndexResult.ok) {
+            uploadObjectsOk = objectIndexResult.uploadOk;
+            uploadObjectsBatches = objectIndexResult.uploadBatches || 0;
+            uploadObjectsOkBatches = objectIndexResult.uploadOkBatches || 0;
+        } else {
+            uiWarn("UPLOAD_OBJECTS", { ok: false, reason: objectIndexResult ? objectIndexResult.error : "unknown" }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+        }
         var wrapper = _createWrapperFromBoard(resolved.board);
         var objGet = _tryObjectGet(wrapper, resolved.board);
 
@@ -2748,6 +3286,10 @@ function 测试_AD_Spec_0_1_一键验证() {
             unknownOkFalse: r3 && (r3.ok === false),
             hasBoardSummary: !!boardSummary,
             uploadOk: uploadOk,
+            objectIndexOk: objectIndexResult && objectIndexResult.ok,
+            uploadObjectsOk: uploadObjectsOk,
+            uploadObjectsBatches: uploadObjectsBatches,
+            uploadObjectsOkBatches: uploadObjectsOkBatches,
             objectGetOk: objGet && objGet.ok
         }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
     } catch (error) {

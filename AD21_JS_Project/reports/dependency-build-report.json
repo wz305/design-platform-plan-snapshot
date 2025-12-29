@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-12-29T13:07:26.993Z",
+  "timestamp": "2025-12-29T15:26:14.358Z",
   "summary": {
-    "totalModules": 42,
+    "totalModules": 44,
     "validDependencies": true,
     "errors": 0,
     "warnings": 0,
@@ -147,7 +147,7 @@
     "src/modules/pcb-interfaces/core/PCBObjectFactory.js": {
       "name": "PCBObjectFactory",
       "dependencies": [],
-      "size": 20842
+      "size": 21655
     },
     "src/modules/pcb-interfaces/core/PCBObjectManager.js": {
       "name": "PCBObjectManager",
@@ -162,7 +162,7 @@
     "src/modules/pcb-interfaces/core/StackMap.js": {
       "name": "StackMap",
       "dependencies": [],
-      "size": 6299
+      "size": 10137
     },
     "src/modules/pcb-interfaces/calculators/GeometryCalculator.js": {
       "name": "GeometryCalculator",
@@ -174,7 +174,7 @@
       "dependencies": [
         "GeometryCalculator"
       ],
-      "size": 18241
+      "size": 22096
     },
     "src/modules/pcb-interfaces/wrappers/PadWrapper.js": {
       "name": "PadWrapper",
@@ -197,10 +197,20 @@
       ],
       "size": 31265
     },
+    "src/modules/pcb-interfaces/wrappers/BoardOutlineWrapper.js": {
+      "name": "BoardOutlineWrapper",
+      "dependencies": [],
+      "size": 10429
+    },
+    "src/modules/pcb-interfaces/wrappers/PolygonWrapper.js": {
+      "name": "PolygonWrapper",
+      "dependencies": [],
+      "size": 6053
+    },
     "src/modules/pcb-interfaces/index.js": {
       "name": "ModuleName",
       "dependencies": [],
-      "size": 12299
+      "size": 12620
     },
     "src/modules/object-creator/core/PositionManager.js": {
       "name": "PositionManager",
@@ -225,7 +235,7 @@
     "src/core/global-events.js": {
       "name": "global-events",
       "dependencies": [],
-      "size": 120480
+      "size": 146155
     }
   },
   "dependencies": {

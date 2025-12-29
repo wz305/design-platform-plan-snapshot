@@ -50,7 +50,7 @@ var logger = SimpleLogger;
 // GeometryCalculator
 
 // 封装器 - 直接引用（构建后自动可访问）
-// ArcWrapper, PadWrapper, TrackWrapper, ViaWrapper
+// ArcWrapper, PadWrapper, TrackWrapper, ViaWrapper, BoardOutlineWrapper, PolygonWrapper
 
 /**
  * PCBInterfaces主模块
@@ -115,6 +115,8 @@ var PCBInterfaces = (function(){
                 PCBObjectFactory.registerWrapperConstructor("Pad", PadWrapper);
                 PCBObjectFactory.registerWrapperConstructor("Track", TrackWrapper);
                 PCBObjectFactory.registerWrapperConstructor("Via", ViaWrapper);
+                PCBObjectFactory.registerWrapperConstructor("BoardOutline", BoardOutlineWrapper);
+                PCBObjectFactory.registerWrapperConstructor("Polygon", PolygonWrapper);
             }
             
             logger.debug("[PCBInterfaces][registerWrappers] SUCCESS - All wrappers registered");
@@ -366,7 +368,9 @@ var PCBInterfaces = (function(){
         ArcWrapper: ArcWrapper,
         PadWrapper: PadWrapper,
         TrackWrapper: TrackWrapper,
-        ViaWrapper: ViaWrapper
+        ViaWrapper: ViaWrapper,
+        BoardOutlineWrapper: BoardOutlineWrapper,
+        PolygonWrapper: PolygonWrapper
     };
 })();
 

@@ -83,28 +83,122 @@ var StackMap = (function(){
         }
     }
 
+    function _resolveLayerStack(boardRef) {
+        var stack = null;
+        var source = "";
+        if (boardRef && boardRef.LayerStack) {
+            stack = boardRef.LayerStack;
+            source = "LayerStack";
+        }
+        var hasFirst = stack && (typeof stack.FirstLayer !== "undefined" || typeof stack.First !== "undefined");
+        var hasNext = stack && (typeof stack.NextLayer !== "undefined" || typeof stack.Next !== "undefined");
+        if ((!hasFirst || !hasNext) && boardRef && boardRef.LayerStack_V7) {
+            stack = boardRef.LayerStack_V7;
+            source = "LayerStack_V7";
+        }
+        return { stack: stack, source: source };
+    }
+
+    function _pickLayerClassId() {
+        if (typeof eLayerClass_All !== "undefined") return eLayerClass_All;
+        if (typeof eLayerClass_Physical !== "undefined") return eLayerClass_Physical;
+        if (typeof eLayerClass_Signal !== "undefined") return eLayerClass_Signal;
+        return null;
+    }
+
+    function _callStackFirst(stack, layerClass) {
+        var obj = null;
+        if (!stack) return null;
+        if (stack.FirstLayer !== undefined) {
+            try {
+                if (typeof stack.FirstLayer === "function" || typeof stack.FirstLayer === "unknown") {
+                    obj = stack.FirstLayer();
+                } else {
+                    obj = stack.FirstLayer;
+                }
+            } catch (e1) {
+                obj = null;
+            }
+            return obj || null;
+        }
+        if (stack.First !== undefined) {
+            try {
+                if (typeof stack.First === "function" || typeof stack.First === "unknown") {
+                    if (layerClass !== null && layerClass !== undefined) {
+                        obj = stack.First(layerClass);
+                    } else {
+                        obj = stack.First();
+                    }
+                } else {
+                    obj = stack.First;
+                }
+            } catch (e2) {
+                obj = null;
+            }
+            return obj || null;
+        }
+        return null;
+    }
+
+    function _callStackNext(stack, layerClass, refLayer) {
+        var obj = null;
+        if (!stack) return null;
+        if (stack.NextLayer !== undefined) {
+            try {
+                if (typeof stack.NextLayer === "function" || typeof stack.NextLayer === "unknown") {
+                    obj = stack.NextLayer(refLayer);
+                } else {
+                    obj = stack.NextLayer;
+                }
+            } catch (e1) {
+                obj = null;
+            }
+            return obj || null;
+        }
+        if (stack.Next !== undefined) {
+            try {
+                if (typeof stack.Next === "function" || typeof stack.Next === "unknown") {
+                    if (layerClass !== null && layerClass !== undefined) {
+                        obj = stack.Next(layerClass, refLayer);
+                    } else {
+                        obj = stack.Next(refLayer);
+                    }
+                } else {
+                    obj = stack.Next;
+                }
+            } catch (e2) {
+                obj = null;
+            }
+            return obj || null;
+        }
+        return null;
+    }
+
     function initFromBoard(boardRef) {
         _reset();
 
-        if (!boardRef || !boardRef.LayerStack) {
+        var stackInfo = _resolveLayerStack(boardRef);
+        var stack = stackInfo.stack;
+        if (!stack) {
             _lastError = "LayerStack not available";
             _fallbackMinimal();
             _ui("warn", "StackMap fallback: LayerStack not available", { hasBoard: !!boardRef }, "initFromBoard");
             return { ok: false, error: _lastError, layers: _ordered.slice(0) };
         }
-
-        var stack = boardRef.LayerStack;
-        if (!stack || !stack.FirstLayer || !stack.NextLayer) {
+        var hasFirst = (typeof stack.FirstLayer !== "undefined" || typeof stack.First !== "undefined");
+        var hasNext = (typeof stack.NextLayer !== "undefined" || typeof stack.Next !== "undefined");
+        if (!hasFirst || !hasNext) {
             _lastError = "LayerStack methods not available";
             _fallbackMinimal();
-            _ui("warn", "StackMap fallback: LayerStack methods not available", null, "initFromBoard");
+            _ui("warn", "StackMap fallback: LayerStack methods not available", { source: stackInfo.source || "" }, "initFromBoard");
             return { ok: false, error: _lastError, layers: _ordered.slice(0) };
         }
 
         var layerObj = null;
         var midIndex = 1;
+        var layerClass = _pickLayerClassId();
         try {
-            layerObj = stack.FirstLayer();
+            layerObj = _callStackFirst(stack, layerClass);
         } catch (e1) {}
 
         while (layerObj) {
@@ -129,7 +223,7 @@ var StackMap = (function(){
             }
 
             try {
-                layerObj = stack.NextLayer(layerObj);
+                layerObj = _callStackNext(stack, layerClass, layerObj);
             } catch (e5) {
                 layerObj = null;
             }

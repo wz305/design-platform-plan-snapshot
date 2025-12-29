@@ -1,0 +1,5613 @@
+{
+  "generatedAt": "2025-12-29T06:49:19.315Z",
+  "schema": "exports-index/v1",
+  "modules": [
+    {
+      "domain": "analyzer",
+      "module": "ASTParser",
+      "docPath": "docs/当前文档/模块文档/analyzer/ASTParser.md",
+      "entryPath": "AD21_JS_Project/analyzer/ast/parser.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "ASTParser",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读文件",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "parseFile",
+          "type": "Function",
+          "params": "filePath:string",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "读文件",
+          "notes": "返回 {success,ast,source,size} 或 {success:false,error,line,column}"
+        },
+        {
+          "name": "parseFiles",
+          "type": "Function",
+          "params": "filePaths:Array",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "读文件",
+          "notes": "批量解析并汇总 successCount/errorCount"
+        },
+        {
+          "name": "validateAST",
+          "type": "Function",
+          "params": "ast:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "返回 {valid:boolean,issues:Array}"
+        },
+        {
+          "name": "getFileInfo",
+          "type": "Function",
+          "params": "filePath:string",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "读文件",
+          "notes": "返回 {filePath,exists,size,ext}（关键词：getFileInfo）"
+        },
+        {
+          "name": "formatParseError",
+          "type": "Function",
+          "params": "parseResult:Object",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "将解析失败结果格式化为文本"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "ActionPlanner",
+      "docPath": "docs/当前文档/模块文档/analyzer/ActionPlanner.md",
+      "entryPath": "AD21_JS_Project/analyzer/execution/action-planner.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "ActionPlanner",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "console输出",
+          "notes": "主导出对象（module.exports）"
+        },
+        {
+          "name": "ActionPlanner.createPlan",
+          "type": "Function",
+          "params": "interpretationResult:Object, options?:Object",
+          "returns": "ExecutionPlan",
+          "env": "Node",
+          "sideEffects": "console输出",
+          "notes": "核心：Actions→Steps + 风险汇总 + validateExecutionPlan"
+        },
+        {
+          "name": "ActionPlanner.simulatePlan",
+          "type": "Function",
+          "params": "plan:ExecutionPlan",
+          "returns": "simulation:Object",
+          "env": "Node",
+          "sideEffects": "console输出",
+          "notes": "逐步骤估算耗时/潜在问题/影响范围"
+        },
+        {
+          "name": "ActionPlanner.getPlanStatistics",
+          "type": "Function",
+          "params": "plan:ExecutionPlan",
+          "returns": "stats:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "从 plan.statistics/riskSummary 派生视图"
+        },
+        {
+          "name": "ActionPlanner.checkExecutionSafety",
+          "type": "Function",
+          "params": "plan:ExecutionPlan",
+          "returns": "safety:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "基于 blockers/highRisk/irreversible 产出安全评估"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "BuildSymbolsOverview",
+      "docPath": "docs/当前文档/模块文档/analyzer/BuildSymbolsOverview.md",
+      "entryPath": "AD21_JS_Project/analyzer/build-symbols-overview.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "BuildSymbolsOverview",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "构建文件符号总览工具对象"
+        },
+        {
+          "name": "runOverview",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "report:Object",
+          "env": "Node",
+          "sideEffects": "读 config/merge-order.json、读 dist/*、写 analyzer/reports/*",
+          "notes": "主入口：执行全流程并落盘"
+        },
+        {
+          "name": "_loadMergeOrder",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "读文件",
+          "notes": "读取 `config/merge-order.json`"
+        },
+        {
+          "name": "_analyzeSourceFiles",
+          "type": "Function",
+          "params": "filePaths:Array",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "读文件/console输出",
+          "notes": "按 merge-order 顺序分析源文件"
+        },
+        {
+          "name": "_analyzeBuiltFiles",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "读 dist/*/写临时文件",
+          "notes": "分析构建产物（关键词：`builtFiles`）"
+        },
+        {
+          "name": "_saveOverviewReport",
+          "type": "Function",
+          "params": "report:Object, outputPath:string",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "写文件",
+          "notes": "写 JSON/MD/TXT 报告"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "CallGraph",
+      "docPath": "docs/当前文档/模块文档/analyzer/CallGraph.md",
+      "entryPath": "AD21_JS_Project/analyzer/semantic/call-graph.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "CallGraph",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "createCallGraph",
+          "type": "Function",
+          "params": "-",
+          "returns": "graph:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建空调用图"
+        },
+        {
+          "name": "buildCallGraph",
+          "type": "Function",
+          "params": "ast:Object, filePath:string",
+          "returns": "graph:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "从 AST 构建节点/边"
+        },
+        {
+          "name": "analyzeCallGraph",
+          "type": "Function",
+          "params": "graph:Object",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "修改 graph",
+          "notes": "补充 in/outDegree、entryPoints、maxCallDepth 等"
+        },
+        {
+          "name": "findCallPaths",
+          "type": "Function",
+          "params": "graph:Object, from:string, to:string",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "寻找调用路径"
+        },
+        {
+          "name": "detectDeadCode",
+          "type": "Function",
+          "params": "graph:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "检测不可达节点"
+        },
+        {
+          "name": "calculateCallDepth",
+          "type": "Function",
+          "params": "graph:Object, entry:string",
+          "returns": "number",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "计算调用深度"
+        },
+        {
+          "name": "detectRecursion",
+          "type": "Function",
+          "params": "graph:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "检测递归/环"
+        },
+        {
+          "name": "generateCallGraphReport",
+          "type": "Function",
+          "params": "graph:Object",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "格式化报告"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "CapabilityIndexBuilder",
+      "docPath": "docs/当前文档/模块文档/analyzer/CapabilityIndexBuilder.md",
+      "entryPath": "AD21_JS_Project/analyzer/capability-index-builder.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "CapabilityIndexBuilder",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "能力索引构建器对象"
+        },
+        {
+          "name": "buildCapabilityIndex",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "读 reports/corrected-symbols-overview.json、写 reports/capability-index-v1.*",
+          "notes": "主入口：构建索引与查询接口并落盘"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "CapabilityQueryValidator",
+      "docPath": "docs/当前文档/模块文档/analyzer/CapabilityQueryValidator.md",
+      "entryPath": "AD21_JS_Project/analyzer/capability-query-validator.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "CapabilityQueryValidator",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "能力查询验证器对象"
+        },
+        {
+          "name": "runValidation",
+          "type": "Function",
+          "params": "-",
+          "returns": "report:Object",
+          "env": "Node",
+          "sideEffects": "读 analyzer/reports/capability-index-v1.json、写 analyzer/reports/capability-query-validation.*",
+          "notes": "主入口：执行验证并落盘"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "CorrectedSymbolsOverview",
+      "docPath": "docs/当前文档/模块文档/analyzer/CorrectedSymbolsOverview.md",
+      "entryPath": "AD21_JS_Project/analyzer/corrected-symbols-overview.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "CorrectedSymbolsOverview",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "修正版符号总览工具对象"
+        },
+        {
+          "name": "runCorrectedOverview",
+          "type": "Function",
+          "params": "-",
+          "returns": "report:Object",
+          "env": "Node",
+          "sideEffects": "读 ../dist/*、写 reports/*",
+          "notes": "主入口：生成修正版总览并落盘"
+        },
+        {
+          "name": "_extractTrueGlobalVariables",
+          "type": "Function",
+          "params": "ast:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "提取真正的全局变量（修正逻辑核心）"
+        },
+        {
+          "name": "_extractGlobalCallableObjects",
+          "type": "Function",
+          "params": "ast:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "提取可调用对象（函数）"
+        },
+        {
+          "name": "_extractGlobalModules",
+          "type": "Function",
+          "params": "ast:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "提取全局模块（IIFE 模块）"
+        },
+        {
+          "name": "_saveCorrectedReport",
+          "type": "Function",
+          "params": "report:Object",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "写 reports/*",
+          "notes": "写 JSON/MD/TXT 报告"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "CrossModuleImpactRule",
+      "docPath": "docs/当前文档/模块文档/analyzer/CrossModuleImpactRule.md",
+      "entryPath": "AD21_JS_Project/analyzer/interpretation/rules/cross-module-impact.rule.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "apply",
+          "type": "Function",
+          "params": "ctx:RuleContext, result:InterpretationResult",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "写 result.warnings",
+          "notes": "对 ctx.isCrossModule(symbol) 的未使用符号生成 warning + suggestions"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "固定为 `cross-module-impact.rule`"
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "规则说明"
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "规则版本"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "DefUseAnalyzer",
+      "docPath": "docs/当前文档/模块文档/analyzer/DefUseAnalyzer.md",
+      "entryPath": "AD21_JS_Project/analyzer/semantic/def-use-analyzer.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "DefUseAnalyzer",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "UseType",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "Use 类型枚举（变量/函数调用等）"
+        },
+        {
+          "name": "Confidence",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "置信度枚举（high/medium/low）"
+        },
+        {
+          "name": "PathTag",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "路径标签枚举/常量（用于分类）"
+        },
+        {
+          "name": "analyzeDefUse",
+          "type": "Function",
+          "params": "ast:Object, filePath:string",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "执行 Def-Use 分析并返回结构化结果"
+        },
+        {
+          "name": "generateDefUseReport",
+          "type": "Function",
+          "params": "defUseResult:Object",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "格式化报告"
+        },
+        {
+          "name": "getDefs",
+          "type": "Function",
+          "params": "defUseResult:Object",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "查询定义点"
+        },
+        {
+          "name": "getUses",
+          "type": "Function",
+          "params": "defUseResult:Object",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "查询使用点"
+        },
+        {
+          "name": "getUnusedSymbols",
+          "type": "Function",
+          "params": "defUseResult:Object",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "查询未使用定义"
+        },
+        {
+          "name": "getUndefinedUses",
+          "type": "Function",
+          "params": "defUseResult:Object",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "查询未定义使用"
+        },
+        {
+          "name": "queryImpact",
+          "type": "Function",
+          "params": "defUseResult:Object, symbolName:string",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "影响评估（downstreamCount/riskLevel）"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "DependencyAnalyzer",
+      "docPath": "docs/当前文档/模块文档/analyzer/DependencyAnalyzer.md",
+      "entryPath": "AD21_JS_Project/analyzer/semantic/dependency-analyzer.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "DependencyAnalyzer",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "analyzeModuleDependencies",
+          "type": "Function",
+          "params": "ast:Object, filePath:string",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "分析 require/依赖（线索：实现关键字 `require`）"
+        },
+        {
+          "name": "analyzeFunctionCalls",
+          "type": "Function",
+          "params": "ast:Object, filePath:string",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "提取函数调用关系"
+        },
+        {
+          "name": "detectCircularDependencies",
+          "type": "Function",
+          "params": "dependencyGraph:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "检测循环依赖并给出环"
+        },
+        {
+          "name": "buildDependencyGraph",
+          "type": "Function",
+          "params": "moduleResults:Array",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "构建依赖图（nodes/edges）"
+        },
+        {
+          "name": "generateDependencyReport",
+          "type": "Function",
+          "params": "graph:Object",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "格式化依赖报告"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "DigitalVariableTracer",
+      "docPath": "docs/当前文档/模块文档/analyzer/DigitalVariableTracer.md",
+      "entryPath": "AD21_JS_Project/analyzer/digital-variable-tracer.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "DigitalVariableTracer",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "主导出对象（module.exports）"
+        },
+        {
+          "name": "DigitalVariableTracer.runTrace",
+          "type": "Function",
+          "params": "-",
+          "returns": "report:Object",
+          "env": "Node",
+          "sideEffects": "读 dist/build/scripts 写 analyzer/reports 输出 console",
+          "notes": "分析数字变量声明/连续区间/构建脚本模式"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "ESLintConfig",
+      "docPath": "docs/当前文档/模块文档/analyzer/ESLintConfig.md",
+      "entryPath": "AD21_JS_Project/analyzer/eslint/eslint.config.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "default",
+          "type": "Array",
+          "params": "-",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "module.exports = [ ...flatConfig ]"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "ESLintRunner",
+      "docPath": "docs/当前文档/模块文档/analyzer/ESLintRunner.md",
+      "entryPath": "AD21_JS_Project/analyzer/eslint/eslint-runner.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "ESLintRunner",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "初始化 ESLint 实例",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "validateFile",
+          "type": "Function",
+          "params": "filePath:string",
+          "returns": "Promise<Object>",
+          "env": "Node",
+          "sideEffects": "读文件/运行 ESLint",
+          "notes": "返回 {success,errorCount,warningCount,messages}"
+        },
+        {
+          "name": "validateFiles",
+          "type": "Function",
+          "params": "filePaths:Array",
+          "returns": "Promise<Object>",
+          "env": "Node",
+          "sideEffects": "读文件/运行 ESLint",
+          "notes": "逐文件串行校验并汇总"
+        },
+        {
+          "name": "passesLanguageGate",
+          "type": "Function",
+          "params": "filePath:string",
+          "returns": "Promise<boolean>",
+          "env": "Node",
+          "sideEffects": "读文件/运行 ESLint",
+          "notes": "语义分析入口守卫"
+        },
+        {
+          "name": "formatErrors",
+          "type": "Function",
+          "params": "result:Object",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "将 ESLintRunner 结果格式化为文本"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "GlobalVariableAnalyzer",
+      "docPath": "docs/当前文档/模块文档/analyzer/GlobalVariableAnalyzer.md",
+      "entryPath": "AD21_JS_Project/analyzer/global-variable-analyzer.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "GlobalVariableAnalyzer",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "主导出对象（module.exports）"
+        },
+        {
+          "name": "GlobalVariableAnalyzer.runAnalysis",
+          "type": "Function",
+          "params": "-",
+          "returns": "report:Object",
+          "env": "Node",
+          "sideEffects": "读 dist/config 写 analyzer/reports 输出 console",
+          "notes": "完整流程：built→source→report→save"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "GlobalVariableFixer",
+      "docPath": "docs/当前文档/模块文档/analyzer/GlobalVariableFixer.md",
+      "entryPath": "AD21_JS_Project/analyzer/global-variable-fixer.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "GlobalVariableFixer",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "主导出对象（module.exports）"
+        },
+        {
+          "name": "GlobalVariableFixer.fixGlobalVariables",
+          "type": "Function",
+          "params": "-",
+          "returns": "report:Object",
+          "env": "Node",
+          "sideEffects": "读 dist 写 analyzer/reports 输出 console",
+          "notes": "对比“当前方法 vs 正确作用域分析”并生成报告"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "InterpretationTypes",
+      "docPath": "docs/当前文档/模块文档/analyzer/InterpretationTypes.md",
+      "entryPath": "AD21_JS_Project/analyzer/interpretation/interpretation-types.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "InterpretationResult",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "Stage 6 的“唯一正式输出”模板（包含 actions/warnings/errors/meta）"
+        },
+        {
+          "name": "ActionContract",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "推荐动作最小结构：action/symbol/risk/confidence/reason/evidence"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "Interpreter",
+      "docPath": "docs/当前文档/模块文档/analyzer/Interpreter.md",
+      "entryPath": "AD21_JS_Project/analyzer/interpretation/interpreter.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "interpret",
+          "type": "Function",
+          "params": "stage5Facts:Object, stage4Meta?:Object",
+          "returns": "InterpretationResult",
+          "env": "Node",
+          "sideEffects": "无（仅内存计算）",
+          "notes": "依次应用规则：unused/undefined/cross-module"
+        },
+        {
+          "name": "getStatistics",
+          "type": "Function",
+          "params": "interpretationResult:Object",
+          "returns": "stats:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "统计 actions/warnings/errors/criticalIssues/ruleCount"
+        },
+        {
+          "name": "hasBlockingIssues",
+          "type": "Function",
+          "params": "interpretationResult:Object",
+          "returns": "boolean",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "检查 errors[].risk 是否为 critical/high"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "NumberVariableInvestigator",
+      "docPath": "docs/当前文档/模块文档/analyzer/NumberVariableInvestigator.md",
+      "entryPath": "AD21_JS_Project/analyzer/number-variable-investigator.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "NumberVariableInvestigator",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "主导出对象（module.exports）"
+        },
+        {
+          "name": "NumberVariableInvestigator.investigate",
+          "type": "Function",
+          "params": "-",
+          "returns": "report:Object",
+          "env": "Node",
+          "sideEffects": "读 dist 写 analyzer/reports 输出 console",
+          "notes": "调查数组访问/对象访问/可疑 var 声明等模式"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "PlanTypes",
+      "docPath": "docs/当前文档/模块文档/analyzer/PlanTypes.md",
+      "entryPath": "AD21_JS_Project/analyzer/execution/plan-types.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "StepType",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "步骤类型枚举（字符串）"
+        },
+        {
+          "name": "RiskLevel",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "风险级别枚举（字符串）"
+        },
+        {
+          "name": "ExecutionStep",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "步骤接口模板（字段形状）"
+        },
+        {
+          "name": "ExecutionPlan",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "执行计划接口模板"
+        },
+        {
+          "name": "ExecutionResult",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "执行结果接口模板"
+        },
+        {
+          "name": "RiskSummary",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "风险摘要接口模板"
+        },
+        {
+          "name": "createExecutionStep",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "step:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建带默认值的 ExecutionStep"
+        },
+        {
+          "name": "createExecutionPlan",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "plan:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建计划并自动计算 statistics"
+        },
+        {
+          "name": "createRiskSummary",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "summary:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建风险摘要"
+        },
+        {
+          "name": "calculateStatistics",
+          "type": "Function",
+          "params": "plan:Object",
+          "returns": "stats:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "统计 stepsByType/stepsByRisk/estimatedImpact"
+        },
+        {
+          "name": "validateExecutionPlan",
+          "type": "Function",
+          "params": "plan:Object",
+          "returns": "{valid:boolean, errors:string[]}",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "校验基本字段（type/target）"
+        },
+        {
+          "name": "mergeExecutionPlans",
+          "type": "Function",
+          "params": "plans:Array",
+          "returns": "plan:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "合并 steps 并生成新 plan（source: merged-plans）"
+        },
+        {
+          "name": "generateStepId",
+          "type": "Function",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "生成 `step_<timestamp>_<rand>`"
+        },
+        {
+          "name": "generatePlanId",
+          "type": "Function",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "生成 `plan_<timestamp>_<rand>`"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "ProjectIndex",
+      "docPath": "docs/当前文档/模块文档/analyzer/ProjectIndex.md",
+      "entryPath": "AD21_JS_Project/analyzer/semantic/project-index.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "ProjectIndex",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "createIndex",
+          "type": "Function",
+          "params": "-",
+          "returns": "index:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建空索引（含 metadata/collections）"
+        },
+        {
+          "name": "addSymbol",
+          "type": "Function",
+          "params": "index:Object, symbol:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "修改 index",
+          "notes": "添加单符号并更新元数据/冲突"
+        },
+        {
+          "name": "addSymbols",
+          "type": "Function",
+          "params": "index:Object, symbols:Array",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "修改 index",
+          "notes": "批量添加"
+        },
+        {
+          "name": "findSymbols",
+          "type": "Function",
+          "params": "index:Object, query:Object",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "按查询过滤符号"
+        },
+        {
+          "name": "findSymbolsByScope",
+          "type": "Function",
+          "params": "index:Object, scope:string",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "按 scope 查询"
+        },
+        {
+          "name": "findUnusedSymbols",
+          "type": "Function",
+          "params": "index:Object",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "筛未使用符号（启发式）"
+        },
+        {
+          "name": "findSymbolUsages",
+          "type": "Function",
+          "params": "index:Object, symbolName:string",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "查 usages（依赖符号字段）"
+        },
+        {
+          "name": "analyzeVisibility",
+          "type": "Function",
+          "params": "index:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "可见性分析"
+        },
+        {
+          "name": "generateIndexReport",
+          "type": "Function",
+          "params": "index:Object",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "生成可读报告"
+        },
+        {
+          "name": "exportToJSON",
+          "type": "Function",
+          "params": "index:Object",
+          "returns": "json:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "导出为 JSON 结构"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "RuleContext",
+      "docPath": "docs/当前文档/模块文档/analyzer/RuleContext.md",
+      "entryPath": "AD21_JS_Project/analyzer/interpretation/rule-context.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "RuleContext",
+          "type": "Constructor",
+          "params": "stage5Facts?:Object, stage4Meta?:Object",
+          "returns": "ctx:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "规则层只应通过 ctx 读取数据"
+        },
+        {
+          "name": "RuleContext.prototype.getUnusedSymbols",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "读取 `facts.unusedSymbols`"
+        },
+        {
+          "name": "RuleContext.prototype.getUndefinedUses",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "读取 `facts.undefinedUses`"
+        },
+        {
+          "name": "RuleContext.prototype.isCrossModule",
+          "type": "Function",
+          "params": "symbolName:string",
+          "returns": "boolean",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "读取 `meta.moduleMap[symbolName] === \\\"external\\\"`"
+        },
+        {
+          "name": "RuleContext.prototype.getSymbolConfidence",
+          "type": "Function",
+          "params": "symbolName:string",
+          "returns": "\\\"high\\\"|\\\"medium\\\"|\\\"low\\\"",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "从 `unusedSymbols[]` 查 confidence（默认 low）"
+        },
+        {
+          "name": "RuleContext.prototype.isEntryFunction",
+          "type": "Function",
+          "params": "symbolName:string",
+          "returns": "boolean",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "读取 `meta.entryPoints[]`"
+        },
+        {
+          "name": "RuleContext.prototype.getUseCount",
+          "type": "Function",
+          "params": "symbolName:string",
+          "returns": "number",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "从 `facts.defUseAnalysis[]` 查 uses.length（默认 0）"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "SemanticAnalyzer",
+      "docPath": "docs/当前文档/模块文档/analyzer/SemanticAnalyzer.md",
+      "entryPath": "AD21_JS_Project/analyzer/semantic/semantic-analyzer.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "SemanticAnalyzer",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "console输出",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "analyzeFile",
+          "type": "Function",
+          "params": "filePath:string",
+          "returns": "Promise<Object>",
+          "env": "Node",
+          "sideEffects": "读文件/console输出",
+          "notes": "对单文件执行 ESLint->AST->TopLevel 扫描（Stage 1~3）"
+        },
+        {
+          "name": "analyzeFiles",
+          "type": "Function",
+          "params": "filePaths:Array",
+          "returns": "Promise<Object>",
+          "env": "Node",
+          "sideEffects": "读文件/console输出",
+          "notes": "对多个文件执行分析并汇总"
+        },
+        {
+          "name": "analyzeProject",
+          "type": "Function",
+          "params": "filePaths:Array",
+          "returns": "Promise<Object>",
+          "env": "Node",
+          "sideEffects": "读文件/console输出",
+          "notes": "项目级汇总：依赖、索引、调用图、Def-Use（Stage 4/5）"
+        },
+        {
+          "name": "generateReport",
+          "type": "Function",
+          "params": "stageResult:Object",
+          "returns": "reportText:string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "将分析结果格式化为文本报告"
+        },
+        {
+          "name": "generateBatchReport",
+          "type": "Function",
+          "params": "batchResult:Object",
+          "returns": "reportText:string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "将批量结果格式化为文本报告"
+        },
+        {
+          "name": "generateProjectReport",
+          "type": "Function",
+          "params": "projectResult:Object",
+          "returns": "reportText:string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "将项目结果格式化为文本报告"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "SemanticWorkflow",
+      "docPath": "docs/当前文档/模块文档/analyzer/SemanticWorkflow.md",
+      "entryPath": "AD21_JS_Project/analyzer/semantic-workflow.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "SemanticWorkflow",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/console输出",
+          "notes": "CLI 主控制器对象（同时可被 require 调用）"
+        },
+        {
+          "name": "main",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "process.exit/console输出",
+          "notes": "读取 process.argv 并派发命令"
+        },
+        {
+          "name": "showHelp",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "console输出",
+          "notes": "打印命令帮助"
+        },
+        {
+          "name": "parseOptions",
+          "type": "Function",
+          "params": "args:Array",
+          "returns": "options:Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "解析 `--key value` 风格参数"
+        },
+        {
+          "name": "executeCommand",
+          "type": "Function",
+          "params": "command:string, options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "读文件/console输出",
+          "notes": "分派到各命令处理函数"
+        },
+        {
+          "name": "loadCapabilityQuery",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "query:Object",
+          "env": "Node",
+          "sideEffects": "读取 `reports/capability-index-v1.json`",
+          "notes": "加载能力索引并构建查询接口"
+        },
+        {
+          "name": "listModules",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "读取能力索引",
+          "notes": "列出模块/可调用对象/全局变量"
+        },
+        {
+          "name": "listMethods",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "读取能力索引",
+          "notes": "列出指定模块方法"
+        },
+        {
+          "name": "checkCallable",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "读取能力索引",
+          "notes": "检查对象可调用性"
+        },
+        {
+          "name": "canAccess",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "读取能力索引",
+          "notes": "检查从对象到目标的访问存在性（简化）"
+        },
+        {
+          "name": "predictImpact",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "读取能力索引",
+          "notes": "预测对符号进行动作的风险（基于索引事实）"
+        },
+        {
+          "name": "generatePlan",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "调用 ActionPlanner/Interpreter",
+          "notes": "生成 ExecutionPlan（以 dry-run 为主）"
+        },
+        {
+          "name": "simulatePlan",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "无/console输出",
+          "notes": "对计划做模拟（内部构造 mockPlan）"
+        },
+        {
+          "name": "validateCapability",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "写 analyzer/reports/*",
+          "notes": "运行 CapabilityQueryValidator"
+        },
+        {
+          "name": "analyzeProject",
+          "type": "Function",
+          "params": "options:Object",
+          "returns": "result:Object",
+          "env": "Node",
+          "sideEffects": "读目录/console输出",
+          "notes": "扫描目录下 `.js` 并调用 SemanticAnalyzer.analyzeProject"
+        },
+        {
+          "name": "scanJSFiles",
+          "type": "Function",
+          "params": "dir:string",
+          "returns": "files:Array",
+          "env": "Node",
+          "sideEffects": "读目录",
+          "notes": "递归收集 `.js` 文件"
+        },
+        {
+          "name": "outputResult",
+          "type": "Function",
+          "params": "result:Object, options:Object",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "可能写 options.output",
+          "notes": "按 json/markdown 输出结果"
+        },
+        {
+          "name": "formatMarkdown",
+          "type": "Function",
+          "params": "result:Object, options:Object",
+          "returns": "markdown:string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "将结果对象格式化为 Markdown"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "SymbolTypes",
+      "docPath": "docs/当前文档/模块文档/analyzer/SymbolTypes.md",
+      "entryPath": "AD21_JS_Project/analyzer/semantic/symbol-types.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "SymbolTypes",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "SymbolKind",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "符号类型枚举"
+        },
+        {
+          "name": "Visibility",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "可见性枚举"
+        },
+        {
+          "name": "LifecyclePhase",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "生命周期阶段枚举"
+        },
+        {
+          "name": "Severity",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "诊断严重性枚举"
+        },
+        {
+          "name": "DiagnosticRule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "诊断规则枚举/常量"
+        },
+        {
+          "name": "createBaseSymbol",
+          "type": "Function",
+          "params": "params:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建基础符号"
+        },
+        {
+          "name": "createModuleSymbol",
+          "type": "Function",
+          "params": "name:string, meta:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建模块符号"
+        },
+        {
+          "name": "createExecutionEntrySymbol",
+          "type": "Function",
+          "params": "name:string, meta:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建执行入口符号"
+        },
+        {
+          "name": "createExportedMemberSymbol",
+          "type": "Function",
+          "params": "name:string, meta:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建导出成员符号"
+        },
+        {
+          "name": "createInternalMemberSymbol",
+          "type": "Function",
+          "params": "name:string, meta:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建内部成员符号"
+        },
+        {
+          "name": "createDiagnostic",
+          "type": "Function",
+          "params": "params:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建诊断对象"
+        },
+        {
+          "name": "createErrorDiagnostic",
+          "type": "Function",
+          "params": "params:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建 error 诊断"
+        },
+        {
+          "name": "createWarningDiagnostic",
+          "type": "Function",
+          "params": "params:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "创建 warning 诊断"
+        },
+        {
+          "name": "validateSymbol",
+          "type": "Function",
+          "params": "symbol:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "返回 {valid,issues}"
+        },
+        {
+          "name": "validateDiagnostic",
+          "type": "Function",
+          "params": "diagnostic:Object",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "返回 {valid,issues}"
+        },
+        {
+          "name": "getSymbolDescription",
+          "type": "Function",
+          "params": "symbol:Object",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "生成可读描述"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "TopLevelScanner",
+      "docPath": "docs/当前文档/模块文档/analyzer/TopLevelScanner.md",
+      "entryPath": "AD21_JS_Project/analyzer/semantic/top-level-scanner.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "TopLevelScanner",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "模块导出对象"
+        },
+        {
+          "name": "scanTopLevelSymbols",
+          "type": "Function",
+          "params": "ast:Object, filePath:string",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "返回 {filePath,symbols,diagnostics,summary}"
+        },
+        {
+          "name": "scanFiles",
+          "type": "Function",
+          "params": "fileScanResults:Array",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "对多个 parseResult 进行扫描并汇总"
+        },
+        {
+          "name": "isIIFEModule",
+          "type": "Function",
+          "params": "ast:Object",
+          "returns": "boolean",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "判断是否 IIFE 模块（线索：关键词 `IIFE`）"
+        },
+        {
+          "name": "isDFMFunction",
+          "type": "Function",
+          "params": "node:Object",
+          "returns": "boolean",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "判断是否 DFM 全局函数"
+        },
+        {
+          "name": "isTopLevelFunction",
+          "type": "Function",
+          "params": "node:Object",
+          "returns": "boolean",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "判断是否顶层 FunctionDeclaration"
+        },
+        {
+          "name": "formatScanResult",
+          "type": "Function",
+          "params": "result:Object",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "格式化扫描结果文本"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "UndefinedUseRule",
+      "docPath": "docs/当前文档/模块文档/analyzer/UndefinedUseRule.md",
+      "entryPath": "AD21_JS_Project/analyzer/interpretation/rules/undefined-use.rule.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "apply",
+          "type": "Function",
+          "params": "ctx:RuleContext, result:InterpretationResult",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "写 result.errors",
+          "notes": "把 undefinedUses[] 转为 errors[]，并生成 suggestions[]"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "固定为 `undefined-use.rule`"
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "规则说明"
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "规则版本"
+        }
+      ]
+    },
+    {
+      "domain": "analyzer",
+      "module": "UnusedSymbolRule",
+      "docPath": "docs/当前文档/模块文档/analyzer/UnusedSymbolRule.md",
+      "entryPath": "AD21_JS_Project/analyzer/interpretation/rules/unused-symbol.rule.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "apply",
+          "type": "Function",
+          "params": "ctx:RuleContext, result:InterpretationResult",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "写 result.actions/warnings",
+          "notes": "按 confidence/entryPoint/useCount 产出建议"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "固定为 `unused-symbol.rule`"
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "规则说明"
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "规则版本"
+        }
+      ]
+    },
+    {
+      "domain": "core",
+      "module": "BaseModule",
+      "docPath": "docs/当前文档/模块文档/core/BaseModule.md",
+      "entryPath": "AD21_JS_Project/src/modules/base/index.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "BaseModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "IIFE模块导出"
+        },
+        {
+          "name": "create",
+          "type": "Function",
+          "params": "userOptions?:Object",
+          "returns": "instance:Object",
+          "env": "Both",
+          "sideEffects": "可能触发init/写memLog(Hook异常)",
+          "notes": "返回含init/run/destroy的实例"
+        },
+        {
+          "name": "init",
+          "type": "Function",
+          "params": "instance:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "可能写memLog/调用logger",
+          "notes": "初始化实例并触发Hook"
+        },
+        {
+          "name": "run",
+          "type": "Function",
+          "params": "instance:Object",
+          "returns": "Object|null",
+          "env": "Both",
+          "sideEffects": "可能写memLog/调用logger",
+          "notes": "执行主逻辑并触发Hook"
+        },
+        {
+          "name": "destroy",
+          "type": "Function",
+          "params": "instance:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "可能写memLog/调用logger",
+          "notes": "销毁实例并清理Hook"
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "模块版本"
+        },
+        {
+          "name": "defaultOptions",
+          "type": "Object",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "默认配置"
+        }
+      ]
+    },
+    {
+      "domain": "core",
+      "module": "Core",
+      "docPath": "docs/当前文档/模块文档/core/Core.md",
+      "entryPath": "AD21_JS_Project/src/core/core.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "Core",
+          "type": "Function",
+          "params": "userOptions?:Object",
+          "returns": "coreInstance:Object",
+          "env": "AD",
+          "sideEffects": "注册到window",
+          "notes": "构造函数形式调用"
+        },
+        {
+          "name": "Core.create",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "coreInstance:Object",
+          "env": "AD",
+          "sideEffects": "可能创建Logger实例",
+          "notes": "静态工厂方法"
+        },
+        {
+          "name": "Core.version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "模块版本"
+        },
+        {
+          "name": "Core.defaultOptions",
+          "type": "Object",
+          "params": "-",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "默认配置"
+        }
+      ]
+    },
+    {
+      "domain": "core",
+      "module": "EnvironmentProbeModule",
+      "docPath": "docs/当前文档/模块文档/core/EnvironmentProbeModule.md",
+      "entryPath": "AD21_JS_Project/src/环境探测/EnvironmentProbeModule.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "EnvironmentProbeModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "写UI日志/尝试创建ActiveX",
+          "notes": "IIFE模块导出"
+        },
+        {
+          "name": "runAll",
+          "type": "Function",
+          "params": "(customConfig)",
+          "returns": "report:Object",
+          "env": "AD",
+          "sideEffects": "创建ActiveX/写日志/可写文件",
+          "notes": "主入口"
+        },
+        {
+          "name": "getConfig",
+          "type": "Function",
+          "params": "-",
+          "returns": "CONFIG:Object",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "读取当前配置"
+        },
+        {
+          "name": "setConfig",
+          "type": "Function",
+          "params": "(cfg:Object)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "运行探测",
+          "notes": "内部调用runAll"
+        }
+      ]
+    },
+    {
+      "domain": "core",
+      "module": "HTTPClientModule",
+      "docPath": "docs/当前文档/模块文档/core/HTTPClientModule.md",
+      "entryPath": "AD21_JS_Project/src/modules/http-client/index.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "HTTPClientModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "ActiveX/写UI日志",
+          "notes": "IIFE模块导出"
+        },
+        {
+          "name": "HTTP客户端",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "ActiveX/写UI日志",
+          "notes": "兼容中文变量名（别名）"
+        },
+        {
+          "name": "request",
+          "type": "Function",
+          "params": "method,url,body,headers",
+          "returns": "{ok,status,text,json}",
+          "env": "AD",
+          "sideEffects": "发起同步HTTP",
+          "notes": "内部创建XMLHTTP"
+        },
+        {
+          "name": "ping",
+          "type": "Function",
+          "params": "baseUrl:string",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "发起HTTP/写UI日志",
+          "notes": "GET /ping -> pong"
+        },
+        {
+          "name": "sendCommand",
+          "type": "Function",
+          "params": "baseUrl,cmd,params",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "发起HTTP/写UI日志",
+          "notes": "POST /api/command(JSON)"
+        },
+        {
+          "name": "ui",
+          "type": "Function",
+          "params": "msg:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写UILogger/memLog/ShowMessage",
+          "notes": "日志通道封装"
+        }
+      ]
+    },
+    {
+      "domain": "core",
+      "module": "ModuleAccessor",
+      "docPath": "docs/当前文档/模块文档/core/ModuleAccessor.md",
+      "entryPath": "AD21_JS_Project/src/core/module-accessor.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "ModuleAccessor",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "IIFE模块导出"
+        },
+        {
+          "name": "getModule",
+          "type": "Function",
+          "params": "moduleName:string",
+          "returns": "module|nil",
+          "env": "Both",
+          "sideEffects": "eval/console日志/缓存",
+          "notes": "按优先级查找模块"
+        },
+        {
+          "name": "isModuleAvailable",
+          "type": "Function",
+          "params": "moduleName:string",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "eval/console日志/缓存",
+          "notes": "内部调用getModule"
+        },
+        {
+          "name": "clearCache",
+          "type": "Function",
+          "params": "moduleName?:string",
+          "returns": "void",
+          "env": "Both",
+          "sideEffects": "清理缓存",
+          "notes": "不传则清空全部缓存"
+        },
+        {
+          "name": "getCacheStats",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "返回缓存统计"
+        },
+        {
+          "name": "configure",
+          "type": "Function",
+          "params": "config:Object",
+          "returns": "void",
+          "env": "Both",
+          "sideEffects": "修改内部配置",
+          "notes": "影响日志与缓存行为"
+        },
+        {
+          "name": "getConfiguration",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "返回当前配置"
+        },
+        {
+          "name": "getAvailableModules",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "eval/console日志/缓存",
+          "notes": "扫描常见模块名"
+        },
+        {
+          "name": "getStatistics",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "包含配置/缓存/可用模块"
+        }
+      ]
+    },
+    {
+      "domain": "core",
+      "module": "global-events",
+      "docPath": "docs/当前文档/模块文档/core/global-events.md",
+      "entryPath": "AD21_JS_Project/src/core/global-events.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "showErrorInUI",
+          "type": "Function",
+          "params": "functionName:string, error:Error, context:any",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog/alert",
+          "notes": "UI错误输出"
+        },
+        {
+          "name": "showSuccessInUI",
+          "type": "Function",
+          "params": "functionName:string, message:string, context:any",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "UI成功输出"
+        },
+        {
+          "name": "checkLoggerModuleAvailability",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "读取全局模块",
+          "notes": "检查Logger相关模块"
+        },
+        {
+          "name": "btnOutputLogClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "flush日志/UI输出",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnGenerateLogClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "生成日志/UI输出",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnClearDisplayClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "清空memLog",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnSaveLogClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "flush日志/写文件(间接)",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnDebugStatusClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "UI调试输出",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnLogStatsClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "读取统计/UI输出",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "showObjectCreatorWindow",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIModule",
+          "notes": "显示对象创建窗口"
+        },
+        {
+          "name": "btnCreateObjectClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用showObjectCreatorWindow",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnRefreshStatusClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "读取模块状态/UI输出",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnObjectStatsClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "读取统计/UI输出",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnClearCacheClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "清理缓存",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnEnvironmentProbeClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "触发环境探测",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "chkGenDebugClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改日志生成开关",
+          "notes": "复选框事件"
+        },
+        {
+          "name": "chkGenInfoClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改日志生成开关",
+          "notes": "复选框事件"
+        },
+        {
+          "name": "chkGenWarnClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改日志生成开关",
+          "notes": "复选框事件"
+        },
+        {
+          "name": "chkGenErrorClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改日志生成开关",
+          "notes": "复选框事件"
+        },
+        {
+          "name": "chkUIDebugClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改日志显示开关",
+          "notes": "复选框事件"
+        },
+        {
+          "name": "chkUIInfoClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改日志显示开关",
+          "notes": "复选框事件"
+        },
+        {
+          "name": "chkUIWarnClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改日志显示开关",
+          "notes": "复选框事件"
+        },
+        {
+          "name": "chkUIErrorClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改日志显示开关",
+          "notes": "复选框事件"
+        },
+        {
+          "name": "btnDevModeClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "切换日志模式",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnProdModeClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "切换日志模式",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnDebugModeClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "切换日志模式",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnSilentModeClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "切换日志模式",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "updateAllSwitches",
+          "type": "Function",
+          "params": "enabled:boolean",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改UI控件",
+          "notes": "更新复选框状态"
+        },
+        {
+          "name": "updateProductionModeSwitches",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改UI控件",
+          "notes": "更新复选框状态"
+        },
+        {
+          "name": "updateDebugModeSwitches",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "修改UI控件",
+          "notes": "更新复选框状态"
+        },
+        {
+          "name": "initializeGlobalEvents",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "全局初始化"
+        },
+        {
+          "name": "uiWrite",
+          "type": "Function",
+          "params": "message:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "UI输出底层函数"
+        },
+        {
+          "name": "uiDebug",
+          "type": "Function",
+          "params": "level:string, message:string, context:any, fileName?:string, functionName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "带级别输出"
+        },
+        {
+          "name": "uiTrace",
+          "type": "Function",
+          "params": "message:string, context:any, fileName?:string, functionName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "TRACE输出"
+        },
+        {
+          "name": "uiInfo",
+          "type": "Function",
+          "params": "message:string, context:any, fileName?:string, functionName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "INFO输出"
+        },
+        {
+          "name": "uiWarn",
+          "type": "Function",
+          "params": "message:string, context:any, fileName?:string, functionName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "WARN输出"
+        },
+        {
+          "name": "uiError",
+          "type": "Function",
+          "params": "message:string, context:any, fileName?:string, functionName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "ERROR输出"
+        },
+        {
+          "name": "uiFatal",
+          "type": "Function",
+          "params": "message:string, context:any, fileName?:string, functionName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "FATAL输出"
+        },
+        {
+          "name": "测试_运行环境探测",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "运行环境探测模块",
+          "notes": "可写reports报告"
+        },
+        {
+          "name": "debugModuleStatus",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog/读取全局",
+          "notes": "模块状态检查"
+        },
+        {
+          "name": "debugFunctionCall",
+          "type": "Function",
+          "params": "functionName:string, args:Array, fileName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "函数调用跟踪"
+        },
+        {
+          "name": "debugFunctionReturn",
+          "type": "Function",
+          "params": "functionName:string, result:any, fileName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "函数返回跟踪"
+        },
+        {
+          "name": "debugFunctionError",
+          "type": "Function",
+          "params": "functionName:string, error:Error, fileName?:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "函数异常跟踪"
+        },
+        {
+          "name": "cmbObjectTypeChange",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "btnSetOriginClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "btnValidateClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "btnCreateClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "btnCreateAtOriginClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "btnResetClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "btnCancelClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "chkGridSnapClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "edtGridSizeChange",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用UIEventManager",
+          "notes": "DFM事件"
+        },
+        {
+          "name": "cleanupGlobalEvents",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "写memLog",
+          "notes": "全局清理"
+        }
+      ]
+    },
+    {
+      "domain": "core",
+      "module": "simple-global-events",
+      "docPath": "docs/当前文档/模块文档/core/simple-global-events.md",
+      "entryPath": "AD21_JS_Project/src/core/simple-global-events.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "HandleError",
+          "type": "Function",
+          "params": "error:Error|string, context:string",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "输出SimpleLogError/ShowMessage",
+          "notes": "统一错误处理"
+        },
+        {
+          "name": "SafeExecute",
+          "type": "Function",
+          "params": "func:Function, errorContext:string, fallbackValue:any",
+          "returns": "any",
+          "env": "AD",
+          "sideEffects": "调用HandleError",
+          "notes": "安全执行包装"
+        },
+        {
+          "name": "btnOutputLogClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "flush日志/UI提示",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnGenerateLogClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "生成日志/UI提示",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnClearDisplayClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "flush日志/UI提示",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "btnSaveLogClick",
+          "type": "Function",
+          "params": "Sender:Object",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "flush日志/UI提示",
+          "notes": "按钮事件"
+        },
+        {
+          "name": "InitializeSimpleLoggerUI",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "配置SimpleLoggerIndex",
+          "notes": "初始化UI日志配置"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "ArcWrapper",
+      "docPath": "docs/当前文档/模块文档/pcb/ArcWrapper.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/wrappers/ArcWrapper.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "ArcWrapper",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "导出构造函数（返回BasePCBWrapper实例扩展）"
+        },
+        {
+          "name": "ArcWrapper.create",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "创建wrapper并可能init",
+          "notes": "-"
+        },
+        {
+          "name": "ArcWrapper.getDefaultMockData",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "返回默认Mock数据"
+        },
+        {
+          "name": "ArcWrapperInstance.getCenterX/setCenterX",
+          "type": "Function",
+          "params": "- / value:number",
+          "returns": "number/void",
+          "env": "Both",
+          "sideEffects": "读写原生对象或Mock数据",
+          "notes": "set* 内部调用 `_markDirty`（基类未实现，见“已知问题”）"
+        },
+        {
+          "name": "ArcWrapperInstance.getCenterY/setCenterY",
+          "type": "Function",
+          "params": "- / value:number",
+          "returns": "number/void",
+          "env": "Both",
+          "sideEffects": "读写属性",
+          "notes": "同上"
+        },
+        {
+          "name": "ArcWrapperInstance.getRadius/setRadius",
+          "type": "Function",
+          "params": "- / value:number",
+          "returns": "number/void",
+          "env": "Both",
+          "sideEffects": "读写属性",
+          "notes": "-"
+        },
+        {
+          "name": "ArcWrapperInstance.getStartAngle/setStartAngle",
+          "type": "Function",
+          "params": "- / value:number",
+          "returns": "number/void",
+          "env": "Both",
+          "sideEffects": "读写属性",
+          "notes": "-"
+        },
+        {
+          "name": "ArcWrapperInstance.getEndAngle/setEndAngle",
+          "type": "Function",
+          "params": "- / value:number",
+          "returns": "number/void",
+          "env": "Both",
+          "sideEffects": "读写属性",
+          "notes": "-"
+        },
+        {
+          "name": "ArcWrapperInstance.getLineWidth/setLineWidth",
+          "type": "Function",
+          "params": "- / value:number",
+          "returns": "number/void",
+          "env": "Both",
+          "sideEffects": "读写属性",
+          "notes": "-"
+        },
+        {
+          "name": "ArcWrapperInstance.getLayer/setLayer",
+          "type": "Function",
+          "params": "- / value:any",
+          "returns": "any/void",
+          "env": "Both",
+          "sideEffects": "读写属性",
+          "notes": "-"
+        },
+        {
+          "name": "ArcWrapperInstance.rotateAroundXY",
+          "type": "Function",
+          "params": "centerX:number,centerY:number,angle:number",
+          "returns": "void",
+          "env": "Both",
+          "sideEffects": "可能调用原生RotateAroundXY并刷新属性",
+          "notes": "高优先级API"
+        },
+        {
+          "name": "ArcWrapperInstance.getState_StrictHitTest",
+          "type": "Function",
+          "params": "x:number,y:number",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "可能调用原生GetState_StrictHitTest",
+          "notes": "高优先级API（降级到几何检测）"
+        },
+        {
+          "name": "ArcWrapperInstance.getStartPoint/getEndPoint",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "依赖GeometryCalculator（若存在）"
+        },
+        {
+          "name": "ArcWrapperInstance.getArcLength/getBoundingBox",
+          "type": "Function",
+          "params": "-",
+          "returns": "number/Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "依赖GeometryCalculator（若存在）"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "BasePCBWrapper",
+      "docPath": "docs/当前文档/模块文档/pcb/BasePCBWrapper.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/core/BasePCBWrapper.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "BasePCBWrapper",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "注册到window",
+          "notes": "仅 `window.BasePCBWrapper`，无 module.exports/global"
+        },
+        {
+          "name": "create",
+          "type": "Function",
+          "params": "userOptions?:Object",
+          "returns": "instance:Object",
+          "env": "AD",
+          "sideEffects": "可能autoInit；读/写原生对象属性",
+          "notes": "创建封装实例（返回含init/run/destroy与属性访问API）"
+        },
+        {
+          "name": "init",
+          "type": "Function",
+          "params": "instance:Object",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "校验nativeObject（非Mock）；一次性提取属性缓存",
+          "notes": "初始化实例并可触发Hook"
+        },
+        {
+          "name": "run",
+          "type": "Function",
+          "params": "instance:Object",
+          "returns": "Object|null",
+          "env": "AD",
+          "sideEffects": "执行_executeMainLogic（默认无副作用）",
+          "notes": "默认实现仅返回成功结果"
+        },
+        {
+          "name": "destroy",
+          "type": "Function",
+          "params": "instance:Object",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "必要时syncToNative；清理缓存/Hook/原生引用",
+          "notes": "销毁实例"
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "模块版本（源码：`2.0.0`）"
+        },
+        {
+          "name": "defaultOptions",
+          "type": "Object",
+          "params": "-",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "默认配置（enableCache/enableDirectAccess/syncMode等）"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "GeometryCalculator",
+      "docPath": "docs/当前文档/模块文档/pcb/GeometryCalculator.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/calculators/GeometryCalculator.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "GeometryCalculator",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "注册到window",
+          "notes": "仅 `window.GeometryCalculator`，无 module.exports/global"
+        },
+        {
+          "name": "calculateDistance",
+          "type": "Function",
+          "params": "x1:number,y1:number,x2:number,y2:number",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "calculateAngle",
+          "type": "Function",
+          "params": "x1:number,y1:number,x2:number,y2:number",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "calculateMidPoint",
+          "type": "Function",
+          "params": "x1:number,y1:number,x2:number,y2:number",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "返回 `{x,y}`"
+        },
+        {
+          "name": "polarToCartesian",
+          "type": "Function",
+          "params": "centerX:number,centerY:number,radius:number,angle:number",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "返回 `{x,y}`"
+        },
+        {
+          "name": "calculateArcLength",
+          "type": "Function",
+          "params": "radius:number,startAngle:number,endAngle:number",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "calculateCircleBoundingBox",
+          "type": "Function",
+          "params": "centerX:number,centerY:number,radius:number",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "返回 `{x1,y1,x2,y2}`"
+        },
+        {
+          "name": "calculateRectBoundingBox",
+          "type": "Function",
+          "params": "x:number,y:number,width:number,height:number",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "返回 `{x1,y1,x2,y2}`"
+        },
+        {
+          "name": "calculateTrackBoundingBox",
+          "type": "Function",
+          "params": "x1:number,y1:number,x2:number,y2:number,width:number",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "calculateCircleArea",
+          "type": "Function",
+          "params": "radius:number",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "calculatePadArea",
+          "type": "Function",
+          "params": "sizeX:number,sizeY:number,shape:string",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "shape支持Rect/Round/Octagonal/RoundedRect"
+        },
+        {
+          "name": "isPointInCircle",
+          "type": "Function",
+          "params": "x:number,y:number,centerX:number,centerY:number,radius:number",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "isPointOnLine",
+          "type": "Function",
+          "params": "x:number,y:number,x1:number,y1:number,x2:number,y2:number,tolerance:number",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "isPointOnArc",
+          "type": "Function",
+          "params": "x:number,y:number,centerX:number,centerY:number,radius:number,startAngle:number,endAngle:number,tolerance:number",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "isPointInPad",
+          "type": "Function",
+          "params": "x:number,y:number,padX:number,padY:number,sizeX:number,sizeY:number,shape:string,rotation:number",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "包含旋转处理"
+        },
+        {
+          "name": "rotatePoint",
+          "type": "Function",
+          "params": "x:number,y:number,centerX:number,centerY:number,angle:number",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "extendLine",
+          "type": "Function",
+          "params": "x1:number,y1:number,x2:number,y2:number,extension:number",
+          "returns": "Object",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "doBoundingBoxesIntersect",
+          "type": "Function",
+          "params": "box1:Object,box2:Object",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "-"
+        },
+        {
+          "name": "calculateTrackResistance",
+          "type": "Function",
+          "params": "length:number,width:number,thickness:number",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "简化模型"
+        },
+        {
+          "name": "calculateTrackCapacitance",
+          "type": "Function",
+          "params": "length:number,width:number,layer:Object",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "简化模型"
+        },
+        {
+          "name": "calculateTrackImpedance",
+          "type": "Function",
+          "params": "width:number,thickness:number,layer:Object",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "简化模型"
+        },
+        {
+          "name": "calculateViaResistance",
+          "type": "Function",
+          "params": "size:number,holeSize:number,startLayer:Object,endLayer:Object",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "简化模型"
+        },
+        {
+          "name": "calculateViaCapacitance",
+          "type": "Function",
+          "params": "size:number,holeSize:number,startLayer:Object,endLayer:Object",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "简化模型"
+        },
+        {
+          "name": "calculateViaInductance",
+          "type": "Function",
+          "params": "size:number,holeSize:number,startLayer:Object,endLayer:Object",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "简化模型"
+        },
+        {
+          "name": "calculateViaImpedance",
+          "type": "Function",
+          "params": "size:number,holeSize:number",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "简化模型"
+        },
+        {
+          "name": "calculateViaAspectRatio",
+          "type": "Function",
+          "params": "startLayer:Object,endLayer:Object,holeSize:number",
+          "returns": "number",
+          "env": "AD",
+          "sideEffects": "console输出",
+          "notes": "简化模型"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "PCBInterfaces",
+      "docPath": "docs/当前文档/模块文档/pcb/PCBInterfaces.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/index.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "PCBInterfaces",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "主入口IIFE模块"
+        },
+        {
+          "name": "initialize",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "初始化Mock/Factory/Pool并注册Wrappers",
+          "notes": "依赖全局PCBMockSystem/PCBObjectFactory/PCBObjectPool/ArcWrapper等"
+        },
+        {
+          "name": "createWrapper",
+          "type": "Function",
+          "params": "objectType:string, options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "可能创建Mock对象/调用工厂",
+          "notes": "内部调用PCBObjectFactory.createWrapper"
+        },
+        {
+          "name": "createFromIterator",
+          "type": "Function",
+          "params": "iterator:Object, objectType:string, options?:Object",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "可能遍历AD迭代器",
+          "notes": "已知问题：调用了PCBObjectFactory.createFromIterator（源码中不存在；线索见“已知问题”）"
+        },
+        {
+          "name": "createMock",
+          "type": "Function",
+          "params": "objectType:string, mockData?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "创建Mock原生对象并封装",
+          "notes": "依赖PCBMockSystem.createMockObject与PCBObjectFactory.createWrapper"
+        },
+        {
+          "name": "getObjectPool",
+          "type": "Function",
+          "params": "poolType:string",
+          "returns": "Any",
+          "env": "Both",
+          "sideEffects": "读取对象池信息",
+          "notes": "已知问题：poolType注释与PCBObjectPool支持值不一致"
+        },
+        {
+          "name": "getStatistics",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "读取Factory/Pool/Mock统计",
+          "notes": "依赖对应子模块的get*Statistics"
+        },
+        {
+          "name": "cleanup",
+          "type": "Function",
+          "params": "-",
+          "returns": "void",
+          "env": "Both",
+          "sideEffects": "清空对象池/Mock对象/重置统计",
+          "notes": "会改变全局状态（Pool/Mock/Factory统计）"
+        },
+        {
+          "name": "isReady",
+          "type": "Function",
+          "params": "-",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "返回内部isInitialized标志"
+        },
+        {
+          "name": "getSupportedTypes",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "返回PCBObjectFactory.getSupportedObjectTypes()"
+        },
+        {
+          "name": "BasePCBWrapper",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局BasePCBWrapper）"
+        },
+        {
+          "name": "PCBMockSystem",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局PCBMockSystem）"
+        },
+        {
+          "name": "PCBObjectFactory",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局PCBObjectFactory）"
+        },
+        {
+          "name": "PCBObjectPool",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局PCBObjectPool）"
+        },
+        {
+          "name": "GeometryCalculator",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局GeometryCalculator）"
+        },
+        {
+          "name": "ArcWrapper",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局ArcWrapper）"
+        },
+        {
+          "name": "PadWrapper",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局PadWrapper）"
+        },
+        {
+          "name": "TrackWrapper",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局TrackWrapper）"
+        },
+        {
+          "name": "ViaWrapper",
+          "type": "Any",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "透传引用（依赖全局ViaWrapper）"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "PCBMockSystem",
+      "docPath": "docs/当前文档/模块文档/pcb/PCBMockSystem.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/core/PCBMockSystem.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "PCBMockSystem",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "IIFE模块导出"
+        },
+        {
+          "name": "createMockObject",
+          "type": "Function",
+          "params": "objectType:string, mockData?:Object",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "创建并缓存Mock对象",
+          "notes": "会为每个字段动态定义getter/setter（ES5风险，见“已知问题”）"
+        },
+        {
+          "name": "getMockObject",
+          "type": "Function",
+          "params": "mockId:string",
+          "returns": "Object|null",
+          "env": "Both",
+          "sideEffects": "读取缓存",
+          "notes": "-"
+        },
+        {
+          "name": "removeMockObject",
+          "type": "Function",
+          "params": "mockId:string",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "修改缓存",
+          "notes": "-"
+        },
+        {
+          "name": "getAllMockObjects",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "读取缓存",
+          "notes": "-"
+        },
+        {
+          "name": "clearAllMockObjects",
+          "type": "Function",
+          "params": "-",
+          "returns": "number",
+          "env": "Both",
+          "sideEffects": "清空缓存",
+          "notes": "返回清理数量"
+        },
+        {
+          "name": "getMockDataTemplate",
+          "type": "Function",
+          "params": "objectType:string",
+          "returns": "Object|null",
+          "env": "Both",
+          "sideEffects": "读取模板",
+          "notes": "-"
+        },
+        {
+          "name": "getAllMockDataTemplates",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "读取模板",
+          "notes": "-"
+        },
+        {
+          "name": "getMockObjectId",
+          "type": "Function",
+          "params": "objectType:string",
+          "returns": "number",
+          "env": "Both",
+          "sideEffects": "依赖AD常量",
+          "notes": "使用 eArcObject/ePadObject/...（需要外部提供）"
+        },
+        {
+          "name": "getMockStatistics",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "读取统计",
+          "notes": "-"
+        },
+        {
+          "name": "initialize",
+          "type": "Function",
+          "params": "-",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "初始化模板",
+          "notes": "会引用AD常量（需要外部提供）"
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "模块版本"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "PCBObjectFactory",
+      "docPath": "docs/当前文档/模块文档/pcb/PCBObjectFactory.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/core/PCBObjectFactory.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "PCBObjectFactory",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "IIFE模块导出"
+        },
+        {
+          "name": "initialize",
+          "type": "Function",
+          "params": "-",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "初始化类型映射",
+          "notes": "会访问AD常量（eArcObject等）"
+        },
+        {
+          "name": "registerWrapperConstructor",
+          "type": "Function",
+          "params": "objectType:string, constructor:Function",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "修改内部注册表",
+          "notes": "用于把 ArcWrapper 等注册进工厂"
+        },
+        {
+          "name": "createWrapper",
+          "type": "Function",
+          "params": "nativeObject?:Object, options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "可能创建Mock原生对象、调用BasePCBWrapper",
+          "notes": "真实对象路径依赖 nativeObject.ObjectId 与AD常量"
+        },
+        {
+          "name": "createWrappersFromIterator",
+          "type": "Function",
+          "params": "iterator:Object, options?:Object",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "遍历迭代器创建多个wrapper",
+          "notes": "要求 iterator.First/iterator.Next（代码有接口检查）"
+        },
+        {
+          "name": "getObjectType",
+          "type": "Function",
+          "params": "nativeObject:Object",
+          "returns": "string",
+          "env": "Both",
+          "sideEffects": "类型识别",
+          "notes": "会读 nativeObject.ObjectId 并查映射"
+        },
+        {
+          "name": "getSupportedObjectTypes",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "返回工厂支持类型列表"
+        },
+        {
+          "name": "isObjectTypeSupported",
+          "type": "Function",
+          "params": "objectType:string",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "-"
+        },
+        {
+          "name": "getFactoryStatistics",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "返回创建统计"
+        },
+        {
+          "name": "resetFactoryStatistics",
+          "type": "Function",
+          "params": "-",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "重置统计",
+          "notes": "-"
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "模块版本"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "PCBObjectManager",
+      "docPath": "docs/当前文档/模块文档/pcb/PCBObjectManager.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/core/PCBObjectManager.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "PCBObjectManager",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "IIFE模块导出"
+        },
+        {
+          "name": "initialize",
+          "type": "Function",
+          "params": "factory:Object, logger?:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "写入内部_factory/_logger",
+          "notes": "必须先初始化才能createWrapper/createEmptyWrapper"
+        },
+        {
+          "name": "createWrapper",
+          "type": "Function",
+          "params": "nativeObject:Object, wrapperType:string, options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "创建并注册wrapper到boundObjects",
+          "notes": "内部依赖各Wrapper.create（存在签名不一致风险）"
+        },
+        {
+          "name": "createEmptyWrapper",
+          "type": "Function",
+          "params": "wrapperType:string, options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "向pendingPool加入空wrapper",
+          "notes": "标记为Mock并等待后续bind"
+        },
+        {
+          "name": "bindToExisting",
+          "type": "Function",
+          "params": "wrapper:Object, nativeObject:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "从pendingPool移除并绑定原生对象",
+          "notes": "会重新init并syncFromNative"
+        },
+        {
+          "name": "createFromExisting",
+          "type": "Function",
+          "params": "nativeObject:Object, wrapperType:string, options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "可能复用已存在wrapper",
+          "notes": "若已绑定则直接返回"
+        },
+        {
+          "name": "getWrapper",
+          "type": "Function",
+          "params": "nativeObject:Object",
+          "returns": "wrapper:Object|null",
+          "env": "Both",
+          "sideEffects": "读取boundObjects",
+          "notes": "按 I_ObjectAddress 查找"
+        },
+        {
+          "name": "getPendingWrappers",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "读取pendingPool",
+          "notes": "-"
+        },
+        {
+          "name": "getPendingPoolInfo",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "读取pendingPool",
+          "notes": "-"
+        },
+        {
+          "name": "destroyWrapper",
+          "type": "Function",
+          "params": "wrapper:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "从boundObjects/pendingPool移除并destroy",
+          "notes": "会修改缓存"
+        },
+        {
+          "name": "clearAll",
+          "type": "Function",
+          "params": "-",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "销毁并清空所有对象",
+          "notes": "强副作用：清空缓存/销毁wrapper"
+        },
+        {
+          "name": "getStats",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "读取统计",
+          "notes": "-"
+        },
+        {
+          "name": "getDebugInfo",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "读取详细列表",
+          "notes": "-"
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "params": "-",
+          "returns": "string",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "模块版本"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "PCBObjectPool",
+      "docPath": "docs/当前文档/模块文档/pcb/PCBObjectPool.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/core/PCBObjectPool.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "PCBObjectPool",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global/IIFE导出",
+          "notes": "支持 exportModule"
+        },
+        {
+          "name": "attachBoard",
+          "type": "Function",
+          "params": "boardKey:string",
+          "returns": "string",
+          "env": "Both",
+          "sideEffects": "可能触发reset",
+          "notes": "切板/清池用"
+        },
+        {
+          "name": "register",
+          "type": "Function",
+          "params": "wrapper:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "写入 byHandle/byAddress/byType",
+          "notes": "要求wrapper含handle/address或可读取I_ObjectAddress"
+        },
+        {
+          "name": "getByHandle",
+          "type": "Function",
+          "params": "handle:number|string",
+          "returns": "Object|null",
+          "env": "Both",
+          "sideEffects": "更新命中统计",
+          "notes": "-"
+        },
+        {
+          "name": "getByAddress",
+          "type": "Function",
+          "params": "address:number|string",
+          "returns": "Object|null",
+          "env": "Both",
+          "sideEffects": "更新命中统计",
+          "notes": "-"
+        },
+        {
+          "name": "invalidate",
+          "type": "Function",
+          "params": "key|wrapper",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "从池中移除",
+          "notes": "支持handle/address/wrapper"
+        },
+        {
+          "name": "reset",
+          "type": "Function",
+          "params": "reason?:string",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "清空全部池",
+          "notes": "-"
+        },
+        {
+          "name": "stats",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "统计汇总"
+        },
+        {
+          "name": "validateRef",
+          "type": "Function",
+          "params": "wrapper:Object",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "可能invalidate",
+          "notes": "轻量校验 directRef/nativeObject"
+        },
+        {
+          "name": "initialize",
+          "type": "Function",
+          "params": "-",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "reset别名",
+          "notes": "兼容旧接口"
+        },
+        {
+          "name": "addToPool/getFromPool/removeFromPool/clearAllPools/getAllPoolObjects/getPoolStatistics",
+          "type": "Function",
+          "params": "-",
+          "returns": "Any",
+          "env": "Both",
+          "sideEffects": "兼容旧接口",
+          "notes": "仅为旧代码保留"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "PadWrapper",
+      "docPath": "docs/当前文档/模块文档/pcb/PadWrapper.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/wrappers/PadWrapper.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "PadWrapper",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "构造函数（返回BasePCBWrapper实例扩展）"
+        },
+        {
+          "name": "PadWrapper.create",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "工厂入口"
+        },
+        {
+          "name": "PadWrapper.getDefaultMockData",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "默认Mock数据"
+        },
+        {
+          "name": "PadWrapperInstance.initFromNative",
+          "type": "Function",
+          "params": "nativeRef:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "写入对象池",
+          "notes": "设置 nativeRef/handle/address"
+        },
+        {
+          "name": "PadWrapperInstance.toSpec",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "spec/0.1 pad"
+        },
+        {
+          "name": "PadWrapperInstance.applySpec",
+          "type": "Function",
+          "params": "specPayload:Object",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "写回原生对象",
+          "notes": "白名单字段"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "StackMap",
+      "docPath": "docs/当前文档/模块文档/pcb/StackMap.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/core/StackMap.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "StackMap",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "支持 exportModule"
+        },
+        {
+          "name": "initFromBoard",
+          "type": "Function",
+          "params": "boardRef:Object",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "初始化映射",
+          "notes": "失败时 fallback Top/Bottom/Multi"
+        },
+        {
+          "name": "getLayerId",
+          "type": "Function",
+          "params": "name:string",
+          "returns": "number|null",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "不支持则返回null"
+        },
+        {
+          "name": "getNormalizedLayerName",
+          "type": "Function",
+          "params": "adLayerId:number",
+          "returns": "string|null",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "-"
+        },
+        {
+          "name": "getAllNormalizedLayers",
+          "type": "Function",
+          "params": "-",
+          "returns": "Array",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "按层序返回"
+        },
+        {
+          "name": "isSupportedLayerName",
+          "type": "Function",
+          "params": "name:string",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "-"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "TrackWrapper",
+      "docPath": "docs/当前文档/模块文档/pcb/TrackWrapper.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/wrappers/TrackWrapper.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "TrackWrapper",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "构造函数（返回BasePCBWrapper实例扩展）"
+        },
+        {
+          "name": "TrackWrapper.create",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "工厂入口"
+        },
+        {
+          "name": "TrackWrapper.getDefaultMockData",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "默认Mock数据"
+        },
+        {
+          "name": "TrackWrapperInstance.initFromNative",
+          "type": "Function",
+          "params": "nativeRef:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "写入对象池",
+          "notes": "设置 nativeRef/handle/address"
+        },
+        {
+          "name": "TrackWrapperInstance.toSpec",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "spec/0.1 track"
+        },
+        {
+          "name": "TrackWrapperInstance.applySpec",
+          "type": "Function",
+          "params": "specPayload:Object",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "写回原生对象",
+          "notes": "白名单字段"
+        }
+      ]
+    },
+    {
+      "domain": "pcb",
+      "module": "ViaWrapper",
+      "docPath": "docs/当前文档/模块文档/pcb/ViaWrapper.md",
+      "entryPath": "AD21_JS_Project/src/modules/pcb-interfaces/wrappers/ViaWrapper.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "ViaWrapper",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "注册到window/module.exports/global",
+          "notes": "构造函数（返回BasePCBWrapper实例扩展）"
+        },
+        {
+          "name": "ViaWrapper.create",
+          "type": "Function",
+          "params": "options?:Object",
+          "returns": "wrapper:Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "工厂入口"
+        },
+        {
+          "name": "ViaWrapper.getDefaultMockData",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "默认Mock数据"
+        },
+        {
+          "name": "ViaWrapperInstance.initFromNative",
+          "type": "Function",
+          "params": "nativeRef:Object",
+          "returns": "boolean",
+          "env": "Both",
+          "sideEffects": "写入对象池",
+          "notes": "设置 nativeRef/handle/address"
+        },
+        {
+          "name": "ViaWrapperInstance.toSpec",
+          "type": "Function",
+          "params": "-",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "无",
+          "notes": "spec/0.1 via"
+        },
+        {
+          "name": "ViaWrapperInstance.applySpec",
+          "type": "Function",
+          "params": "specPayload:Object",
+          "returns": "Object",
+          "env": "Both",
+          "sideEffects": "写回原生对象",
+          "notes": "白名单字段"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-demo-check-main",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-demo-check-main.md",
+      "entryPath": "AD21_JS_Project/analyzer/demo-check-main.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "checkMainFile",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "读项目文件；控制台输出；可能调用 analyzer 各阶段",
+          "notes": "当 `require.main === module` 时会自动执行（关键词：`if (require.main === module) { checkMainFile(); }`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-demo-execution-planner",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-demo-execution-planner.md",
+      "entryPath": "AD21_JS_Project/analyzer/demo-execution-planner.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "demonstrateExecutionPlanner",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "控制台输出",
+          "notes": "主运行时会调用（关键词：`demonstrateExecutionPlanner();`）"
+        },
+        {
+          "name": "createDemoInterpretationResult",
+          "type": "function",
+          "params": "()",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "生成演示用 InterpretationResult"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-demo-execution-validation",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-demo-execution-validation.md",
+      "entryPath": "analyzer/demo-execution-validation.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "ExecutionValidator",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "写文件/控制台输出",
+          "notes": "`module.exports = ExecutionValidator`（对象上还暴露多个 `_` 私有方法）"
+        },
+        {
+          "name": "ExecutionValidator.runValidation",
+          "type": "Function",
+          "params": "()",
+          "returns": "Promise<Report>",
+          "env": "Node",
+          "sideEffects": "写文件/控制台输出",
+          "notes": "直接运行时会执行并在失败时 `process.exit(1)`（见“运行行为”）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-demo-full-build-check",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-demo-full-build-check.md",
+      "entryPath": "analyzer/demo-full-build-check.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "FullBuildChecker",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "读写文件/控制台输出",
+          "notes": "module.exports = FullBuildChecker"
+        },
+        {
+          "name": "FullBuildChecker.runFullCheck",
+          "type": "Function",
+          "params": "(options?)",
+          "returns": "Report",
+          "env": "Node",
+          "sideEffects": "读 `config/merge-order.json`，读源码，写报告",
+          "notes": "默认输出 `analyzer/reports/full-build-analysis-report.json`（未确认是否同时生成 `.md`；线索：`analyzer/demo-full-build-check.js` 关键词 `_saveReport`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-demo-semantic-analysis",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-demo-semantic-analysis.md",
+      "entryPath": "analyzer/demo-semantic-analysis.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "demonstrateSemanticAnalysis",
+          "type": "Function",
+          "params": "()",
+          "returns": "Promise<void>",
+          "env": "Node",
+          "sideEffects": "写临时文件/控制台输出",
+          "notes": "module.exports = { demonstrateSemanticAnalysis }"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-demo-stage6-interpretation",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-demo-stage6-interpretation.md",
+      "entryPath": "analyzer/demo-stage6-interpretation.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "demonstrateStage6",
+          "type": "Function",
+          "params": "()",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "控制台输出",
+          "notes": "主演示：跑 `SemanticAnalyzer.analyzeProject` 后调用 `Interpreter.interpret` 并打印结果"
+        },
+        {
+          "name": "demonstrateScenarios",
+          "type": "Function",
+          "params": "()",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "控制台输出",
+          "notes": "补充场景演示（高置信度未使用/未定义使用/跨模块影响）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-test-query-apis",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-test-query-apis.md",
+      "entryPath": "analyzer/test-query-apis.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "-",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "写临时文件/控制台输出",
+          "notes": "该脚本为“顶层执行脚本”，`require()` 时也会立即执行"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-test-stage5-integration",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-test-stage5-integration.md",
+      "entryPath": "analyzer/test-stage5-integration.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "-",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "写报告/控制台输出",
+          "notes": "顶层调用 `runTest()`，`require()` 时也会立即执行"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-test-stage6-closed-loop",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-test-stage6-closed-loop.md",
+      "entryPath": "analyzer/test-stage6-closed-loop.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "testClosedLoop",
+          "type": "Function",
+          "params": "()",
+          "returns": "{ success, result, summary }",
+          "env": "Node",
+          "sideEffects": "控制台输出",
+          "notes": "主测试：构造 facts/meta 并调用 `Interpreter.interpret()`"
+        },
+        {
+          "name": "createCompleteStage5Facts",
+          "type": "Function",
+          "params": "()",
+          "returns": "Stage5Facts",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "返回包含 `unusedSymbols/undefinedUses/...` 的模拟数据"
+        },
+        {
+          "name": "createCompleteStage4Meta",
+          "type": "Function",
+          "params": "()",
+          "returns": "Stage4Meta",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "返回 `moduleMap/exports/...` 的模拟元信息"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-tests-basic-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-tests-basic-test.md",
+      "entryPath": "analyzer/tests/basic-test.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "BasicTest",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "写测试文件/控制台输出",
+          "notes": "module.exports = BasicTest"
+        },
+        {
+          "name": "BasicTest.runAllTests",
+          "type": "Function",
+          "params": "()",
+          "returns": "Promise<boolean>",
+          "env": "Node",
+          "sideEffects": "写测试文件/控制台输出",
+          "notes": "运行全套测试并打印汇总"
+        },
+        {
+          "name": "BasicTest.createTestFiles",
+          "type": "Function",
+          "params": "()",
+          "returns": "string[]",
+          "env": "Node",
+          "sideEffects": "写文件",
+          "notes": "在 `analyzer/tests/test-files/` 写入多份临时样例文件"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-tests-def-use-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-tests-def-use-test.md",
+      "entryPath": "analyzer/tests/def-use-test.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "DefUseTest",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "写临时文件/写报告/控制台输出",
+          "notes": "module.exports = DefUseTest"
+        },
+        {
+          "name": "DefUseTest.runAllTests",
+          "type": "Function",
+          "params": "()",
+          "returns": "MainResults",
+          "env": "Node",
+          "sideEffects": "写临时文件/控制台输出",
+          "notes": "运行用例并返回通过/失败统计"
+        },
+        {
+          "name": "DefUseTest.generateTestReport",
+          "type": "Function",
+          "params": "(mainResults)",
+          "returns": "string",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "生成文本报告"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-tests-dependency-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-tests-dependency-test.md",
+      "entryPath": "analyzer/tests/dependency-test.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "DependencyTest",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "写临时文件/控制台输出",
+          "notes": "module.exports = DependencyTest"
+        },
+        {
+          "name": "DependencyTest.runAllTests",
+          "type": "Function",
+          "params": "()",
+          "returns": "Promise<TestResults>",
+          "env": "Node",
+          "sideEffects": "写临时文件/控制台输出",
+          "notes": "主入口：依次执行 8 个 Stage 4 测试并汇总输出"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-tests-integration-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-tests-integration-test.md",
+      "entryPath": "analyzer/tests/integration-test.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "IntegrationTest",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "控制台输出",
+          "notes": "module.exports = IntegrationTest"
+        },
+        {
+          "name": "IntegrationTest.runAllTests",
+          "type": "Function",
+          "params": "()",
+          "returns": "Promise<boolean>",
+          "env": "Node",
+          "sideEffects": "控制台输出",
+          "notes": "主入口，运行单文件/批量/报告/错误处理四类测试"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "analyzer-tests-semantic-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/analyzer-tests-semantic-test.md",
+      "entryPath": "analyzer/tests/semantic-test.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "SemanticTest",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "写测试文件/控制台输出",
+          "notes": "module.exports = SemanticTest"
+        },
+        {
+          "name": "SemanticTest.runAllTests",
+          "type": "Function",
+          "params": "()",
+          "returns": "Promise<boolean>",
+          "env": "Node",
+          "sideEffects": "写测试文件/控制台输出",
+          "notes": "运行 Stage 3 全套测试并汇总"
+        },
+        {
+          "name": "SemanticTest.createSemanticTestFiles",
+          "type": "Function",
+          "params": "()",
+          "returns": "string[]",
+          "env": "Node",
+          "sideEffects": "写文件",
+          "notes": "在 `analyzer/tests/test-files/` 写入测试样例"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-__tests__-jalangi2-semantic-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-__tests__-jalangi2-semantic-test.md",
+      "entryPath": "debug/__tests__/jalangi2-semantic-test.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "-",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "加载分析器/写报告/`process.exit`",
+          "notes": "本文件未设置 `module.exports`；定义了局部变量 `Jalangi2SemanticTest` 但不对外导出"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-__tests__-mvp-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-__tests__-mvp-test.md",
+      "entryPath": "debug/__tests__/mvp-test.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "-",
+          "params": "-",
+          "returns": "-",
+          "env": "Node",
+          "sideEffects": "加载依赖/控制台输出/可能写 trace 文件",
+          "notes": "本文件不设置 `module.exports`；作为脚本运行（或被 `require`）会打印日志并加载依赖"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-cli-fix-global-exports",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-cli-fix-global-exports.md",
+      "entryPath": "AD21_JS_Project/debug/cli/fix-global-exports.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "—",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "写 `console.log`；写 `global.*`",
+          "notes": "该脚本为一次性修复脚本，未使用 `module.exports`"
+        },
+        {
+          "name": "global.ExpectationEngine",
+          "type": "object",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "全局注入",
+          "notes": "仅在 `typeof ExpectationEngine !== \"undefined\"` 时注入"
+        },
+        {
+          "name": "global.ViolationTracer",
+          "type": "object",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "全局注入",
+          "notes": "仅在 `typeof ViolationTracer !== \"undefined\"` 时注入"
+        },
+        {
+          "name": "global.SemanticReporter",
+          "type": "object",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "全局注入",
+          "notes": "仅在 `typeof SemanticReporter !== \"undefined\"` 时注入"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-cli-jalangi2-semantic",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-cli-jalangi2-semantic.md",
+      "entryPath": "AD21_JS_Project/debug/cli/jalangi2-semantic.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "—",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "require` Jalangi2 analyzers；读 rules json；写报告文件；`process.exit",
+          "notes": "脚本式 CLI（线索：关键词 `process.exit`、`output: \\\"debug/reports/...\\\"`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-cli-semantic-debug",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-cli-semantic-debug.md",
+      "entryPath": "AD21_JS_Project/debug/cli/semantic-debug.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "—",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "require` 多个模块；可能 `eval` 构建产物；创建目录；`process.exit",
+          "notes": "脚本式 CLI，未用 `module.exports`（线索：文件中存在 `process.exit`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-cli-test-jalangi2-simple",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-cli-test-jalangi2-simple.md",
+      "entryPath": "AD21_JS_Project/debug/cli/test-jalangi2-simple.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "—",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "require` analyzers/runner；控制台输出；可能写 `debug/reports",
+          "notes": "脚本式 smoke test（未使用 `module.exports`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-cli-test-real-violations-direct",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-cli-test-real-violations-direct.md",
+      "entryPath": "AD21_JS_Project/debug/cli/test-real-violations-direct.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "—",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "require` analyzers + ad-mock；执行违规；写 `debug/reports/*.json",
+          "notes": "脚本式 runner（关键词：`fs.writeFileSync('../reports/direct-violation-test-report.json'`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-cli-test-real-violations",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-cli-test-real-violations.md",
+      "entryPath": "AD21_JS_Project/debug/cli/test-real-violations.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "—",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "读取规则；运行分析；写 `debug/reports/*.json`",
+          "notes": "脚本式 runner（关键词：`fs.writeFileSync`、`../reports/real-violation-test-report.json`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-runtime-ad-mock",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-runtime-ad-mock.md",
+      "entryPath": "AD21_JS_Project/debug/runtime/ad-mock.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "initializeADMock",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "写 `console.log`；初始化全局 Mock 状态",
+          "notes": "通过 `global.initializeADMock = ...` 或 `this.initializeADMock = ...` 暴露（见 `ad-mock.js` 关键词：`global.initializeADMock`）"
+        },
+        {
+          "name": "resetADMock",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "写 `console.log`；清空/重置 Mock 状态",
+          "notes": "通过 `global.resetADMock = ...` 或 `this.resetADMock = ...` 暴露（见关键词：`global.resetADMock`）"
+        },
+        {
+          "name": "PCBServer",
+          "type": "function",
+          "params": "()",
+          "returns": "Object",
+          "env": "Node",
+          "sideEffects": "全局注入 `global.PCBServer`；返回 Mock 的 PCBServer 接口对象",
+          "notes": "`ad-mock.js` 末尾：`global.PCBServer = PCBServer`（仅 Node）"
+        },
+        {
+          "name": "`eTrackObject` 等常量",
+          "type": "number",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "全局变量污染（脚本作用域）",
+          "notes": "例如 `eTrackObject/ePadObject/eViaObject/eArcObject`（见 `ad-mock.js` 顶部“全局常量定义”）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-test-functions",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-test-functions.md",
+      "entryPath": "AD21_JS_Project/debug/test-functions.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "TestButton_Click",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "`console.log`；调用 `PCBServer()` 创建/遍历对象",
+          "notes": "通过 `global.TestButton_Click = ...` 暴露（关键词：`global.TestButton_Click`）"
+        },
+        {
+          "name": "TestModuleSystem",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "console.log`；尝试调用 `LoggerModule/ObjectModule",
+          "notes": "通过 `global.TestModuleSystem = ...` 暴露（关键词：`global.TestModuleSystem`）"
+        },
+        {
+          "name": "TestBusinessFlow",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "`console.log`；PCB 操作 + Logger 记录",
+          "notes": "通过 `global.TestBusinessFlow = ...` 暴露（关键词：`global.TestBusinessFlow`）"
+        },
+        {
+          "name": "getAvailableTestFunctions",
+          "type": "function",
+          "params": "()",
+          "returns": "string[]",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "用于列出可用测试入口（关键词：`getAvailableTestFunctions`）"
+        },
+        {
+          "name": "isTestFunctionAvailable",
+          "type": "function",
+          "params": "(functionName)",
+          "returns": "boolean",
+          "env": "Node",
+          "sideEffects": "无",
+          "notes": "用于查询函数是否存在"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "debug-test-real-violations",
+      "docPath": "docs/当前文档/模块文档/tests-debug/debug-test-real-violations.md",
+      "entryPath": "AD21_JS_Project/debug/test-real-violations.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "TestRealViolations_Click",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "Node",
+          "sideEffects": "`console.log`；调用 `PCBServer()` 并制造多类违规",
+          "notes": "通过 `module.exports = { TestRealViolations_Click }` 导出（关键词：`module.exports`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "tests-complete-module-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/tests-complete-module-test.md",
+      "entryPath": "tests/complete-module-test.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "module.exports",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "控制台输出",
+          "notes": "主要导出为 `PCBInterfaces`（线索：文件内 `module.exports = PCBInterfaces;`），随后追加 `module.exports.BaseModule` 等属性"
+        },
+        {
+          "name": "module.exports.PCBInterfaces",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "未确认：文件内未显式设置该别名；实际主导出对象即 `PCBInterfaces`"
+        },
+        {
+          "name": "module.exports.BaseModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "“简化导出”段追加（关键词：`// === 简化导出 ===`）"
+        },
+        {
+          "name": "module.exports.LoggerTypes",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.LoggerTools",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.StepFormat",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.StepWrite",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.LoggerModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上（文件中重复赋值两次）"
+        },
+        {
+          "name": "module.exports.ModuleName",
+          "type": "*",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "未确认：`ModuleName` 来源不明且重复赋值两次（线索：关键词 `ModuleName`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "tests-comprehensive-module-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/tests-comprehensive-module-test.md",
+      "entryPath": "tests/comprehensive-module-test.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "module.exports",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "控制台输出",
+          "notes": "主导出为 `PCBInterfaces`（线索：`module.exports = PCBInterfaces;`），随后追加少量属性"
+        },
+        {
+          "name": "module.exports.BaseModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "“简化导出”段追加（关键词：`// === 简化导出 ===`）"
+        },
+        {
+          "name": "module.exports.LoggerModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "文件中重复赋值两次（线索：`module.exports.LoggerModule = LoggerModule;` x2）"
+        },
+        {
+          "name": "module.exports.ModuleName",
+          "type": "*",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "未确认：来源不明且重复赋值两次（线索：关键词 `ModuleName`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "tests-full-module-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/tests-full-module-test.md",
+      "entryPath": "tests/full-module-test.js",
+      "environment": "Both",
+      "exports": [
+        {
+          "name": "module.exports",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "控制台输出",
+          "notes": "主导出为 `PCBInterfaces`（线索：`module.exports = PCBInterfaces;`），随后追加大量属性"
+        },
+        {
+          "name": "module.exports.BaseModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "“简化导出”段追加"
+        },
+        {
+          "name": "module.exports.LoggerTypes",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.LoggerTools",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.StepFormat",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.StepWrite",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.LoggerModule",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "文件中重复赋值两次"
+        },
+        {
+          "name": "module.exports.BasePCBWrapper",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.PCBMockSystem",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.PCBObjectFactory",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.PCBObjectManager",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.PCBObjectPool",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.GeometryCalculator",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.ArcWrapper",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.PadWrapper",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.TrackWrapper",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.ViaWrapper",
+          "type": "Object",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "同上"
+        },
+        {
+          "name": "module.exports.ModuleName",
+          "type": "*",
+          "params": "-",
+          "returns": "-",
+          "env": "Both",
+          "sideEffects": "-",
+          "notes": "未确认：来源不明（线索：关键词 `ModuleName`）"
+        }
+      ]
+    },
+    {
+      "domain": "tests-debug",
+      "module": "tests-module-dependency-test",
+      "docPath": "docs/当前文档/模块文档/tests-debug/tests-module-dependency-test.md",
+      "entryPath": "AD21_JS_Project/tests/module-dependency-test.js",
+      "environment": "Node",
+      "exports": [
+        {
+          "name": "（无）",
+          "type": "—",
+          "params": "—",
+          "returns": "—",
+          "env": "Node",
+          "sideEffects": "require` 多个模块；读取源码文件；写 `reports/*.json",
+          "notes": "脚本式测试 runner（线索：`fs.writeFileSync('reports/module-dependency-test-report.json'`）"
+        }
+      ]
+    },
+    {
+      "domain": "ui",
+      "module": "MainFormDFM",
+      "docPath": "docs/当前文档/模块文档/ui/MainFormDFM.md",
+      "entryPath": "AD21_JS_Project/ui/main.dfm",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "MainForm",
+          "type": "DFM窗体对象",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "创建UI控件树",
+          "notes": "窗体类：`TMainForm`"
+        },
+        {
+          "name": "memLog",
+          "type": "TMemo控件",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "作为统一UI日志输出通道",
+          "notes": "关键词：`object memLog: TMemo`"
+        },
+        {
+          "name": "btnOutputLog",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "触发日志输出",
+          "notes": "绑定函数名：`btnOutputLogClick`"
+        },
+        {
+          "name": "btnGenerateLog",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "生成测试日志",
+          "notes": "绑定函数名：`btnGenerateLogClick`"
+        },
+        {
+          "name": "btnClearDisplay",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "清空memLog",
+          "notes": "绑定函数名：`btnClearDisplayClick`"
+        },
+        {
+          "name": "btnSaveLog",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "触发日志保存",
+          "notes": "绑定函数名：`btnSaveLogClick`"
+        },
+        {
+          "name": "btnEnvironmentProbe",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "触发环境探测",
+          "notes": "绑定函数名：`btnEnvironmentProbeClick`"
+        },
+        {
+          "name": "btnDebugStatus",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调试状态检查",
+          "notes": "绑定函数名：`btnDebugStatusClick`"
+        },
+        {
+          "name": "btnLogStats",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "显示日志统计",
+          "notes": "绑定函数名：`btnLogStatsClick`"
+        },
+        {
+          "name": "btnCreateObject",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "打开对象创建窗体",
+          "notes": "绑定函数名：`btnCreateObjectClick`"
+        },
+        {
+          "name": "btnRefreshStatus",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "刷新模块状态",
+          "notes": "绑定函数名：`btnRefreshStatusClick`"
+        },
+        {
+          "name": "btnObjectStats",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "显示对象统计",
+          "notes": "绑定函数名：`btnObjectStatsClick`"
+        },
+        {
+          "name": "btnClearCache",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "清空模块缓存",
+          "notes": "绑定函数名：`btnClearCacheClick`"
+        },
+        {
+          "name": "chkGen* / chkUI*",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "切换GlobalLogController生成/显示开关",
+          "notes": "绑定函数名：`chkGenDebugClick`等"
+        },
+        {
+          "name": "btnDevMode/btnProdMode/btnDebugMode/btnSilentMode",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "快捷切换日志模式",
+          "notes": "绑定函数名：`btnDevModeClick`等"
+        }
+      ]
+    },
+    {
+      "domain": "ui",
+      "module": "ObjectCreatorFormDFM",
+      "docPath": "docs/当前文档/模块文档/ui/ObjectCreatorFormDFM.md",
+      "entryPath": "AD21_JS_Project/ui/object-creator.dfm",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "ObjectCreatorForm",
+          "type": "DFM窗体对象",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "创建控件树",
+          "notes": "窗体类：`TObjectCreatorForm`"
+        },
+        {
+          "name": "cmbObjectType",
+          "type": "TComboBox控件",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "提供对象类型选择",
+          "notes": "Items：`Track/Pad/Via/Arc`"
+        },
+        {
+          "name": "edtX/edtY",
+          "type": "TEdit控件",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "输入坐标",
+          "notes": "用于位置与原点设置"
+        },
+        {
+          "name": "chkGridSnap",
+          "type": "TCheckBox控件",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "网格对齐开关",
+          "notes": "事件绑定未确认（DFM未见OnClick）"
+        },
+        {
+          "name": "edtGridSize",
+          "type": "TEdit控件",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "网格大小输入",
+          "notes": "事件绑定未确认（DFM未见OnChange）"
+        },
+        {
+          "name": "btnSetOrigin",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "设为原点",
+          "notes": "绑定函数名：`btnSetOriginClick`"
+        },
+        {
+          "name": "btnValidate",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "验证参数",
+          "notes": "绑定函数名：`btnValidateClick`"
+        },
+        {
+          "name": "btnCreate",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "创建对象",
+          "notes": "绑定函数名：`btnCreateClick`"
+        },
+        {
+          "name": "btnCreateAtOrigin",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "在原点创建",
+          "notes": "绑定函数名：`btnCreateAtOriginClick`"
+        },
+        {
+          "name": "btnReset",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "重置表单",
+          "notes": "绑定函数名：`btnResetClick`"
+        },
+        {
+          "name": "btnCancel",
+          "type": "OnClick事件",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "取消/关闭",
+          "notes": "绑定函数名：`btnCancelClick`"
+        },
+        {
+          "name": "lblStatus/lblPositionInfo",
+          "type": "TLabel控件",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "状态显示",
+          "notes": "由`ObjectCreatorUI`写入"
+        }
+      ]
+    },
+    {
+      "domain": "ui",
+      "module": "ObjectCreatorUI",
+      "docPath": "docs/当前文档/模块文档/ui/ObjectCreatorUI.md",
+      "entryPath": "AD21_JS_Project/ui/core/ObjectCreatorUI.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "ObjectCreatorUI",
+          "type": "object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "注册全局变量`ObjectCreatorUI`",
+          "notes": "纯大IIFE导出"
+        },
+        {
+          "name": "ObjectCreatorUI.create",
+          "type": "function",
+          "params": "(options)",
+          "returns": "{controller, config}",
+          "env": "AD",
+          "sideEffects": "初始化内部_controller",
+          "notes": "读取/写入UI控件（全局变量）"
+        },
+        {
+          "name": "ObjectCreatorUI.initialize",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectModule.initialize`、写UI日志",
+          "notes": "依赖`ObjectModule`存在"
+        },
+        {
+          "name": "ObjectCreatorUI.showWindow",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorForm.Show()`",
+          "notes": "依赖DFM窗体"
+        },
+        {
+          "name": "ObjectCreatorUI.hideWindow",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorForm.Hide()`",
+          "notes": "依赖DFM窗体"
+        },
+        {
+          "name": "ObjectCreatorUI.handleObjectTypeChange",
+          "type": "function",
+          "params": "(newType)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "切换参数组显示",
+          "notes": "依赖`grpTrack/grpPad/grpVia/grpArc`等控件"
+        },
+        {
+          "name": "ObjectCreatorUI.handleSetOrigin",
+          "type": "function",
+          "params": "(x,y)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "更新坐标/状态；可调用`PositionManager_GLOBAL.setOrigin`",
+          "notes": "PositionManager_GLOBAL来源需确认"
+        },
+        {
+          "name": "ObjectCreatorUI.handleCreateObject",
+          "type": "function",
+          "params": "(x,y,atOrigin)",
+          "returns": "{success, object?|error?}",
+          "env": "AD",
+          "sideEffects": "调用`ObjectModule.createMock`创建对象；写UI日志",
+          "notes": "创建对象仅为Mock（见代码）"
+        },
+        {
+          "name": "ObjectCreatorUI.handleReset",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "重置控件值/状态",
+          "notes": "大量写UI控件"
+        },
+        {
+          "name": "ObjectCreatorUI.controller",
+          "type": "function",
+          "params": "()",
+          "returns": "_controller",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "对外暴露内部控制器引用"
+        }
+      ]
+    },
+    {
+      "domain": "ui",
+      "module": "ObjectCreatorWindow",
+      "docPath": "docs/当前文档/模块文档/ui/ObjectCreatorWindow.md",
+      "entryPath": "AD21_JS_Project/ui/object-creator.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "ObjectCreatorWindow",
+          "type": "object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "注册全局变量`ObjectCreatorWindow`",
+          "notes": "纯大IIFE导出"
+        },
+        {
+          "name": "ObjectCreatorWindow.create",
+          "type": "function",
+          "params": "(options)",
+          "returns": "{config, initialized}",
+          "env": "AD",
+          "sideEffects": "缓存配置",
+          "notes": "不启动UI，仅记录配置"
+        },
+        {
+          "name": "ObjectCreatorWindow.initialize",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`UIModule.initializeUI`、写UI日志",
+          "notes": "失败时`throw`"
+        },
+        {
+          "name": "ObjectCreatorWindow.show",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "必要时先initialize；调用`UIModule.showObjectCreatorWindow`",
+          "notes": "打开对象创建窗体"
+        },
+        {
+          "name": "ObjectCreatorWindow.hide",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`UIModule.hideObjectCreatorWindow`",
+          "notes": "隐藏对象创建窗体（若存在）"
+        },
+        {
+          "name": "ObjectCreatorWindow.isInitialized",
+          "type": "function",
+          "params": "()",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "返回内部状态"
+        },
+        {
+          "name": "ObjectCreatorWindow.getStatus",
+          "type": "function",
+          "params": "()",
+          "returns": "object",
+          "env": "AD",
+          "sideEffects": "读取`UIModule.getStatus`",
+          "notes": "包含`uiModuleAvailable/uiModuleStatus`"
+        }
+      ]
+    },
+    {
+      "domain": "ui",
+      "module": "UIEventManager",
+      "docPath": "docs/当前文档/模块文档/ui/UIEventManager.md",
+      "entryPath": "AD21_JS_Project/ui/core/UIEventManager.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "UIEventManager",
+          "type": "object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "注册全局变量`UIEventManager`",
+          "notes": "纯大IIFE导出"
+        },
+        {
+          "name": "UIEventManager.create",
+          "type": "function",
+          "params": "(options)",
+          "returns": "{config, eventsBound}",
+          "env": "AD",
+          "sideEffects": "缓存配置",
+          "notes": "不做真实事件绑定"
+        },
+        {
+          "name": "UIEventManager.bindEvents",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "仅设置`_eventsBound=true`并输出日志",
+          "notes": "代码注明“DFM事件通过全局函数处理”"
+        },
+        {
+          "name": "UIEventManager.unbindEvents",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "设置`_eventsBound=false`",
+          "notes": "不解绑DFM层面的事件"
+        },
+        {
+          "name": "UIEventManager.isEventsBound",
+          "type": "function",
+          "params": "()",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "仅返回状态"
+        },
+        {
+          "name": "UIEventManager.handleObjectTypeChange",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "读取`cmbObjectType.Text`并调用`ObjectCreatorUI.handleObjectTypeChange`",
+          "notes": "供全局DFM函数调用"
+        },
+        {
+          "name": "UIEventManager.handleSetOriginClick",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "读取`edtX/edtY.Text`并调用`ObjectCreatorUI.handleSetOrigin`",
+          "notes": "供全局DFM函数调用"
+        },
+        {
+          "name": "UIEventManager.handleValidateClick",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorUI.controller().validateParameters/updateStatus`",
+          "notes": "供全局DFM函数调用"
+        },
+        {
+          "name": "UIEventManager.handleCreateClick",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorUI.handleCreateObject(..., false)`",
+          "notes": "供全局DFM函数调用"
+        },
+        {
+          "name": "UIEventManager.handleCreateAtOriginClick",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorUI.handleCreateObject(..., true)`",
+          "notes": "供全局DFM函数调用"
+        },
+        {
+          "name": "UIEventManager.handleResetClick",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorUI.handleReset`",
+          "notes": "供全局DFM函数调用"
+        },
+        {
+          "name": "UIEventManager.handleCancelClick",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorForm.Close()`",
+          "notes": "依赖`ObjectCreatorForm`"
+        },
+        {
+          "name": "UIEventManager.handleGridSnapClick",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "读`chkGridSnap/edtGridSize`并调用`PositionManager_GLOBAL.configureCoordinateSystem`",
+          "notes": "DFM是否绑定此事件未确认"
+        },
+        {
+          "name": "UIEventManager.handleGridSizeChange",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "读`edtGridSize`并调用`PositionManager_GLOBAL.configureCoordinateSystem`",
+          "notes": "DFM是否绑定此事件未确认"
+        },
+        {
+          "name": "UIEventManager.handleEnvironmentProbeClick",
+          "type": "function",
+          "params": "(Sender)",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "触发`测试_运行环境探测`或直接调用模块",
+          "notes": "供全局DFM函数调用"
+        }
+      ]
+    },
+    {
+      "domain": "ui",
+      "module": "UIModule",
+      "docPath": "docs/当前文档/模块文档/ui/UIModule.md",
+      "entryPath": "AD21_JS_Project/ui/index.js",
+      "environment": "AD",
+      "exports": [
+        {
+          "name": "UIModule",
+          "type": "object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "注册全局变量`UIModule`",
+          "notes": "纯大IIFE导出"
+        },
+        {
+          "name": "UIModule.createObjectCreatorUI",
+          "type": "function",
+          "params": "(options)",
+          "returns": "{controller, config}",
+          "env": "AD",
+          "sideEffects": "读取/依赖`ObjectCreatorUI`",
+          "notes": "直接转调`ObjectCreatorUI.create`"
+        },
+        {
+          "name": "UIModule.initializeUI",
+          "type": "function",
+          "params": "()",
+          "returns": "boolean(未显式返回)",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorUI.initialize`、标记初始化、调用`UIEventManager.bindEvents`",
+          "notes": "会调用`uiInfo/uiError`"
+        },
+        {
+          "name": "UIModule.showObjectCreatorWindow",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "必要时先初始化；调用`ObjectCreatorUI.showWindow`",
+          "notes": "会打开`ObjectCreatorForm`（DFM窗体）"
+        },
+        {
+          "name": "UIModule.hideObjectCreatorWindow",
+          "type": "function",
+          "params": "()",
+          "returns": "void",
+          "env": "AD",
+          "sideEffects": "调用`ObjectCreatorUI.hideWindow`",
+          "notes": "会隐藏`ObjectCreatorForm`（若存在）"
+        },
+        {
+          "name": "UIModule.isInitialized",
+          "type": "function",
+          "params": "()",
+          "returns": "boolean",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "仅返回内部状态"
+        },
+        {
+          "name": "UIModule.getStatus",
+          "type": "function",
+          "params": "()",
+          "returns": "object",
+          "env": "AD",
+          "sideEffects": "可能调用`UIEventManager.isEventsBound`",
+          "notes": "返回依赖可用性与事件状态"
+        },
+        {
+          "name": "UIModule.ObjectCreatorUI",
+          "type": "object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "直接暴露全局变量引用（构建后需先加载`ObjectCreatorUI`）"
+        },
+        {
+          "name": "UIModule.UIEventManager",
+          "type": "object",
+          "params": "-",
+          "returns": "-",
+          "env": "AD",
+          "sideEffects": "无",
+          "notes": "直接暴露全局变量引用（构建后需先加载`UIEventManager`）"
+        }
+      ]
+    }
+  ]
+}

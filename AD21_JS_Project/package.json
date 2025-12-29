@@ -26,7 +26,7 @@
     "es3-analyze": "node scripts/es3-analyzer.js",
     "mock": "node web-mock/mock-server-es3.js",
     "mock-server:start": "node web-mock/mock-server-es3.js",
-    "mock-server:clean": "powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force }\"",
+    "mock-server:clean": "powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | Where-Object { $_ -and $_ -ne 0 } | ForEach-Object { Stop-Process -Id $_ -Force }\"",
     "mock-server:restart": "npm run mock-server:clean && npm run mock-server:start"
   },
   "devDependencies": {

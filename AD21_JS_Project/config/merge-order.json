@@ -21,14 +21,12 @@
     "src/modules/http-client/index.js",
     "src/环境探测/EnvironmentProbeModule.js",
     "ui/core/UIEventManager.js",
-    
     "src/modules/object-module/core/ObjectFactory.js",
     "src/modules/object-module/core/ObjectManager.js",
     "src/modules/object-module/core/MockSystem.js",
     "src/modules/object-module/wrappers/PCBObjectWrapper.js",
     "src/modules/object-module/wrappers/GeometryWrapper.js",
     "src/modules/object-module/index.js",
-    
     "src/modules/pcb-interfaces/core/BasePCBWrapper.js",
     "src/modules/pcb-interfaces/core/PCBMockSystem.js",
     "src/modules/pcb-interfaces/core/PCBObjectFactory.js",
@@ -40,6 +38,8 @@
     "src/modules/pcb-interfaces/wrappers/PadWrapper.js",
     "src/modules/pcb-interfaces/wrappers/TrackWrapper.js",
     "src/modules/pcb-interfaces/wrappers/ViaWrapper.js",
+    "src/modules/pcb-interfaces/wrappers/BoardOutlineWrapper.js",
+    "src/modules/pcb-interfaces/wrappers/PolygonWrapper.js",
     "src/modules/pcb-interfaces/index.js",
     "src/modules/object-creator/core/PositionManager.js",
     "src/modules/object-creator/core/ObjectCreator.js",

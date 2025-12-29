@@ -33,6 +33,52 @@ var ArcWrapper = (function(){
         mockData: options.mockData || ArcWrapper.getDefaultMockData(),
         syncMode: options.syncMode || "auto"
     });
+
+    function _setIdentityFromNative(nativeRef) {
+        if (!nativeRef) return;
+        baseInst.nativeObject = nativeRef;
+        baseInst.directRef = nativeRef;
+        baseInst.isMock = false;
+        try {
+            if (nativeRef.I_ObjectAddress !== undefined && nativeRef.I_ObjectAddress !== null) {
+                var t = typeof nativeRef.I_ObjectAddress;
+                var addr = null;
+                try { addr = nativeRef.I_ObjectAddress; } catch (eAddr1) {}
+                if (typeof addr === "function") {
+                    try { addr = addr(); } catch (eAddr2) {}
+                }
+                if (addr === null || addr === undefined || addr === 0) {
+                    if (t === "function" || t === "unknown") {
+                        addr = nativeRef.I_ObjectAddress();
+                    }
+                }
+                baseInst.handle = addr;
+                baseInst.address = addr;
+            } else if (nativeRef.ObjectAddress !== undefined && nativeRef.ObjectAddress !== null) {
+                baseInst.address = nativeRef.ObjectAddress;
+                baseInst.handle = nativeRef.ObjectAddress;
+            }
+        } catch (e1) {}
+        if (!baseInst.handle && nativeRef) {
+            baseInst.handle = nativeRef;
+            baseInst.address = nativeRef;
+        }
+    }
+
+    function _resolveLayerName(layerId) {
+        if (typeof StackMap !== "undefined" && StackMap && StackMap.getNormalizedLayerName) {
+            var name = StackMap.getNormalizedLayerName(layerId);
+            if (name) return name;
+        }
+        if (typeof eTopLayer !== "undefined" && layerId === eTopLayer) return "TopLayer";
+        if (typeof eBottomLayer !== "undefined" && layerId === eBottomLayer) return "BottomLayer";
+        if (typeof eMultiLayer !== "undefined" && layerId === eMultiLayer) return "MultiLayer";
+        return null;
+    }
+
+    if (options.nativeObject) {
+        _setIdentityFromNative(options.nativeObject);
+    }
     
     /**
      * 重写：提取圆弧特有属性
@@ -503,6 +549,52 @@ var ArcWrapper = (function(){
             boundingBox: getBoundingBox()
         };
     }
+
+    function toSpec() {
+        var nativeObj = baseInst.nativeObject || null;
+        var cx = null, cy = null, radius = null, sa = null, ea = null, lineWidth = null, layerId = null;
+        try { cx = nativeObj.XCenter; } catch (e1) {}
+        try { cy = nativeObj.YCenter; } catch (e2) {}
+        try { radius = nativeObj.Radius; } catch (e3) {}
+        try { sa = nativeObj.StartAngle; } catch (e4) {}
+        try { ea = nativeObj.EndAngle; } catch (e5) {}
+        try { lineWidth = nativeObj.LineWidth; } catch (e6) {}
+        try { layerId = nativeObj.Layer; } catch (e7) {}
+
+        var netName = "";
+        try { if (nativeObj.Net && nativeObj.Net.Name) netName = nativeObj.Net.Name; } catch (e8) {}
+
+        return {
+            schema: "spec/0.1",
+            type: "arc",
+            handle: baseInst.handle || null,
+            address: baseInst.address || null,
+            payload: {
+                common: {
+                    centerX: cx,
+                    centerY: cy,
+                    radius: radius,
+                    startAngle: sa,
+                    endAngle: ea,
+                    width: lineWidth,
+                    layer: _resolveLayerName(layerId),
+                    net: netName
+                }
+            }
+        };
+    }
+
+    function initFromNative(nativeRef) {
+        if (!nativeRef) {
+            return false;
+        }
+        _setIdentityFromNative(nativeRef);
+        try { baseInst._extractSpecificProperties(); } catch (e1) {}
+        if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+            try { PCBObjectPool.register(baseInst); } catch (eReg) {}
+        }
+        return true;
+    }
     
     /**
      * 同步所有属性到原生对象
@@ -558,6 +650,8 @@ var ArcWrapper = (function(){
     baseInst.getArcInfo = getArcInfo;
     baseInst.syncToNative = syncToNative;
     baseInst.syncFromNative = syncFromNative;
+    baseInst.initFromNative = initFromNative;
+    baseInst.toSpec = toSpec;
     
     // 高优先级API
     baseInst.rotateAroundXY = rotateAroundXY;

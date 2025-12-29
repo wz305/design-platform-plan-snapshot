@@ -69,19 +69,17 @@ var PCBObjectFactory = (function(){
     }
     
     function _getObjectTypeFromId(objectId) {
-        var typeMapping = {
-            eArcObject: "Arc",
-            ePadObject: "Pad",
-            eTrackObject: "Track",
-            eViaObject: "Via",
-            eBoardOutlineObject: "BoardOutline",
-            eSignalLayerObject: "SignalLayer",
-            eMechanicalLayerObject: "MechanicalLayer",
-            eDielectricLayerObject: "DielectricLayer",
-            eInternalPlaneObject: "InternalPlane"
-        };
-        
-        return typeMapping[objectId] || "Unknown";
+        if (typeof eArcObject !== "undefined" && objectId === eArcObject) return "Arc";
+        if (typeof ePadObject !== "undefined" && objectId === ePadObject) return "Pad";
+        if (typeof eTrackObject !== "undefined" && objectId === eTrackObject) return "Track";
+        if (typeof eViaObject !== "undefined" && objectId === eViaObject) return "Via";
+        if (typeof eBoardOutlineObject !== "undefined" && objectId === eBoardOutlineObject) return "BoardOutline";
+        if (typeof ePolyObject !== "undefined" && objectId === ePolyObject) return "Polygon";
+        if (typeof eSignalLayerObject !== "undefined" && objectId === eSignalLayerObject) return "SignalLayer";
+        if (typeof eMechanicalLayerObject !== "undefined" && objectId === eMechanicalLayerObject) return "MechanicalLayer";
+        if (typeof eDielectricLayerObject !== "undefined" && objectId === eDielectricLayerObject) return "DielectricLayer";
+        if (typeof eInternalPlaneObject !== "undefined" && objectId === eInternalPlaneObject) return "InternalPlane";
+        return "Unknown";
     }
     
     function _validateNativeObject(nativeObject) {
@@ -149,6 +147,11 @@ var PCBObjectFactory = (function(){
                 objectId: eBoardOutlineObject,
                 wrapperConstructor: null,
                 mockType: "BoardOutline"
+            },
+            "Polygon": {
+                objectId: (typeof ePolyObject !== "undefined" ? ePolyObject : null),
+                wrapperConstructor: null,
+                mockType: "Polygon"
             },
             
             // 层对象
