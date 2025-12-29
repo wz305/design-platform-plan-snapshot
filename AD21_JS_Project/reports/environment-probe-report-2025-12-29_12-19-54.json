@@ -1,0 +1,1 @@
+{"schema":"spec/0.1","type":"ad.board.summary","payload":{"name":"unknown","units":"未确认","bounds":null,"counts":{"track":0,"via":0,"pad":0,"total":0},"note":"PCBServer 未可用"},"meta":{"ts":1766981994448,"source":"AD","rev":"0.1.0","detail":{"schema":"spec/0.1","build":"ad21-js"}}}

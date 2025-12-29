@@ -1,0 +1,167 @@
+{
+  "safe": {
+    "http": [
+      "WinHttp.WinHttpRequest.5.1",
+      "MSXML2.ServerXMLHTTP",
+      "MSXML2.ServerXMLHTTP.3.0",
+      "MSXML2.ServerXMLHTTP.6.0",
+      "MSXML2.XMLHTTP",
+      "MSXML2.XMLHTTP.3.0",
+      "MSXML2.XMLHTTP.6.0",
+      "Microsoft.XMLHTTP"
+    ],
+    "xml_dom_sax_xslt": [
+      "MSXML2.DOMDocument",
+      "MSXML2.DOMDocument.3.0",
+      "MSXML2.DOMDocument.4.0",
+      "MSXML2.DOMDocument.6.0",
+      "Microsoft.XMLDOM",
+      "MSXML2.FreeThreadedDOMDocument",
+      "MSXML2.FreeThreadedDOMDocument.3.0",
+      "MSXML2.FreeThreadedDOMDocument.6.0",
+      "MSXML2.SAXXMLReader",
+      "MSXML2.SAXXMLReader.3.0",
+      "MSXML2.SAXXMLReader.6.0",
+      "MSXML2.MXXMLWriter",
+      "MSXML2.MXXMLWriter.3.0",
+      "MSXML2.MXXMLWriter.6.0",
+      "MSXML2.XMLSchemaCache",
+      "MSXML2.XMLSchemaCache.3.0",
+      "MSXML2.XMLSchemaCache.6.0",
+      "MSXML2.XSLTemplate",
+      "MSXML2.XSLTemplate.3.0",
+      "MSXML2.XSLTemplate.6.0"
+    ],
+    "html_dom": [
+      "htmlfile"
+    ],
+    "collections": [
+      "Scripting.Dictionary"
+    ],
+    "wsh_core": [
+      "WScript.Shell",
+      "WScript.Network",
+      "VBScript.RegExp",
+      "Scriptlet.TypeLib"
+    ],
+    "file_io_stream": [
+      "Scripting.FileSystemObject",
+      "ADODB.Stream"
+    ],
+    "ado_db": [
+      "ADODB.Connection",
+      "ADODB.Recordset",
+      "ADODB.Command"
+    ],
+    "wmi": [
+      "WbemScripting.SWbemLocator",
+      "WbemScripting.SWbemNamedValueSet",
+      "WbemScripting.SWbemRefresher"
+    ],
+    "msi": [
+      "WindowsInstaller.Installer"
+    ],
+    "sapi": [
+      "SAPI.SpVoice",
+      "SAPI.SpFileStream",
+      "SAPI.SpMemoryStream"
+    ],
+    "imaging_wia": [
+      "WIA.ImageFile",
+      "WIA.CommonDialog",
+      "WIA.Vector"
+    ],
+    "xml_signature_maybe": [
+      "Microsoft.XMLDSig"
+    ],
+    "clipboard_maybe": [
+      "MSForms.DataObject"
+    ],
+    "update_maybe": [
+      "Microsoft.Update.Session",
+      "Microsoft.Update.ServiceManager"
+    ],
+    "compression_maybe": [
+      "ADODB.Stream"
+    ],
+    "net_misc_maybe": [
+      "Msxml2.XMLHTTP.6.0",
+      "Msxml2.ServerXMLHTTP.6.0"
+    ]
+  },
+  "maybe": {
+    "type_library_introspection": [
+      "TLI.TLIApplication",
+      "TLBINF32.TLIApplication",
+      "OLEVIEW.OLEView"
+    ],
+    "crypto_capicom": [
+      "CAPICOM.HashedData",
+      "CAPICOM.Utilities",
+      "CAPICOM.SignedData",
+      "CAPICOM.Store"
+    ],
+    "crypto_csp_maybe": [
+      "X509Enrollment.CX509Enrollment",
+      "X509Enrollment.CX509CertificateRequestPkcs10",
+      "X509Enrollment.CObjectId",
+      "X509Enrollment.CX500DistinguishedName"
+    ],
+    "cert_store_maybe": [
+      "CAPICom.Store"
+    ],
+    "json_maybe": [
+      "MSScriptControl.ScriptControl"
+    ],
+    "windows_scripting_extra": [
+      "Scripting.Encoder",
+      "Scripting.Signer",
+      "Scripting.Dictionary.1"
+    ],
+    "zip_maybe": [
+      "CompressedFolder"
+    ],
+    "network_discovery_maybe": [
+      "HNetCfg.FwMgr",
+      "HNetCfg.FwPolicy2"
+    ],
+    "http_alt_maybe": [
+      "Microsoft.WinHttp.WinHttpRequest.5.1"
+    ],
+    "msxml_alt_maybe": [
+      "Msxml2.DOMDocument.6.0",
+      "Msxml2.FreeThreadedDOMDocument.6.0",
+      "Msxml2.XMLSchemaCache.6.0"
+    ],
+    "shell_exec_maybe": [
+      "WScript.Shell.1"
+    ],
+    "windows_task_scheduler_maybe": [
+      "Schedule.Service"
+    ],
+    "windows_management_maybe": [
+      "Microsoft.WMI"
+    ]
+  },
+  "risky": {
+    "shell": [
+      "Shell.Application"
+    ],
+    "browser": [
+      "InternetExplorer.Application"
+    ],
+    "office": [
+      "Excel.Application",
+      "Word.Application",
+      "Outlook.Application",
+      "PowerPoint.Application",
+      "Access.Application"
+    ],
+    "process": [
+      "WScript.Shell"
+    ],
+    "scheduler": [
+      "Schedule.Service"
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+#### TDouble
+
+TDouble = Double;

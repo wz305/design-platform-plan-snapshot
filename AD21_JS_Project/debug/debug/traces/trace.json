@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-22T11:06:07.877Z",
+    "analyzerType": "lightweight",
+    "totalTraces": 10
+  },
+  "traces": [
+    {
+      "type": "console",
+      "timestamp": 1766401567875,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567875,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567875,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567876,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567876,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567876,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567876,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567877,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567877,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    },
+    {
+      "type": "console",
+      "timestamp": 1766401567877,
+      "data": {
+        "method": "log",
+        "args": []
+      }
+    }
+  ]
+}

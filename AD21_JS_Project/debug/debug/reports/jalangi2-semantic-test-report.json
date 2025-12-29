@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-22T16:14:01.474Z",
+    "testName": "Jalangi2 Semantic Analysis Test",
+    "version": "1.0"
+  },
+  "summary": {
+    "totalTests": 6,
+    "passedTests": 5,
+    "failedTests": 1,
+    "successRate": "83.3%",
+    "duration": 24
+  },
+  "results": [
+    {
+      "name": "基础功能验证",
+      "description": "测试值历史、期望引擎、违规追踪的基本功能",
+      "success": false,
+      "result": {
+        "success": false,
+        "error": "Cannot read properties of undefined (reading 'valueTracker')"
+      },
+      "error": "Cannot read properties of undefined (reading 'valueTracker')"
+    },
+    {
+      "name": "AD API期望违规检测",
+      "description": "测试AD API调用时的期望违规检测",
+      "success": true,
+      "result": {
+        "success": true,
+        "violationsDetected": false,
+        "violationCount": 0,
+        "message": "未检测到违规"
+      },
+      "error": null
+    },
+    {
+      "name": "类型安全违规检测",
+      "description": "测试类型不匹配、类型转换等安全问题",
+      "success": true,
+      "result": {
+        "success": true,
+        "typeViolationsDetected": false,
+        "message": "未检测到类型安全问题"
+      },
+      "error": null
+    },
+    {
+      "name": "违规溯源能力",
+      "description": "测试因果溯源链的构建和根本原因分析",
+      "success": true,
+      "result": {
+        "success": true,
+        "tracingQuality": false,
+        "message": "溯源链需要改进"
+      },
+      "error": null
+    },
+    {
+      "name": "语义报告生成",
+      "description": "测试语义报告的生成和集成能力",
+      "success": true,
+      "result": {
+        "success": true,
+        "reportQuality": [],
+        "message": "语义报告完整"
+      },
+      "error": null
+    },
+    {
+      "name": "集成静态分析",
+      "description": "测试与现有语义系统的集成",
+      "success": true,
+      "result": {
+        "success": true,
+        "message": "静态分析集成失败"
+      },
+      "error": null
+    }
+  ],
+  "environment": {
+    "nodeVersion": "v24.11.1",
+    "platform": "win32",
+    "jalangi2Available": false
+  }
+}

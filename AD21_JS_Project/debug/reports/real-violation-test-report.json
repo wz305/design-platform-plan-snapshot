@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-22T16:30:39.766Z",
+    "entryFunction": "TestRealViolations_Click",
+    "analyzerType": "jalangi2_semantic",
+    "version": "1.0"
+  },
+  "execution": {
+    "mode": "unknown",
+    "success": false,
+    "executionTime": 0
+  },
+  "violations": [],
+  "analysis": {},
+  "recommendations": [],
+  "dynamicAnalysis": {
+    "objectProfile": {
+      "totalObjects": 0,
+      "totalModifications": 0,
+      "objectTypes": {},
+      "averageModifications": 0
+    },
+    "executionPattern": "semantic_analysis_enabled"
+  }
+}

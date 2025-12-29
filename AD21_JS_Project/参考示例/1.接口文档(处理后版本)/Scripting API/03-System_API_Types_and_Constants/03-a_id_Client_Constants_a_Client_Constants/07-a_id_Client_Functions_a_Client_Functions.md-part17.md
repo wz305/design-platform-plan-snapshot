@@ -1,0 +1,3 @@
+#### TString
+
+TString = ShortString;

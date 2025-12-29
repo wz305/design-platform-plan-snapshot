@@ -1,0 +1,4825 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "generatedAt": "2025-12-17T15:34:08.203Z",
+    "description": "Stage 5.5 Capability Facts - 可查询的能力事实库"
+  },
+  "facts": {
+    "modules": {
+      "ModuleAccessor": {
+        "name": "ModuleAccessor",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 587
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 587,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 587,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 587,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 587,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 587,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "core",
+        "dependencies": [
+          "LoggerModule"
+        ],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 587
+            },
+            {
+              "name": "destroy",
+              "line": 587
+            },
+            {
+              "name": "init",
+              "line": 587
+            },
+            {
+              "name": "get",
+              "line": 587
+            },
+            {
+              "name": "set",
+              "line": 587
+            }
+          ]
+        }
+      },
+      "BaseModule": {
+        "name": "BaseModule",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 981
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 981,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 981,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 981,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 981,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 981,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "core",
+        "dependencies": [
+          "LoggerModule"
+        ],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 981
+            },
+            {
+              "name": "destroy",
+              "line": 981
+            },
+            {
+              "name": "init",
+              "line": 981
+            },
+            {
+              "name": "get",
+              "line": 981
+            },
+            {
+              "name": "set",
+              "line": 981
+            }
+          ]
+        }
+      },
+      "Core": {
+        "name": "Core",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 1342
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1342,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1342,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1342,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1342,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1342,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 1342
+            },
+            {
+              "name": "destroy",
+              "line": 1342
+            },
+            {
+              "name": "init",
+              "line": 1342
+            },
+            {
+              "name": "get",
+              "line": 1342
+            },
+            {
+              "name": "set",
+              "line": 1342
+            }
+          ]
+        }
+      },
+      "GlobalLogController": {
+        "name": "GlobalLogController",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 1574
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1574,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1574,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1574,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1574,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 1574,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 1574
+            },
+            {
+              "name": "destroy",
+              "line": 1574
+            },
+            {
+              "name": "init",
+              "line": 1574
+            },
+            {
+              "name": "get",
+              "line": 1574
+            },
+            {
+              "name": "set",
+              "line": 1574
+            }
+          ]
+        }
+      },
+      "LoggerTypes": {
+        "name": "LoggerTypes",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 2487
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2487,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2487,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2487,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2487,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2487,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "logging",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 2487
+            },
+            {
+              "name": "destroy",
+              "line": 2487
+            },
+            {
+              "name": "init",
+              "line": 2487
+            },
+            {
+              "name": "get",
+              "line": 2487
+            },
+            {
+              "name": "set",
+              "line": 2487
+            }
+          ]
+        }
+      },
+      "LoggerTools": {
+        "name": "LoggerTools",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 2832
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2832,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2832,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2832,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2832,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 2832,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "logging",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 2832
+            },
+            {
+              "name": "destroy",
+              "line": 2832
+            },
+            {
+              "name": "init",
+              "line": 2832
+            },
+            {
+              "name": "get",
+              "line": 2832
+            },
+            {
+              "name": "set",
+              "line": 2832
+            }
+          ]
+        }
+      },
+      "StepFormat": {
+        "name": "StepFormat",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 3325
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3325,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3325,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3325,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3325,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3325,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 3325
+            },
+            {
+              "name": "destroy",
+              "line": 3325
+            },
+            {
+              "name": "init",
+              "line": 3325
+            },
+            {
+              "name": "get",
+              "line": 3325
+            },
+            {
+              "name": "set",
+              "line": 3325
+            }
+          ]
+        }
+      },
+      "StepWrite": {
+        "name": "StepWrite",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 3779
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3779,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3779,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3779,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3779,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 3779,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 3779
+            },
+            {
+              "name": "destroy",
+              "line": 3779
+            },
+            {
+              "name": "init",
+              "line": 3779
+            },
+            {
+              "name": "get",
+              "line": 3779
+            },
+            {
+              "name": "set",
+              "line": 3779
+            }
+          ]
+        }
+      },
+      "LoggerModule": {
+        "name": "LoggerModule",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 4599
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          },
+          "getLogger": {
+            "name": "getLogger",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [
+                "name"
+              ],
+              "returns": "logger"
+            }
+          },
+          "createLogger": {
+            "name": "createLogger",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "setLevel": {
+            "name": "setLevel",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "log": {
+            "name": "log",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 4599,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "logging",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 4599
+            },
+            {
+              "name": "destroy",
+              "line": 4599
+            },
+            {
+              "name": "init",
+              "line": 4599
+            },
+            {
+              "name": "get",
+              "line": 4599
+            },
+            {
+              "name": "set",
+              "line": 4599
+            },
+            {
+              "name": "getLogger",
+              "line": 4599
+            },
+            {
+              "name": "createLogger",
+              "line": 4599
+            },
+            {
+              "name": "setLevel",
+              "line": 4599
+            },
+            {
+              "name": "log",
+              "line": 4599
+            }
+          ]
+        }
+      },
+      "LoggerModuleIndex": {
+        "name": "LoggerModuleIndex",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 5633
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 5633,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 5633,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 5633,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 5633,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 5633,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "logging",
+        "dependencies": [
+          "LoggerModule"
+        ],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 5633
+            },
+            {
+              "name": "destroy",
+              "line": 5633
+            },
+            {
+              "name": "init",
+              "line": 5633
+            },
+            {
+              "name": "get",
+              "line": 5633
+            },
+            {
+              "name": "set",
+              "line": 5633
+            }
+          ]
+        }
+      },
+      "UILoggerModule": {
+        "name": "UILoggerModule",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 6361
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6361,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6361,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6361,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6361,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6361,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "logging",
+        "dependencies": [
+          "LoggerModule"
+        ],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 6361
+            },
+            {
+              "name": "destroy",
+              "line": 6361
+            },
+            {
+              "name": "init",
+              "line": 6361
+            },
+            {
+              "name": "get",
+              "line": 6361
+            },
+            {
+              "name": "set",
+              "line": 6361
+            }
+          ]
+        }
+      },
+      "ObjectFactory": {
+        "name": "ObjectFactory",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 6775
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6775,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6775,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6775,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6775,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 6775,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "object",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 6775
+            },
+            {
+              "name": "destroy",
+              "line": 6775
+            },
+            {
+              "name": "init",
+              "line": 6775
+            },
+            {
+              "name": "get",
+              "line": 6775
+            },
+            {
+              "name": "set",
+              "line": 6775
+            }
+          ]
+        }
+      },
+      "ObjectManager": {
+        "name": "ObjectManager",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 7185
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7185,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7185,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7185,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7185,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7185,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "object",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 7185
+            },
+            {
+              "name": "destroy",
+              "line": 7185
+            },
+            {
+              "name": "init",
+              "line": 7185
+            },
+            {
+              "name": "get",
+              "line": 7185
+            },
+            {
+              "name": "set",
+              "line": 7185
+            }
+          ]
+        }
+      },
+      "MockSystem": {
+        "name": "MockSystem",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 7778
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7778,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7778,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7778,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7778,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 7778,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 7778
+            },
+            {
+              "name": "destroy",
+              "line": 7778
+            },
+            {
+              "name": "init",
+              "line": 7778
+            },
+            {
+              "name": "get",
+              "line": 7778
+            },
+            {
+              "name": "set",
+              "line": 7778
+            }
+          ]
+        }
+      },
+      "PCBObjectWrapper": {
+        "name": "PCBObjectWrapper",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 8419
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8419,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8419,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8419,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8419,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8419,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "pcb",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 8419
+            },
+            {
+              "name": "destroy",
+              "line": 8419
+            },
+            {
+              "name": "init",
+              "line": 8419
+            },
+            {
+              "name": "get",
+              "line": 8419
+            },
+            {
+              "name": "set",
+              "line": 8419
+            }
+          ]
+        }
+      },
+      "GeometryWrapper": {
+        "name": "GeometryWrapper",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 8993
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8993,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8993,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8993,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8993,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 8993,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 8993
+            },
+            {
+              "name": "destroy",
+              "line": 8993
+            },
+            {
+              "name": "init",
+              "line": 8993
+            },
+            {
+              "name": "get",
+              "line": 8993
+            },
+            {
+              "name": "set",
+              "line": 8993
+            }
+          ]
+        }
+      },
+      "ObjectModule": {
+        "name": "ObjectModule",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 9756
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          },
+          "createObject": {
+            "name": "createObject",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [
+                "type",
+                "properties"
+              ],
+              "returns": "object"
+            }
+          },
+          "getObject": {
+            "name": "getObject",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "deleteObject": {
+            "name": "deleteObject",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "object",
+        "dependencies": [
+          "LoggerModule"
+        ],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 9756
+            },
+            {
+              "name": "destroy",
+              "line": 9756
+            },
+            {
+              "name": "init",
+              "line": 9756
+            },
+            {
+              "name": "get",
+              "line": 9756
+            },
+            {
+              "name": "set",
+              "line": 9756
+            },
+            {
+              "name": "createObject",
+              "line": 9756
+            },
+            {
+              "name": "getObject",
+              "line": 9756
+            },
+            {
+              "name": "deleteObject",
+              "line": 9756
+            }
+          ]
+        }
+      },
+      "BasePCBWrapper": {
+        "name": "BasePCBWrapper",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 10585
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 10585,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 10585,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 10585,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 10585,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 10585,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "pcb",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 10585
+            },
+            {
+              "name": "destroy",
+              "line": 10585
+            },
+            {
+              "name": "init",
+              "line": 10585
+            },
+            {
+              "name": "get",
+              "line": 10585
+            },
+            {
+              "name": "set",
+              "line": 10585
+            }
+          ]
+        }
+      },
+      "PCBMockSystem": {
+        "name": "PCBMockSystem",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 11590
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 11590,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 11590,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 11590,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 11590,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 11590,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "pcb",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 11590
+            },
+            {
+              "name": "destroy",
+              "line": 11590
+            },
+            {
+              "name": "init",
+              "line": 11590
+            },
+            {
+              "name": "get",
+              "line": 11590
+            },
+            {
+              "name": "set",
+              "line": 11590
+            }
+          ]
+        }
+      },
+      "PCBObjectFactory": {
+        "name": "PCBObjectFactory",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 12203
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12203,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12203,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12203,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12203,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12203,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "pcb",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 12203
+            },
+            {
+              "name": "destroy",
+              "line": 12203
+            },
+            {
+              "name": "init",
+              "line": 12203
+            },
+            {
+              "name": "get",
+              "line": 12203
+            },
+            {
+              "name": "set",
+              "line": 12203
+            }
+          ]
+        }
+      },
+      "PCBObjectManager": {
+        "name": "PCBObjectManager",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 12764
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12764,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12764,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12764,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12764,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 12764,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "pcb",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 12764
+            },
+            {
+              "name": "destroy",
+              "line": 12764
+            },
+            {
+              "name": "init",
+              "line": 12764
+            },
+            {
+              "name": "get",
+              "line": 12764
+            },
+            {
+              "name": "set",
+              "line": 12764
+            }
+          ]
+        }
+      },
+      "PCBObjectPool": {
+        "name": "PCBObjectPool",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 13308
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13308,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13308,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13308,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13308,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13308,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "pcb",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 13308
+            },
+            {
+              "name": "destroy",
+              "line": 13308
+            },
+            {
+              "name": "init",
+              "line": 13308
+            },
+            {
+              "name": "get",
+              "line": 13308
+            },
+            {
+              "name": "set",
+              "line": 13308
+            }
+          ]
+        }
+      },
+      "GeometryCalculator": {
+        "name": "GeometryCalculator",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 13965
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13965,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13965,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13965,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13965,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 13965,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 13965
+            },
+            {
+              "name": "destroy",
+              "line": 13965
+            },
+            {
+              "name": "init",
+              "line": 13965
+            },
+            {
+              "name": "get",
+              "line": 13965
+            },
+            {
+              "name": "set",
+              "line": 13965
+            }
+          ]
+        }
+      },
+      "ArcWrapper": {
+        "name": "ArcWrapper",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 14903
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 14903,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 14903,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 14903,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 14903,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 14903,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 14903
+            },
+            {
+              "name": "destroy",
+              "line": 14903
+            },
+            {
+              "name": "init",
+              "line": 14903
+            },
+            {
+              "name": "get",
+              "line": 14903
+            },
+            {
+              "name": "set",
+              "line": 14903
+            }
+          ]
+        }
+      },
+      "PadWrapper": {
+        "name": "PadWrapper",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 15523
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 15523,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 15523,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 15523,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 15523,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 15523,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 15523
+            },
+            {
+              "name": "destroy",
+              "line": 15523
+            },
+            {
+              "name": "init",
+              "line": 15523
+            },
+            {
+              "name": "get",
+              "line": 15523
+            },
+            {
+              "name": "set",
+              "line": 15523
+            }
+          ]
+        }
+      },
+      "TrackWrapper": {
+        "name": "TrackWrapper",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 16555
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 16555,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 16555,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 16555,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 16555,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 16555,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 16555
+            },
+            {
+              "name": "destroy",
+              "line": 16555
+            },
+            {
+              "name": "init",
+              "line": 16555
+            },
+            {
+              "name": "get",
+              "line": 16555
+            },
+            {
+              "name": "set",
+              "line": 16555
+            }
+          ]
+        }
+      },
+      "ViaWrapper": {
+        "name": "ViaWrapper",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 17315
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 17315,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 17315,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 17315,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 17315,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 17315,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 17315
+            },
+            {
+              "name": "destroy",
+              "line": 17315
+            },
+            {
+              "name": "init",
+              "line": 17315
+            },
+            {
+              "name": "get",
+              "line": 17315
+            },
+            {
+              "name": "set",
+              "line": 17315
+            }
+          ]
+        }
+      },
+      "PCBInterfaces": {
+        "name": "PCBInterfaces",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 18164
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18164,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18164,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18164,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18164,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18164,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          },
+          "createTrack": {
+            "name": "createTrack",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18164,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "createPad": {
+            "name": "createPad",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18164,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "createVia": {
+            "name": "createVia",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18164,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "pcb",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 18164
+            },
+            {
+              "name": "destroy",
+              "line": 18164
+            },
+            {
+              "name": "init",
+              "line": 18164
+            },
+            {
+              "name": "get",
+              "line": 18164
+            },
+            {
+              "name": "set",
+              "line": 18164
+            },
+            {
+              "name": "createTrack",
+              "line": 18164
+            },
+            {
+              "name": "createPad",
+              "line": 18164
+            },
+            {
+              "name": "createVia",
+              "line": 18164
+            }
+          ]
+        }
+      },
+      "PositionManager": {
+        "name": "PositionManager",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 18505
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18505,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18505,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18505,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18505,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 18505,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "utility",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 18505
+            },
+            {
+              "name": "destroy",
+              "line": 18505
+            },
+            {
+              "name": "init",
+              "line": 18505
+            },
+            {
+              "name": "get",
+              "line": 18505
+            },
+            {
+              "name": "set",
+              "line": 18505
+            }
+          ]
+        }
+      },
+      "ObjectCreator": {
+        "name": "ObjectCreator",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 19075
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19075,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19075,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19075,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19075,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19075,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          },
+          "show": {
+            "name": "show",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19075,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "hide": {
+            "name": "hide",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19075,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "validate": {
+            "name": "validate",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19075,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "object",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 19075
+            },
+            {
+              "name": "destroy",
+              "line": 19075
+            },
+            {
+              "name": "init",
+              "line": 19075
+            },
+            {
+              "name": "get",
+              "line": 19075
+            },
+            {
+              "name": "set",
+              "line": 19075
+            },
+            {
+              "name": "show",
+              "line": 19075
+            },
+            {
+              "name": "hide",
+              "line": 19075
+            },
+            {
+              "name": "create",
+              "line": 19075
+            },
+            {
+              "name": "validate",
+              "line": 19075
+            }
+          ]
+        }
+      },
+      "ObjectCreatorModule": {
+        "name": "ObjectCreatorModule",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 19536
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19536,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19536,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19536,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19536,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 19536,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "object",
+        "dependencies": [
+          "LoggerModule"
+        ],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 19536
+            },
+            {
+              "name": "destroy",
+              "line": 19536
+            },
+            {
+              "name": "init",
+              "line": 19536
+            },
+            {
+              "name": "get",
+              "line": 19536
+            },
+            {
+              "name": "set",
+              "line": 19536
+            }
+          ]
+        }
+      },
+      "ObjectCreatorWindow": {
+        "name": "ObjectCreatorWindow",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20045
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 20045,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 20045,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 20045,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 20045,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 20045,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "object",
+        "dependencies": [],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 20045
+            },
+            {
+              "name": "destroy",
+              "line": 20045
+            },
+            {
+              "name": "init",
+              "line": 20045
+            },
+            {
+              "name": "get",
+              "line": 20045
+            },
+            {
+              "name": "set",
+              "line": 20045
+            }
+          ]
+        }
+      }
+    },
+    "callables": {
+      "showErrorInUI": {
+        "name": "showErrorInUI",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20182
+        },
+        "callable": true,
+        "signature": {
+          "name": "showErrorInUI",
+          "params": [
+            "functionName",
+            "error",
+            "context"
+          ]
+        },
+        "category": "utility"
+      },
+      "showSuccessInUI": {
+        "name": "showSuccessInUI",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20218
+        },
+        "callable": true,
+        "signature": {
+          "name": "showSuccessInUI",
+          "params": [
+            "functionName",
+            "message",
+            "context"
+          ]
+        },
+        "category": "utility"
+      },
+      "checkLoggerModuleAvailability": {
+        "name": "checkLoggerModuleAvailability",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20242
+        },
+        "callable": true,
+        "signature": {
+          "name": "checkLoggerModuleAvailability",
+          "params": []
+        },
+        "category": "utility"
+      },
+      "btnOutputLogClick": {
+        "name": "btnOutputLogClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20308
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnOutputLogClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnGenerateLogClick": {
+        "name": "btnGenerateLogClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20366
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnGenerateLogClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnClearDisplayClick": {
+        "name": "btnClearDisplayClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20564
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnClearDisplayClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnSaveLogClick": {
+        "name": "btnSaveLogClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20590
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnSaveLogClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnDebugStatusClick": {
+        "name": "btnDebugStatusClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20649
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnDebugStatusClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnLogStatsClick": {
+        "name": "btnLogStatsClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20678
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnLogStatsClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "showObjectCreatorWindow": {
+        "name": "showObjectCreatorWindow",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20729
+        },
+        "callable": true,
+        "signature": {
+          "name": "showObjectCreatorWindow",
+          "params": []
+        },
+        "category": "utility"
+      },
+      "btnCreateObjectClick": {
+        "name": "btnCreateObjectClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20764
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnCreateObjectClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnRefreshStatusClick": {
+        "name": "btnRefreshStatusClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20786
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnRefreshStatusClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnObjectStatsClick": {
+        "name": "btnObjectStatsClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20847
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnObjectStatsClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnClearCacheClick": {
+        "name": "btnClearCacheClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20895
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnClearCacheClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkGenDebugClick": {
+        "name": "chkGenDebugClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20954
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkGenDebugClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkGenInfoClick": {
+        "name": "chkGenInfoClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 20980
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkGenInfoClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkGenWarnClick": {
+        "name": "chkGenWarnClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21006
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkGenWarnClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkGenErrorClick": {
+        "name": "chkGenErrorClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21032
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkGenErrorClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkUIDebugClick": {
+        "name": "chkUIDebugClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21058
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkUIDebugClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkUIInfoClick": {
+        "name": "chkUIInfoClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21084
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkUIInfoClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkUIWarnClick": {
+        "name": "chkUIWarnClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21110
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkUIWarnClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkUIErrorClick": {
+        "name": "chkUIErrorClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21136
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkUIErrorClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnDevModeClick": {
+        "name": "btnDevModeClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21166
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnDevModeClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnProdModeClick": {
+        "name": "btnProdModeClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21192
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnProdModeClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnDebugModeClick": {
+        "name": "btnDebugModeClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21218
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnDebugModeClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnSilentModeClick": {
+        "name": "btnSilentModeClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21244
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnSilentModeClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "updateAllSwitches": {
+        "name": "updateAllSwitches",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21275
+        },
+        "callable": true,
+        "signature": {
+          "name": "updateAllSwitches",
+          "params": [
+            "enabled"
+          ]
+        },
+        "category": "utility"
+      },
+      "updateProductionModeSwitches": {
+        "name": "updateProductionModeSwitches",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21313
+        },
+        "callable": true,
+        "signature": {
+          "name": "updateProductionModeSwitches",
+          "params": []
+        },
+        "category": "utility"
+      },
+      "updateDebugModeSwitches": {
+        "name": "updateDebugModeSwitches",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21351
+        },
+        "callable": true,
+        "signature": {
+          "name": "updateDebugModeSwitches",
+          "params": []
+        },
+        "category": "utility"
+      },
+      "initializeGlobalEvents": {
+        "name": "initializeGlobalEvents",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21390
+        },
+        "callable": true,
+        "signature": {
+          "name": "initializeGlobalEvents",
+          "params": []
+        },
+        "category": "utility"
+      },
+      "uiWrite": {
+        "name": "uiWrite",
+        "type": "ui_function",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21407
+        },
+        "callable": true,
+        "signature": {
+          "name": "uiWrite",
+          "params": [
+            "message"
+          ]
+        },
+        "category": "ui_function"
+      },
+      "uiDebug": {
+        "name": "uiDebug",
+        "type": "ui_function",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21430
+        },
+        "callable": true,
+        "signature": {
+          "name": "uiDebug",
+          "params": [
+            "level",
+            "message",
+            "context",
+            "fileName",
+            "functionName"
+          ]
+        },
+        "category": "ui_function"
+      },
+      "uiTrace": {
+        "name": "uiTrace",
+        "type": "ui_function",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21475
+        },
+        "callable": true,
+        "signature": {
+          "name": "uiTrace",
+          "params": [
+            "message",
+            "context",
+            "fileName",
+            "functionName"
+          ]
+        },
+        "category": "ui_function"
+      },
+      "uiInfo": {
+        "name": "uiInfo",
+        "type": "ui_function",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21482
+        },
+        "callable": true,
+        "signature": {
+          "name": "uiInfo",
+          "params": [
+            "message",
+            "context",
+            "fileName",
+            "functionName"
+          ]
+        },
+        "category": "ui_function"
+      },
+      "uiWarn": {
+        "name": "uiWarn",
+        "type": "ui_function",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21489
+        },
+        "callable": true,
+        "signature": {
+          "name": "uiWarn",
+          "params": [
+            "message",
+            "context",
+            "fileName",
+            "functionName"
+          ]
+        },
+        "category": "ui_function"
+      },
+      "uiError": {
+        "name": "uiError",
+        "type": "ui_function",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21496
+        },
+        "callable": true,
+        "signature": {
+          "name": "uiError",
+          "params": [
+            "message",
+            "context",
+            "fileName",
+            "functionName"
+          ]
+        },
+        "category": "ui_function"
+      },
+      "uiFatal": {
+        "name": "uiFatal",
+        "type": "ui_function",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21503
+        },
+        "callable": true,
+        "signature": {
+          "name": "uiFatal",
+          "params": [
+            "message",
+            "context",
+            "fileName",
+            "functionName"
+          ]
+        },
+        "category": "ui_function"
+      },
+      "debugModuleStatus": {
+        "name": "debugModuleStatus",
+        "type": "debug",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21510
+        },
+        "callable": true,
+        "signature": {
+          "name": "debugModuleStatus",
+          "params": []
+        },
+        "category": "debug"
+      },
+      "debugFunctionCall": {
+        "name": "debugFunctionCall",
+        "type": "debug",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21578
+        },
+        "callable": true,
+        "signature": {
+          "name": "debugFunctionCall",
+          "params": [
+            "functionName",
+            "args",
+            "fileName"
+          ]
+        },
+        "category": "debug"
+      },
+      "debugFunctionReturn": {
+        "name": "debugFunctionReturn",
+        "type": "debug",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21588
+        },
+        "callable": true,
+        "signature": {
+          "name": "debugFunctionReturn",
+          "params": [
+            "functionName",
+            "result",
+            "fileName"
+          ]
+        },
+        "category": "debug"
+      },
+      "debugFunctionError": {
+        "name": "debugFunctionError",
+        "type": "debug",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21598
+        },
+        "callable": true,
+        "signature": {
+          "name": "debugFunctionError",
+          "params": [
+            "functionName",
+            "error",
+            "fileName"
+          ]
+        },
+        "category": "debug"
+      },
+      "cmbObjectTypeChange": {
+        "name": "cmbObjectTypeChange",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21612
+        },
+        "callable": true,
+        "signature": {
+          "name": "cmbObjectTypeChange",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "utility"
+      },
+      "btnSetOriginClick": {
+        "name": "btnSetOriginClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21632
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnSetOriginClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnValidateClick": {
+        "name": "btnValidateClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21652
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnValidateClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnCreateClick": {
+        "name": "btnCreateClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21672
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnCreateClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnCreateAtOriginClick": {
+        "name": "btnCreateAtOriginClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21692
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnCreateAtOriginClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnResetClick": {
+        "name": "btnResetClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21712
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnResetClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "btnCancelClick": {
+        "name": "btnCancelClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21732
+        },
+        "callable": true,
+        "signature": {
+          "name": "btnCancelClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "chkGridSnapClick": {
+        "name": "chkGridSnapClick",
+        "type": "ui_event",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21752
+        },
+        "callable": true,
+        "signature": {
+          "name": "chkGridSnapClick",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "ui_event"
+      },
+      "edtGridSizeChange": {
+        "name": "edtGridSizeChange",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21772
+        },
+        "callable": true,
+        "signature": {
+          "name": "edtGridSizeChange",
+          "params": [
+            "Sender"
+          ]
+        },
+        "category": "utility"
+      },
+      "cleanupGlobalEvents": {
+        "name": "cleanupGlobalEvents",
+        "type": "utility",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 21793
+        },
+        "callable": true,
+        "signature": {
+          "name": "cleanupGlobalEvents",
+          "params": []
+        },
+        "category": "utility"
+      }
+    },
+    "globals": {
+      "ModuleAccessor": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ModuleAccessor"
+      },
+      "BaseModule": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "BaseModule"
+      },
+      "Core": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "Core"
+      },
+      "GlobalLogController": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "GlobalLogController"
+      },
+      "LoggerTypes": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "LoggerTypes"
+      },
+      "LoggerTools": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "LoggerTools"
+      },
+      "StepFormat": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "StepFormat"
+      },
+      "StepWrite": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "StepWrite"
+      },
+      "LoggerModule": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "LoggerModule"
+      },
+      "LoggerModuleIndex": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "LoggerModuleIndex"
+      },
+      "UILoggerModule": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "UILoggerModule"
+      },
+      "ObjectFactory": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ObjectFactory"
+      },
+      "ObjectManager": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ObjectManager"
+      },
+      "MockSystem": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "MockSystem"
+      },
+      "PCBObjectWrapper": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "PCBObjectWrapper"
+      },
+      "GeometryWrapper": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "GeometryWrapper"
+      },
+      "ObjectModule": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ObjectModule"
+      },
+      "BasePCBWrapper": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "BasePCBWrapper"
+      },
+      "PCBMockSystem": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "PCBMockSystem"
+      },
+      "PCBObjectFactory": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "PCBObjectFactory"
+      },
+      "PCBObjectManager": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "PCBObjectManager"
+      },
+      "PCBObjectPool": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "PCBObjectPool"
+      },
+      "GeometryCalculator": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "GeometryCalculator"
+      },
+      "ArcWrapper": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ArcWrapper"
+      },
+      "PadWrapper": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "PadWrapper"
+      },
+      "TrackWrapper": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "TrackWrapper"
+      },
+      "ViaWrapper": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ViaWrapper"
+      },
+      "PCBInterfaces": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "PCBInterfaces"
+      },
+      "PositionManager": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "PositionManager"
+      },
+      "ObjectCreator": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ObjectCreator"
+      },
+      "ObjectCreatorModule": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ObjectCreatorModule"
+      },
+      "ObjectCreatorWindow": {
+        "type": "module_instance",
+        "callable": true,
+        "access": "global",
+        "module": "ObjectCreatorWindow"
+      },
+      "showErrorInUI": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "showSuccessInUI": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "checkLoggerModuleAvailability": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnOutputLogClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnGenerateLogClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnClearDisplayClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnSaveLogClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnDebugStatusClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnLogStatsClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "showObjectCreatorWindow": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnCreateObjectClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnRefreshStatusClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnObjectStatsClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnClearCacheClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkGenDebugClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkGenInfoClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkGenWarnClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkGenErrorClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkUIDebugClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkUIInfoClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkUIWarnClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkUIErrorClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnDevModeClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnProdModeClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnDebugModeClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnSilentModeClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "updateAllSwitches": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "updateProductionModeSwitches": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "updateDebugModeSwitches": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "initializeGlobalEvents": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "uiWrite": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "uiDebug": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "uiTrace": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "uiInfo": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "uiWarn": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "uiError": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "uiFatal": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "debugModuleStatus": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "debugFunctionCall": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "debugFunctionReturn": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "debugFunctionError": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "cmbObjectTypeChange": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnSetOriginClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnValidateClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnCreateClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnCreateAtOriginClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnResetClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "btnCancelClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "chkGridSnapClick": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "edtGridSizeChange": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      },
+      "cleanupGlobalEvents": {
+        "type": "function",
+        "callable": true,
+        "access": "global"
+      }
+    }
+  },
+  "query": {
+    "supported": [
+      "isObjectCallable",
+      "listMethods",
+      "canAccess",
+      "getGlobalSymbols",
+      "getMethodSignature",
+      "getModuleDependencies"
+    ]
+  },
+  "system": {
+    "boundaries": {
+      "capabilities": [
+        "静态可达性分析",
+        "符号存在性检查",
+        "方法签名推断",
+        "模块依赖分析",
+        "作用域边界识别"
+      ],
+      "limitations": [
+        "运行时值状态推断",
+        "AD内部对象生命周期模拟",
+        "参数值合法性验证",
+        "动态执行路径分析",
+        "内存使用情况预测"
+      ],
+      "confidence": {
+        "static": "high",
+        "runtime": "limited",
+        "semantic": "high"
+      }
+    }
+  }
+}

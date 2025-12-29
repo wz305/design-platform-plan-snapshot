@@ -1,0 +1,191 @@
+{
+  "timestamp": "2025-12-14T15:59:29.000Z",
+  "summary": {
+    "total": 86,
+    "passed": 74,
+    "failed": 12,
+    "successRate": "86.05%"
+  },
+  "modules": {
+    "BaseModule": {
+      "模块加载": { "passed": true, "error": null },
+      "create方法存在": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": true, "error": null },
+      "实例创建": { "passed": true, "error": null },
+      "初始化": { "passed": true, "error": null }
+    },
+    "LoggerTypes": {
+      "模块加载": { "passed": true, "error": null },
+      "LOG_LEVELS存在": { "passed": false, "error": "undefined" },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "LoggerTools": {
+      "模块加载": { "passed": true, "error": null }
+    },
+    "LoggerModule": {
+      "核心模块加载": { "passed": true, "error": null },
+      "create方法存在": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": true, "error": null }
+    },
+    "LoggerModuleIndex": {
+      "索引模块加载": { "passed": true, "error": null },
+      "getLogger方法存在": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": true, "error": null }
+    },
+    "BasePCBWrapper": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": true, "error": null }
+    },
+    "PCBMockSystem": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "PCBObjectFactory": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "PCBObjectManager": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "PCBObjectPool": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "GeometryCalculator": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": true, "error": null }
+    },
+    "ArcWrapper": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "PadWrapper": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "TrackWrapper": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "ViaWrapper": {
+      "模块加载": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": false, "error": "undefined" }
+    },
+    "PCBInterfaces": {
+      "主模块加载": { "passed": true, "error": null },
+      "initialize方法存在": { "passed": true, "error": null },
+      "IIFE模式": { "passed": true, "error": null },
+      "ES3兼容(no let/const)": { "passed": true, "error": null },
+      "ES3兼容(no arrow)": { "passed": true, "error": null },
+      "ES3兼容(no import)": { "passed": true, "error": null },
+      "正确导出": { "passed": true, "error": null }
+    },
+    "全局": {
+      "模块加载过程": { "passed": false, "error": "LoggerTypes is not defined" }
+    },
+    "规范性检查": {
+      "文件读取": { "passed": true, "error": null }
+    },
+    "依赖关系": {
+      "加载顺序确定": { "passed": true, "error": null },
+      "无明显循环依赖": { "passed": true, "error": null }
+    },
+    "功能测试": {
+      "功能验证": { "passed": false, "error": "LoggerTypes is not defined" }
+    }
+  },
+  "dependencies": {
+    "loadOrder": [
+      "BaseModule",
+      "LoggerTypes",
+      "LoggerTools",
+      "StepFormat",
+      "StepWrite",
+      "LoggerModule",
+      "LoggerModuleIndex",
+      "BasePCBWrapper",
+      "PCBMockSystem",
+      "PCBObjectFactory",
+      "PCBObjectManager",
+      "PCBObjectPool",
+      "GeometryCalculator",
+      "ArcWrapper",
+      "PadWrapper",
+      "TrackWrapper",
+      "ViaWrapper",
+      "PCBInterfaces"
+    ],
+    "totalModules": 19
+  },
+  "errors": [
+    "LoggerTypes - LOG_LEVELS存在: undefined",
+    "全局 - 模块加载过程: LoggerTypes is not defined",
+    "types - 正确导出: undefined",
+    "PCBMockSystem - 正确导出: undefined",
+    "PCBObjectFactory - 正确导出: undefined",
+    "PCBObjectManager - 正确导出: undefined",
+    "PCBObjectPool - 正确导出: undefined",
+    "ArcWrapper - 正确导出: undefined",
+    "PadWrapper - 正确导出: undefined",
+    "TrackWrapper - 正确导出: undefined",
+    "ViaWrapper - 正确导出: undefined",
+    "功能测试 - 功能验证: LoggerTypes is not defined"
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "metadata": {
+    "timestamp": "2025-12-22T16:43:12.426Z",
+    "entryFunction": "TestRealViolations_Click",
+    "analyzerType": "jalangi2_semantic",
+    "version": "1.0"
+  },
+  "summary": {
+    "totalViolations": 2,
+    "errorCount": 2,
+    "warningCount": 0,
+    "criticalCount": 1
+  },
+  "violations": [
+    {
+      "id": "V1",
+      "type": "ARGUMENT_TYPE_MISMATCH",
+      "severity": "ERROR",
+      "message": "参数0类型不匹配: 期望 number, 实际 string",
+      "location": "ad-mock.js:PCBObjectFactory",
+      "originalViolation": {
+        "type": "ARGUMENT_TYPE_MISMATCH",
+        "severity": "ERROR",
+        "function": "PCBObjectFactory",
+        "argIndex": 0,
+        "expectedType": "number",
+        "actualType": "string",
+        "message": "参数0类型不匹配: 期望 number, 实际 string",
+        "iid": "mock_call",
+        "location": "ad-mock.js:PCBObjectFactory",
+        "cause": {
+          "type": "argument_violation",
+          "argIndex": 0,
+          "expectedRule": {
+            "arg": 0,
+            "type": "number",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "description": "对象类型ID"
+          }
+        },
+        "callStack": [],
+        "timestamp": 1766421792424
+      },
+      "semanticContext": {
+        "adApiContext": {
+          "apiType": "factory_api",
+          "expectedBehavior": "create_valid_pcb_object",
+          "actualBehavior": "violated_constraint"
+        },
+        "moduleContext": null,
+        "typeSystemContext": {
+          "typeViolation": "ARGUMENT_TYPE_MISMATCH",
+          "expectedType": "number",
+          "actualType": "string",
+          "conversionPath": "direct"
+        },
+        "dataFlowContext": null
+      },
+      "fixComplexity": "simple",
+      "autoFixable": false
+    },
+    {
+      "id": "V1",
+      "type": "INVALID_ENUM_VALUE",
+      "severity": "ERROR",
+      "message": "参数0的值无效: invalid_type, 有效值: 1, 2, 3, 4, 5, 6, 7",
+      "location": "ad-mock.js:PCBObjectFactory",
+      "originalViolation": {
+        "type": "INVALID_ENUM_VALUE",
+        "severity": "ERROR",
+        "function": "PCBObjectFactory",
+        "argIndex": 0,
+        "invalidValue": "invalid_type",
+        "validValues": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "message": "参数0的值无效: invalid_type, 有效值: 1, 2, 3, 4, 5, 6, 7",
+        "iid": "mock_call",
+        "location": "ad-mock.js:PCBObjectFactory",
+        "cause": {
+          "type": "argument_violation",
+          "argIndex": 0,
+          "expectedRule": {
+            "arg": 0,
+            "type": "number",
+            "enum": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "description": "对象类型ID"
+          }
+        },
+        "callStack": [],
+        "timestamp": 1766421792424
+      },
+      "semanticContext": {
+        "adApiContext": {
+          "apiType": "factory_api",
+          "expectedBehavior": "create_valid_pcb_object",
+          "actualBehavior": "violated_constraint"
+        },
+        "moduleContext": null,
+        "typeSystemContext": null,
+        "dataFlowContext": null
+      },
+      "fixComplexity": "medium",
+      "autoFixable": false
+    }
+  ],
+  "analysis": {
+    "semanticIssues": [
+      {
+        "category": "type_system_violation",
+        "description": "类型系统违规: ARGUMENT_TYPE_MISMATCH",
+        "impact": "runtime_error_risk"
+      }
+    ],
+    "apiMisuse": [],
+    "typeSafety": [
+      {
+        "violationType": "ARGUMENT_TYPE_MISMATCH",
+        "affectedValue": "return_value",
+        "severity": "ERROR"
+      }
+    ],
+    "dataFlow": []
+  },
+  "recommendations": [
+    {
+      "id": "R1",
+      "violationId": "V1",
+      "type": "fix",
+      "priority": "high",
+      "title": "参数类型不匹配",
+      "description": "函数参数类型与期望不符，建议进行类型检查或转换",
+      "codeExample": "// 添加类型检查\nif (typeof arg !== 'undefined') {\n  throw new Error('Invalid argument type');\n}",
+      "autoFixable": false,
+      "estimatedEffort": "medium",
+      "impact": "medium"
+    },
+    {
+      "id": "R1",
+      "violationId": "V1",
+      "type": "fix",
+      "priority": "medium",
+      "title": "API使用建议",
+      "description": "参数0的值无效: invalid_type, 有效值: 1, 2, 3, 4, 5, 6, 7",
+      "codeExample": "",
+      "autoFixable": false,
+      "estimatedEffort": "medium",
+      "impact": "medium"
+    }
+  ],
+  "integration": {
+    "staticAnalysis": null,
+    "dynamicAnalysis": {
+      "executionProfile": {
+        "totalObjects": 5,
+        "totalModifications": 12,
+        "objectTypes": {
+          "PCB_Track": 3,
+          "PCB_Object": 1
+        },
+        "averageModifications": 2.4
+      },
+      "runtimeBehavior": {
+        "violationPatterns": [],
+        "stabilityScore": 0.5,
+        "errorFrequency": "low"
+      },
+      "performanceIndicators": {}
+    },
+    "confidence": 0.7
+  }
+}

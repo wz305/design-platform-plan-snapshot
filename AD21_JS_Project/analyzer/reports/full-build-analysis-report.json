@@ -1,0 +1,838 @@
+{
+  "meta": {
+    "generatedAt": "2025-12-16T16:58:57.503Z",
+    "version": "1.0.0",
+    "description": "完整构建路径语义分析报告"
+  },
+  "summary": {
+    "files": {
+      "totalFiles": 34,
+      "processedFiles": 34,
+      "failedFiles": 0,
+      "totalStages": 68,
+      "processingTime": 55
+    },
+    "executionPlans": {
+      "totalPlans": 0,
+      "totalSteps": 0,
+      "riskDistribution": {
+        "low": 0,
+        "medium": 0,
+        "high": 0,
+        "critical": 0
+      },
+      "stepTypeDistribution": {}
+    },
+    "overall": {
+      "status": "success",
+      "successRate": "100.00%",
+      "averageStagesPerFile": "2.0"
+    }
+  },
+  "details": {
+    "files": [
+      {
+        "filePath": "src/json2.js",
+        "index": 1,
+        "fileName": "json2.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/core/module-accessor.js",
+        "index": 2,
+        "fileName": "module-accessor.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/base/index.js",
+        "index": 3,
+        "fileName": "index.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/core/core.js",
+        "index": 4,
+        "fileName": "core.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/log-controller/index.js",
+        "index": 5,
+        "fileName": "index.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/logger/types.js",
+        "index": 6,
+        "fileName": "types.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/logger/tools.js",
+        "index": 7,
+        "fileName": "tools.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/logger/steps/step_format.js",
+        "index": 8,
+        "fileName": "step_format.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/logger/steps/step_write.js",
+        "index": 9,
+        "fileName": "step_write.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/logger/core.js",
+        "index": 10,
+        "fileName": "core.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/logger/index.js",
+        "index": 11,
+        "fileName": "index.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/ui-logger/index.js",
+        "index": 12,
+        "fileName": "index.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-module/core/ObjectFactory.js",
+        "index": 13,
+        "fileName": "ObjectFactory.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-module/core/ObjectManager.js",
+        "index": 14,
+        "fileName": "ObjectManager.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-module/core/MockSystem.js",
+        "index": 15,
+        "fileName": "MockSystem.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-module/wrappers/PCBObjectWrapper.js",
+        "index": 16,
+        "fileName": "PCBObjectWrapper.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-module/wrappers/GeometryWrapper.js",
+        "index": 17,
+        "fileName": "GeometryWrapper.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-module/index.js",
+        "index": 18,
+        "fileName": "index.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/core/BasePCBWrapper.js",
+        "index": 19,
+        "fileName": "BasePCBWrapper.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/core/PCBMockSystem.js",
+        "index": 20,
+        "fileName": "PCBMockSystem.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 3,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/core/PCBObjectFactory.js",
+        "index": 21,
+        "fileName": "PCBObjectFactory.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/core/PCBObjectManager.js",
+        "index": 22,
+        "fileName": "PCBObjectManager.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/core/PCBObjectPool.js",
+        "index": 23,
+        "fileName": "PCBObjectPool.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/calculators/GeometryCalculator.js",
+        "index": 24,
+        "fileName": "GeometryCalculator.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/wrappers/ArcWrapper.js",
+        "index": 25,
+        "fileName": "ArcWrapper.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/wrappers/PadWrapper.js",
+        "index": 26,
+        "fileName": "PadWrapper.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/wrappers/TrackWrapper.js",
+        "index": 27,
+        "fileName": "TrackWrapper.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/wrappers/ViaWrapper.js",
+        "index": 28,
+        "fileName": "ViaWrapper.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/pcb-interfaces/index.js",
+        "index": 29,
+        "fileName": "index.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-creator/core/PositionManager.js",
+        "index": 30,
+        "fileName": "PositionManager.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-creator/core/ObjectCreator.js",
+        "index": 31,
+        "fileName": "ObjectCreator.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/modules/object-creator/index.js",
+        "index": 32,
+        "fileName": "index.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 2,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "ui/object-creator.js",
+        "index": 33,
+        "fileName": "object-creator.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      },
+      {
+        "filePath": "src/core/global-events.js",
+        "index": 34,
+        "fileName": "global-events.js",
+        "summary": {
+          "status": "success",
+          "processingTime": 1,
+          "stagesCompleted": 0
+        },
+        "stages": {
+          "stage1": {
+            "name": "ESLint语言门禁",
+            "status": "failed",
+            "error": "ESLintRunner.run is not a function"
+          },
+          "stage2_4": {
+            "name": "语义分析 (Stage 2-4)",
+            "status": "failed",
+            "error": "SemanticAnalyzer.analyze is not a function"
+          }
+        },
+        "executionPlan": null
+      }
+    ],
+    "executionPlans": []
+  },
+  "insights": {
+    "quality": {
+      "highQualityFiles": 0,
+      "mediumQualityFiles": 0,
+      "lowQualityFiles": 34,
+      "commonIssues": []
+    },
+    "complexity": {
+      "mostComplexFiles": [],
+      "averageComplexity": 0
+    },
+    "risks": {
+      "criticalRisks": [],
+      "highRiskFiles": []
+    },
+    "recommendations": [
+      "发现 34 个低质量文件，建议优先处理"
+    ]
+  }
+}

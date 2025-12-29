@@ -1,0 +1,341 @@
+{
+  "meta": {
+    "generatedAt": "2025-12-17T15:34:49.346Z",
+    "version": "1.0.0",
+    "description": "Capability Query 验证报告"
+  },
+  "summary": {
+    "totalTests": 12,
+    "passedTests": 12,
+    "failedTests": 0,
+    "successRate": "100.00%"
+  },
+  "testResults": [
+    {
+      "expected": true,
+      "actual": true,
+      "passed": true,
+      "testName": "Module 1",
+      "timestamp": "2025-12-17T15:34:49.343Z"
+    },
+    {
+      "expected": false,
+      "actual": false,
+      "passed": true,
+      "testName": "Module 2",
+      "timestamp": "2025-12-17T15:34:49.344Z"
+    },
+    {
+      "expected": true,
+      "actual": true,
+      "passed": true,
+      "testName": "Callable 1",
+      "timestamp": "2025-12-17T15:34:49.344Z"
+    },
+    {
+      "expected": "array",
+      "actual": "array with 9 items",
+      "passed": true,
+      "testName": "Methods 1",
+      "timestamp": "2025-12-17T15:34:49.344Z"
+    },
+    {
+      "expected": "empty array",
+      "actual": "array with 0 items",
+      "passed": true,
+      "testName": "Methods 2",
+      "timestamp": "2025-12-17T15:34:49.344Z"
+    },
+    {
+      "expected": "both exist and reachable",
+      "actual": "{\"fromExists\":true,\"toExists\":true,\"staticallyReachable\":{\"name\":\"ObjectModule\",\"type\":\"module\",\"access\":\"global\",\"location\":{\"file\":\"dist/main_utf8.js\",\"line\":9756},\"methods\":{\"create\":{\"name\":\"create\",\"type\":\"method\",\"callable\":true,\"access\":\"instance\",\"location\":9756,\"signature\":{\"params\":[\"options\"],\"returns\":\"object\"}},\"destroy\":{\"name\":\"destroy\",\"type\":\"method\",\"callable\":true,\"access\":\"instance\",\"location\":9756,\"signature\":{\"params\":[],\"returns\":\"boolean\"}},\"init\":{\"name\":\"init\",\"type\":\"method\",\"callable\":true,\"access\":\"instance\",\"location\":9756,\"signature\":{\"params\":[],\"returns\":\"unknown\"}},\"get\":{\"name\":\"get\",\"type\":\"method\",\"callable\":true,\"access\":\"instance\",\"location\":9756,\"signature\":{\"params\":[\"id\"],\"returns\":\"object\"}},\"set\":{\"name\":\"set\",\"type\":\"method\",\"callable\":true,\"access\":\"instance\",\"location\":9756,\"signature\":{\"params\":[\"id\",\"value\"],\"returns\":\"boolean\"}},\"createObject\":{\"name\":\"createObject\",\"type\":\"method\",\"callable\":true,\"access\":\"instance\",\"location\":9756,\"signature\":{\"params\":[\"type\",\"properties\"],\"returns\":\"object\"}},\"getObject\":{\"name\":\"getObject\",\"type\":\"method\",\"callable\":true,\"access\":\"instance\",\"location\":9756,\"signature\":{\"params\":[],\"returns\":\"unknown\"}},\"deleteObject\":{\"name\":\"deleteObject\",\"type\":\"method\",\"callable\":true,\"access\":\"instance\",\"location\":9756,\"signature\":{\"params\":[],\"returns\":\"unknown\"}}},\"properties\":{},\"callable\":true,\"category\":\"object\",\"dependencies\":[\"LoggerModule\"],\"interface\":{\"methods\":[{\"name\":\"create\",\"line\":9756},{\"name\":\"destroy\",\"line\":9756},{\"name\":\"init\",\"line\":9756},{\"name\":\"get\",\"line\":9756},{\"name\":\"set\",\"line\":9756},{\"name\":\"createObject\",\"line\":9756},{\"name\":\"getObject\",\"line\":9756},{\"name\":\"deleteObject\",\"line\":9756}]}}}",
+      "passed": {
+        "name": "ObjectModule",
+        "type": "module",
+        "access": "global",
+        "location": {
+          "file": "dist/main_utf8.js",
+          "line": 9756
+        },
+        "methods": {
+          "create": {
+            "name": "create",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [
+                "options"
+              ],
+              "returns": "object"
+            }
+          },
+          "destroy": {
+            "name": "destroy",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [],
+              "returns": "boolean"
+            }
+          },
+          "init": {
+            "name": "init",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "get": {
+            "name": "get",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [
+                "id"
+              ],
+              "returns": "object"
+            }
+          },
+          "set": {
+            "name": "set",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [
+                "id",
+                "value"
+              ],
+              "returns": "boolean"
+            }
+          },
+          "createObject": {
+            "name": "createObject",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [
+                "type",
+                "properties"
+              ],
+              "returns": "object"
+            }
+          },
+          "getObject": {
+            "name": "getObject",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          },
+          "deleteObject": {
+            "name": "deleteObject",
+            "type": "method",
+            "callable": true,
+            "access": "instance",
+            "location": 9756,
+            "signature": {
+              "params": [],
+              "returns": "unknown"
+            }
+          }
+        },
+        "properties": {},
+        "callable": true,
+        "category": "object",
+        "dependencies": [
+          "LoggerModule"
+        ],
+        "interface": {
+          "methods": [
+            {
+              "name": "create",
+              "line": 9756
+            },
+            {
+              "name": "destroy",
+              "line": 9756
+            },
+            {
+              "name": "init",
+              "line": 9756
+            },
+            {
+              "name": "get",
+              "line": 9756
+            },
+            {
+              "name": "set",
+              "line": 9756
+            },
+            {
+              "name": "createObject",
+              "line": 9756
+            },
+            {
+              "name": "getObject",
+              "line": 9756
+            },
+            {
+              "name": "deleteObject",
+              "line": 9756
+            }
+          ]
+        }
+      },
+      "testName": "Access 1",
+      "timestamp": "2025-12-17T15:34:49.345Z"
+    },
+    {
+      "expected": "from not exist",
+      "actual": "{\"fromExists\":false,\"toExists\":true}",
+      "passed": true,
+      "testName": "Access 2",
+      "timestamp": "2025-12-17T15:34:49.345Z"
+    },
+    {
+      "expected": "object with modules, callables, globals",
+      "actual": "{\"hasModules\":true,\"hasCallables\":true,\"hasGlobals\":true,\"moduleCount\":32,\"callableCount\":51,\"globalCount\":83}",
+      "passed": true,
+      "testName": "Globals 1",
+      "timestamp": "2025-12-17T15:34:49.345Z"
+    },
+    {
+      "expected": "signature object",
+      "actual": "{\"params\":[\"options\"],\"returns\":\"object\"}",
+      "passed": [
+        "options"
+      ],
+      "testName": "Signature 1",
+      "timestamp": "2025-12-17T15:34:49.345Z"
+    },
+    {
+      "expected": null,
+      "actual": "null",
+      "passed": true,
+      "testName": "Signature 2",
+      "timestamp": "2025-12-17T15:34:49.345Z"
+    },
+    {
+      "expected": "array",
+      "actual": "array with 1 items",
+      "passed": true,
+      "testName": "Dependencies 1",
+      "timestamp": "2025-12-17T15:34:49.345Z"
+    },
+    {
+      "expected": "static facts only",
+      "actual": "static structure validated",
+      "passed": [
+        "ModuleAccessor",
+        "BaseModule",
+        "Core",
+        "GlobalLogController",
+        "LoggerTypes",
+        "LoggerTools",
+        "StepFormat",
+        "StepWrite",
+        "LoggerModule",
+        "LoggerModuleIndex",
+        "UILoggerModule",
+        "ObjectFactory",
+        "ObjectManager",
+        "MockSystem",
+        "PCBObjectWrapper",
+        "GeometryWrapper",
+        "ObjectModule",
+        "BasePCBWrapper",
+        "PCBMockSystem",
+        "PCBObjectFactory",
+        "PCBObjectManager",
+        "PCBObjectPool",
+        "GeometryCalculator",
+        "ArcWrapper",
+        "PadWrapper",
+        "TrackWrapper",
+        "ViaWrapper",
+        "PCBInterfaces",
+        "PositionManager",
+        "ObjectCreator",
+        "ObjectCreatorModule",
+        "ObjectCreatorWindow",
+        "showErrorInUI",
+        "showSuccessInUI",
+        "checkLoggerModuleAvailability",
+        "btnOutputLogClick",
+        "btnGenerateLogClick",
+        "btnClearDisplayClick",
+        "btnSaveLogClick",
+        "btnDebugStatusClick",
+        "btnLogStatsClick",
+        "showObjectCreatorWindow",
+        "btnCreateObjectClick",
+        "btnRefreshStatusClick",
+        "btnObjectStatsClick",
+        "btnClearCacheClick",
+        "chkGenDebugClick",
+        "chkGenInfoClick",
+        "chkGenWarnClick",
+        "chkGenErrorClick",
+        "chkUIDebugClick",
+        "chkUIInfoClick",
+        "chkUIWarnClick",
+        "chkUIErrorClick",
+        "btnDevModeClick",
+        "btnProdModeClick",
+        "btnDebugModeClick",
+        "btnSilentModeClick",
+        "updateAllSwitches",
+        "updateProductionModeSwitches",
+        "updateDebugModeSwitches",
+        "initializeGlobalEvents",
+        "uiWrite",
+        "uiDebug",
+        "uiTrace",
+        "uiInfo",
+        "uiWarn",
+        "uiError",
+        "uiFatal",
+        "debugModuleStatus",
+        "debugFunctionCall",
+        "debugFunctionReturn",
+        "debugFunctionError",
+        "cmbObjectTypeChange",
+        "btnSetOriginClick",
+        "btnValidateClick",
+        "btnCreateClick",
+        "btnCreateAtOriginClick",
+        "btnResetClick",
+        "btnCancelClick",
+        "chkGridSnapClick",
+        "edtGridSizeChange",
+        "cleanupGlobalEvents"
+      ],
+      "testName": "Boundary 1",
+      "timestamp": "2025-12-17T15:34:49.345Z"
+    }
+  ],
+  "conclusions": [
+    {
+      "type": "warning",
+      "message": "Capability Index 存在功能问题，需要进一步修复"
+    }
+  ]
+}

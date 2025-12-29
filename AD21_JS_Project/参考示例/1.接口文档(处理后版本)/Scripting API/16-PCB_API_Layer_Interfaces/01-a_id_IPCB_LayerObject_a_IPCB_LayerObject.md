@@ -1,0 +1,207 @@
+### <a id="IPCB_LayerObject"></a>IPCB\_LayerObject
+
+__Overview__  
+The IPCB\_LayerObject interface represents a layer used in a PCB document\. Each layer has properties such as layer name and used by primitive, for example\.
+
+This interface is returned by the LayerObject function in the IPCB\_LayerStack interface, and is property in the IPCB\_LayerStack\_V7 interface\.
+
+__Methods and properties:__
+
+[__IPCB\_LayerObject methods__](https://www.altium.com/documentation/altium-designer/pcb-api-layer-interfaces?version=21#IPCB_LayerObject methods)
+
+[__IPCB\_LayerObject properties__](https://www.altium.com/documentation/altium-designer/pcb-api-layer-interfaces?version=21#IPCB_LayerObject properties)
+
+I\_ObjectAddress  
+IsInLayerStack  
+V6\_LayerID  
+V7\_LayerID  
+LayerStack
+
+Name  
+UsedByPrims
+
+#### <a id="IPCB_LayerObject_methods"></a>IPCB\_LayerObject methods
+
+##### I\_ObjectAddress method
+
+__Syntax__  
+Function  I\_ObjectAddress : TPCBObjectHandle;  
+__Description__  
+The I\_ObjectAddress function retrieves the Pointer handle for the layer object\.
+
+##### IsInLayerStack method
+
+__Syntax__  
+Function  IsInLayerStack : Boolean;  
+__Description__  
+This function determines if the layer object is in the current layer stack for the PCB document\.
+
+##### V6\_LayerID method
+
+__Syntax__  
+Function  V6\_LayerID : TV6\_Layer;  
+__Description__  
+The V6\_LayerID function returns the layer object's layer ID within the layer stack\.  
+__Example__
+
+01
+
+Procedure SigLayers;
+
+02
+
+Var
+
+03
+
+   Board      : IPCB\_Board;
+
+04
+
+   Stack      : IPCB\_LayerStack;
+
+05
+
+   LyrObj     : IPCB\_LayerObject;
+
+06
+
+   LyrClass   : string;
+
+07
+
+ 
+
+08
+
+Begin
+
+09
+
+   // nominate layer class
+
+10
+
+   LyrClass : = eLayerClass\_Signal;
+
+11
+
+ 
+
+12
+
+   Board := PCBServer\.GetCurrentPCBBoard;
+
+13
+
+   Stack := Board\.LayerStack;
+
+14
+
+ 
+
+15
+
+   // get first layer in class
+
+16
+
+   LyrObj := Stack\.First\(LyrClass\);
+
+17
+
+ 
+
+18
+
+   // exit if layer type is not available in stack
+
+19
+
+   If LyrObj = Nil then
+
+20
+
+   Begin
+
+21
+
+      ShowError\('Stackup does not have this type of layer\.'\);
+
+22
+
+      exit;
+
+23
+
+   End;
+
+24
+
+ 
+
+25
+
+   // iterate through layers and display each layer ID & name
+
+26
+
+  Repeat
+
+27
+
+     ShowMessage\('LayerID: ' \+ OleStrToString\(LyrObj\.V6\_LayerID\) \+ '  Name: ' \+ LyrObj\.Name\);
+
+28
+
+     LyrObj := Stack\.Next\(LyrClass, LyrObj\);
+
+29
+
+  Until LyrObj = Nil;
+
+30
+
+ 
+
+31
+
+End;
+
+[TLayerClassID reference](https://files.doc.altium.com/sites/default/files/wiki_attachments/272666/TLayerClassID.txt)
+
+##### V7\_LayerID method
+
+__Syntax__  
+Function  V7\_LayerID : TV7\_Layer; \(IDispatch\)  
+__Description__  
+The V7\_LayerID function returns the layer object's layer ID within the layer stack as a TV7\_Layer type\.
+
+##### LayerStack method
+
+__Syntax__  
+Function  LayerStack : IPCB\_LayerStackBase;  
+__Description__  
+This function returns the layer stack, referenced by the IPCB\_LayerStackBase interface, associated with the current layer object\. Note that both the IPCB\_MasterLayerStack and IPCB\_LayerStack interfaces inherit methods and properties from the IPCB\_LayerStackBase interface\.
+
+#### <a id="IPCB_LayerObject_properties"></a>IPCB\_LayerObject properties
+
+##### Name property
+
+__Syntax__  
+Property  Name : TPCBString;  
+__Read/Write syntax__  
+GetState\_Name;  
+SetState\_Name;  
+__Description__  
+The Name property returns a string representing the current layer object name\. See line 27 in the V6\_LayerID method example above\.
+
+##### UsedByPrims property
+
+__Syntax__  
+Property  UsedByPrims : Boolean;  
+__Read/Write syntax__  
+GetState\_UsedByPrims;  
+SetState\_UsedByPrims;  
+__Description__  
+The UsedByPrims property indicates whether the layer object is used by primitives\.

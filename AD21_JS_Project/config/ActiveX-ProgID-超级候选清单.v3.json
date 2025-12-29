@@ -1,0 +1,283 @@
+{
+  "safe": {
+    "http": [
+      "WinHttp.WinHttpRequest.5.1",
+      "MSXML2.ServerXMLHTTP",
+      "MSXML2.ServerXMLHTTP.3.0",
+      "MSXML2.ServerXMLHTTP.4.0",
+      "MSXML2.ServerXMLHTTP.6.0",
+      "MSXML2.XMLHTTP",
+      "MSXML2.XMLHTTP.3.0",
+      "MSXML2.XMLHTTP.4.0",
+      "MSXML2.XMLHTTP.6.0",
+      "Microsoft.XMLHTTP"
+    ],
+    "soap_webservices_maybe": [
+      "MSXML2.SoapClient.3.0",
+      "MSSOAP.SoapClient30"
+    ],
+    "xml_dom_sax_xslt": [
+      "MSXML2.DOMDocument",
+      "MSXML2.DOMDocument.2.6",
+      "MSXML2.DOMDocument.3.0",
+      "MSXML2.DOMDocument.4.0",
+      "MSXML2.DOMDocument.6.0",
+      "Microsoft.XMLDOM",
+      "MSXML2.FreeThreadedDOMDocument",
+      "MSXML2.FreeThreadedDOMDocument.3.0",
+      "MSXML2.FreeThreadedDOMDocument.6.0",
+      "MSXML2.SAXXMLReader",
+      "MSXML2.SAXXMLReader.3.0",
+      "MSXML2.SAXXMLReader.6.0",
+      "MSXML2.MXXMLWriter",
+      "MSXML2.MXXMLWriter.3.0",
+      "MSXML2.MXXMLWriter.6.0",
+      "MSXML2.XMLSchemaCache",
+      "MSXML2.XMLSchemaCache.3.0",
+      "MSXML2.XMLSchemaCache.6.0",
+      "MSXML2.XSLTemplate",
+      "MSXML2.XSLTemplate.3.0",
+      "MSXML2.XSLTemplate.6.0"
+    ],
+    "msxml_alt_casing": [
+      "Msxml2.DOMDocument.6.0",
+      "Msxml2.FreeThreadedDOMDocument.6.0",
+      "Msxml2.XMLSchemaCache.6.0",
+      "Msxml2.XMLHTTP.6.0",
+      "Msxml2.ServerXMLHTTP.6.0"
+    ],
+    "html_dom": [
+      "htmlfile"
+    ],
+    "collections": [
+      "Scripting.Dictionary",
+      "Scripting.Dictionary.1"
+    ],
+    "wsh_core": [
+      "WScript.Shell",
+      "WScript.Shell.1",
+      "WScript.Network",
+      "VBScript.RegExp",
+      "Scriptlet.TypeLib"
+    ],
+    "file_io_stream": [
+      "Scripting.FileSystemObject",
+      "ADODB.Stream"
+    ],
+    "ado": [
+      "ADODB.Connection",
+      "ADODB.Recordset",
+      "ADODB.Command",
+      "MSDASC.DataLinks",
+      "MSDAINITIALIZE"
+    ],
+    "adox_maybe": [
+      "ADOX.Catalog",
+      "ADOX.Table",
+      "ADOX.Column"
+    ],
+    "wmi": [
+      "WbemScripting.SWbemLocator",
+      "WbemScripting.SWbemNamedValueSet",
+      "WbemScripting.SWbemRefresher"
+    ],
+    "com_admin_maybe": [
+      "COMAdmin.COMAdminCatalog",
+      "COMAdmin.COMAdminCatalog.1"
+    ],
+    "windows_update": [
+      "Microsoft.Update.Session",
+      "Microsoft.Update.ServiceManager"
+    ],
+    "firewall": [
+      "HNetCfg.FwMgr",
+      "HNetCfg.FwPolicy2",
+      "NetFwTypeLib.NetFwMgr",
+      "NetFwTypeLib.NetFwPolicy2"
+    ],
+    "winrm": [
+      "WSMan.Automation"
+    ],
+    "network_sharing_maybe": [
+      "HNetCfg.HNetShare"
+    ],
+    "bits_maybe": [
+      "Microsoft.BackgroundIntelligentTransfer.Management.BitsManager",
+      "BitsManager"
+    ],
+    "msmq_maybe": [
+      "MSMQ.MSMQQueueInfo",
+      "MSMQ.MSMQQueue",
+      "MSMQ.MSMQMessage"
+    ],
+    "eventsystem_maybe": [
+      "EventSystem.EventSystem",
+      "EventSystem.EventSubscription"
+    ],
+    "perf_logs_maybe": [
+      "Pla.DataCollectorSet",
+      "Pla.TraceDataCollector",
+      "Pla.PerformanceCounterDataCollector",
+      "Pla.LogFile"
+    ],
+    "dxdiag_maybe": [
+      "DxDiag.DxDiagProvider",
+      "DxDiag.DxDiagProvider.1"
+    ],
+    "msi": [
+      "WindowsInstaller.Installer",
+      "WindowsInstaller.Package"
+    ],
+    "sapi_speech": [
+      "SAPI.SpVoice",
+      "SAPI.SpFileStream",
+      "SAPI.SpMemoryStream",
+      "SAPI.SpSharedRecognizer",
+      "SAPI.SpInprocRecognizer",
+      "SAPI.SpObjectTokenCategory"
+    ],
+    "imaging_wia": [
+      "WIA.ImageFile",
+      "WIA.CommonDialog",
+      "WIA.Vector",
+      "WIA.DeviceManager",
+      "WIA.Item"
+    ],
+    "media_wmp_maybe": [
+      "WMPlayer.OCX",
+      "WMPlayer.OCX.7",
+      "WMPlayer.OCX.9",
+      "WMPlayer.OCX.10"
+    ],
+    "directshow_maybe": [
+      "QuartzTypeLib.FilterGraph",
+      "FilterGraph",
+      "QuartzTypeLib.SystemDeviceEnum",
+      "SystemDeviceEnum"
+    ],
+    "activeX_controls_maybe": [
+      "MSComctlLib.ListViewCtrl.2",
+      "MSComctlLib.TreeViewCtrl.2",
+      "MSComctlLib.ImageListCtrl.2",
+      "MSComctlLib.Toolbar.2",
+      "MSComctlLib.StatusBar.2",
+      "MSComctlLib.ProgressBar.2",
+      "MSComctlLib.Slider.2",
+      "MSComctlLib.TabStrip.2",
+      "MSComctlLib.Animation.2",
+      "MSComDlg.CommonDialog",
+      "MSComDlg.CommonDialog.1",
+      "RICHTX32.RichTextCtrl.1",
+      "SysInfo.SysInfo.1",
+      "MSWinsock.Winsock.1",
+      "MSInet.Inet.1",
+      "MSFlexGridLib.MSFlexGrid.1",
+      "MSHierarchicalFlexGridLib.MSHFlexGrid.1",
+      "MSChart20Lib.MSChart.2"
+    ],
+    "adsi_maybe": [
+      "ADSystemInfo",
+      "NameTranslate",
+      "ADsNameSpaces"
+    ],
+    "fax_maybe": [
+      "FaxComEx.FaxServer",
+      "FaxComEx.FaxDocument"
+    ]
+  },
+  "maybe": {
+    "type_library_introspection": [
+      "TLI.TLIApplication",
+      "TLBINF32.TLIApplication",
+      "OLEVIEW.OLEView"
+    ],
+    "crypto_capicom_legacy": [
+      "CAPICOM.HashedData",
+      "CAPICOM.Utilities",
+      "CAPICOM.SignedData",
+      "CAPICOM.Store",
+      "CAPICOM.Certificate"
+    ],
+    "crypto_x509_enrollment": [
+      "X509Enrollment.CX509Enrollment",
+      "X509Enrollment.CX509CertificateRequestPkcs10",
+      "X509Enrollment.CX509CertificateRequestPkcs7",
+      "X509Enrollment.CX509PrivateKey",
+      "X509Enrollment.CObjectId",
+      "X509Enrollment.CObjectIds",
+      "X509Enrollment.CX500DistinguishedName"
+    ],
+    "xml_dsig_maybe": [
+      "Microsoft.XMLDSig",
+      "DSig.XmlDsig.1"
+    ],
+    "clipboard_maybe": [
+      "MSForms.DataObject"
+    ],
+    "script_control_maybe": [
+      "MSScriptControl.ScriptControl"
+    ],
+    "windows_scripting_extra": [
+      "Scripting.Encoder",
+      "Scripting.Signer"
+    ],
+    "sqlxml_maybe": [
+      "SQLXMLBulkLoad.SQLXMLBulkLoad.4.0"
+    ],
+    "adobe_maybe": [
+      "AcroExch.App",
+      "AcroExch.AVDoc",
+      "AcroExch.PDDoc"
+    ],
+    "cad_maybe": [
+      "AutoCAD.Application",
+      "SldWorks.Application",
+      "SolidEdge.Application"
+    ],
+    "eda_maybe": [
+      "Altium.DXP",
+      "AltiumDesigner.Application"
+    ],
+    "matlab_maybe": [
+      "Matlab.Application"
+    ]
+  },
+  "risky": {
+    "shell": [
+      "Shell.Application"
+    ],
+    "browser": [
+      "InternetExplorer.Application",
+      "InternetExplorer.Application.1",
+      "Shell.Explorer",
+      "Shell.Explorer.2"
+    ],
+    "office_core": [
+      "Excel.Application",
+      "Word.Application",
+      "Outlook.Application",
+      "PowerPoint.Application",
+      "Access.Application"
+    ],
+    "office_versioned": [
+      "Excel.Application.16",
+      "Word.Application.16",
+      "Outlook.Application.16",
+      "PowerPoint.Application.16",
+      "Access.Application.16",
+      "Visio.Application",
+      "Visio.Application.16",
+      "Project.Application",
+      "MSProject.Application",
+      "MSProject.Application.16",
+      "OneNote.Application",
+      "OneNote.Application.16"
+    ],
+    "scheduler": [
+      "Schedule.Service"
+    ],
+    "process_exec": [
+      "WScript.Shell"
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+#### THugeInt
+
+THugeInt       = Comp;

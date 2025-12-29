@@ -1,0 +1,15 @@
+# Daily Changelog Generator
+
+This workflow helps you create a changelog for your daily work.
+
+1.  **Check your recent git commits:**
+    I will run the following command to see your commits from today.
+    ```bash
+    git log --author="$(git config user.name)" --since="yesterday" --oneline
+    ```
+
+2.  **Summarize your work:**
+    I will present the commits to you and ask for a summary of your changes to be added to the `changelog.md` file.
+
+3.  **Create/Append to daily changelog:**
+    I will append to the `changelog.md` file. The content will include a header with the current date, the list of commits, and your summary.

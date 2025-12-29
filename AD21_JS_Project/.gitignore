@@ -1,0 +1,23 @@
+# 排除参考示例中的接口文档目录
+参考示例/1.接口文档/
+
+# 常见的忽略文件
+*.log
+logs/
+*.tmp
+*.temp
+node_modules/
+.DS_Store
+Thumbs.db
+
+# IDE和编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 构建输出文件
+build/
+*.exe
+*.dll

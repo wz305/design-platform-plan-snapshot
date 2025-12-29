@@ -1,0 +1,13 @@
+{
+  "name": "design-platform-root",
+  "private": true,
+  "scripts": {
+    "ad:build": "npm --prefix AD21_JS_Project run build",
+    "ad:build-with-test": "npm --prefix AD21_JS_Project run build-with-test",
+    "mock-server:start": "npm --prefix AD21_JS_Project run mock-server:start",
+    "mock-server:clean": "npm --prefix AD21_JS_Project run mock-server:clean",
+    "mock-server:restart": "npm --prefix AD21_JS_Project run mock-server:restart",
+    "web:dev": "npm --prefix designer-platform_V7 run dev",
+    "web:build": "npm --prefix designer-platform_V7 run build"
+  }
+}

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spec v0.1 Diagnostics</title>
+  <style>
+    :root {
+      --bg: #0f1b2d;
+      --bg-2: #13263d;
+      --card: rgba(255, 255, 255, 0.08);
+      --accent: #38c5a1;
+      --warn: #f5c542;
+      --text: #e8f0ff;
+      --muted: #9fb2cc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, #1d3b66 0%, transparent 60%),
+                  radial-gradient(900px 500px at 90% 10%, #183d4a 0%, transparent 55%),
+                  var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 20px 24px 8px;
+    }
+    h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    main {
+      padding: 16px 24px 24px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 6px 0;
+      font-size: 13px;
+    }
+    .value {
+      font-weight: 600;
+    }
+    .value.ok { color: var(--accent); }
+    .value.warn { color: var(--warn); }
+    .log {
+      background: rgba(0,0,0,0.25);
+      padding: 10px;
+      border-radius: 10px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 12px;
+      color: #d7e3ff;
+      white-space: pre-wrap;
+      min-height: 90px;
+    }
+    footer {
+      padding: 8px 24px 20px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Spec v0.1 Diagnostics</h1>
+    <div class="subtitle">Mock Server &amp; AD one-click validation status</div>
+  </header>
+  <main>
+    <section class="card">
+      <h2>Ping</h2>
+      <div class="row"><span>Endpoint</span><span class="value" id="ping-url">/ping</span></div>
+      <div class="row"><span>Status</span><span class="value" id="ping-status">...</span></div>
+      <div class="row"><span>Text</span><span class="value" id="ping-text">...</span></div>
+    </section>
+    <section class="card">
+      <h2>Server Status</h2>
+      <div class="row"><span>Uptime</span><span class="value" id="status-uptime">...</span></div>
+      <div class="row"><span>SSE Clients</span><span class="value" id="status-sse">0</span></div>
+      <div class="row"><span>Last Event</span><span class="value" id="status-last">-</span></div>
+    </section>
+    <section class="card">
+      <h2>Latest Report</h2>
+      <div class="row"><span>Type</span><span class="value" id="report-type">-</span></div>
+      <div class="row"><span>At</span><span class="value" id="report-at">-</span></div>
+      <div class="log" id="report-body">(empty)</div>
+    </section>
+    <section class="card">
+      <h2>SSE Stream</h2>
+      <div class="row"><span>Connected</span><span class="value" id="sse-connected">no</span></div>
+      <div class="row"><span>Last Event Name</span><span class="value" id="sse-event">-</span></div>
+      <div class="log" id="sse-body">(waiting)</div>
+    </section>
+  </main>
+  <footer>URL: <span id="base-url"></span></footer>
+
+  <script>
+    (function(){
+      var baseUrl = location.origin;
+      document.getElementById("base-url").textContent = baseUrl;
+
+      function setText(id, text, cls){
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = text;
+        if (cls) el.className = "value " + cls;
+      }
+
+      function fetchPing(){
+        fetch(baseUrl + "/ping").then(function(r){
+          return r.text().then(function(t){
+            setText("ping-status", r.ok ? "OK" : "FAIL", r.ok ? "ok" : "warn");
+            setText("ping-text", t || "(empty)");
+          });
+        }).catch(function(){
+          setText("ping-status", "FAIL", "warn");
+          setText("ping-text", "error");
+        });
+      }
+
+      function fetchStatus(){
+        fetch(baseUrl + "/api/status").then(function(r){ return r.json(); }).then(function(data){
+          if (!data || !data.ok) return;
+          var up = Math.max(0, Date.now() - (data.state ? data.state.serverStartedAt : Date.now()));
+          setText("status-uptime", Math.round(up/1000) + "s");
+          setText("status-sse", String(data.sseClients || 0));
+          setText("status-last", data.state && data.state.lastEventAt ? new Date(data.state.lastEventAt).toLocaleTimeString() : "-");
+        }).catch(function(){});
+      }
+
+      function fetchLatest(){
+        fetch(baseUrl + "/api/latest-report?full=0").then(function(r){ return r.json(); }).then(function(data){
+          if (!data || !data.ok) {
+            setText("report-type", "-", "warn");
+            document.getElementById("report-body").textContent = data && data.error ? data.error : "no report";
+            return;
+          }
+          var meta = data.meta || {};
+          setText("report-type", meta.type || "command");
+          setText("report-at", meta.at ? new Date(meta.at).toLocaleTimeString() : "-");
+          document.getElementById("report-body").textContent = JSON.stringify(data.report || {}, null, 2);
+        }).catch(function(){});
+      }
+
+      function initSSE(){
+        var es = null;
+        try {
+          es = new EventSource(baseUrl + "/api/events");
+        } catch (e) {}
+        if (!es) return;
+        setText("sse-connected", "yes", "ok");
+        es.addEventListener("message", function(ev){
+          setText("sse-event", "message");
+          document.getElementById("sse-body").textContent = ev.data || "";
+        });
+        es.addEventListener("status", function(ev){
+          setText("sse-event", "status");
+          document.getElementById("sse-body").textContent = ev.data || "";
+        });
+        es.addEventListener("report", function(ev){
+          setText("sse-event", "report");
+          document.getElementById("sse-body").textContent = ev.data || "";
+          fetchLatest();
+        });
+      }
+
+      fetchPing();
+      fetchStatus();
+      fetchLatest();
+      initSSE();
+      setInterval(fetchStatus, 2000);
+      setInterval(fetchLatest, 4000);
+      setInterval(fetchPing, 6000);
+    })();
+  </script>
+</body>
+</html>

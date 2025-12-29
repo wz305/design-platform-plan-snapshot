@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "generatedAt": "2025-12-16T16:51:12.000Z",
+    "version": "1.0.0",
+    "description": "Execution Planner验证报告"
+  },
+  "summary": {
+    "totalTests": 3,
+    "passedTests": 3,
+    "failedTests": 0,
+    "startTime": "2025-12-16T16:51:11.888Z"
+  },
+  "details": {
+    "testResults": [
+      {
+        "name": "基础功能验证",
+        "status": "passed",
+        "details": {
+          "planCreated": true,
+          "stepsCount": 1,
+          "riskLevel": "low",
+          "simulationCreated": true,
+          "estimatedDuration": 10,
+          "statisticsRetrieved": true,
+          "totalSteps": 1,
+          "safetyChecked": true,
+          "isSafe": true
+        },
+        "error": null
+      },
+      {
+        "name": "实际文件分析",
+        "status": "passed",
+        "details": {
+          "fileAnalyzed": "src/core/module-accessor.js",
+          "fileSize": 11099,
+          "eslintErrors": 0,
+          "eslintWarnings": 0,
+          "semanticAnalysis": true,
+          "symbolCount": 1,
+          "functionCount": 0,
+          "factsExtracted": true,
+          "factsCount": 1,
+          "interpretationDone": true,
+          "actionsCount": 1,
+          "warningsCount": 0,
+          "executionPlanCreated": true,
+          "stepsCount": 1,
+          "riskLevel": "low"
+        },
+        "error": null
+      },
+      {
+        "name": "构建路径验证",
+        "status": "passed",
+        "details": {
+          "configLoaded": true,
+          "fileCount": 34,
+          "outputFiles": {
+            "utf8": "main_utf8.js",
+            "gb2312": "main.js"
+          },
+          "checkedFiles": 5,
+          "existingFiles": 5
+        },
+        "error": null
+      }
+    ],
+    "executionPlans": []
+  },
+  "insights": {
+    "overallStatus": "success",
+    "successRate": "100.00%",
+    "recommendations": [
+      "所有测试通过，Execution Planner功能正常",
+      "可以进行完整构建路径分析"
+    ]
+  }
+}

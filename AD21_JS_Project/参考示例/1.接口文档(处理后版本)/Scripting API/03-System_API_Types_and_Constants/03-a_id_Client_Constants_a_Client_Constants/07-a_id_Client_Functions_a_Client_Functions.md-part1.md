@@ -1,0 +1,3 @@
+#### TAltShiftCtrlCombination
+
+TAltShiftCtrlCombination = TShiftState;

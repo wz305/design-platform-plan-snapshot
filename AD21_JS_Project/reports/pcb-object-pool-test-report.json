@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "at": "2025-12-29T06:49:12.751Z",
+  "results": [
+    {
+      "name": "register/getByHandle",
+      "ok": true,
+      "detail": "handle=1001"
+    },
+    {
+      "name": "register/getByAddress",
+      "ok": true,
+      "detail": "address=2001"
+    },
+    {
+      "name": "invalidate",
+      "ok": true,
+      "detail": "after invalidate"
+    },
+    {
+      "name": "reset",
+      "ok": true,
+      "detail": "after reset"
+    },
+    {
+      "name": "stats",
+      "ok": true,
+      "detail": "total=0"
+    }
+  ]
+}

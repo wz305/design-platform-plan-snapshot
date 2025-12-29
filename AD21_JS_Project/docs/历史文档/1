@@ -1,0 +1,102 @@
+完美！我已经完成了对 `dist/main.js` 的全面分析。现在我有了完整的全局变量注册和使用情况。
+
+## 分析结果总结
+
+### 1. 注册到 window 的所有方法和属性（共38个）
+
+**核心配置和工具：**
+- `window.ProjectConfig`
+- `window.CoreState`, `window.CoreContext`, `window.CoreOptions`
+- `window._CoreTools`, `window._CoreRunMainLogic`
+- `window.createCoreMethods`, `window.Core`, `window.createCoreInstance`
+
+**Logger系统：**
+- `window.LOG_LEVELS`, `window.LogEntry`, `window.LoggerConfig`, `window.LoggerStats`, `window.WriteResult`
+- `window.getLoggerUtils`, `window.getLoggerTools`, `window.getLoggerFormat`, `window.getLoggerWriteStep`
+- `window.LoggerInstance`, `window.createLoggerInstance`, `window.Logger`, `window.GlobalLogger`, `window.LOG`
+- `window.flushAllLogs`
+
+**Topology系统：**
+- `window.TopologyNode`, `window.TopologyEdge`, `window.TopologyGraph`, `window.TopologyAnalysisResult`
+- `window._TopologyTools`, `window._TopologyLoopDetection`
+- `window.createTopologyMethods`, `window.Topology`, `window.createTopologyInstance`
+
+**全局事件：**
+- `window.Button1Click`, `window.initializeGlobalEvents`, `window.cleanupGlobalEvents`
+
+### 2. 发现的问题
+
+通过搜索分析，我发现了**关键问题**：
+
+**ProjectConfig 的使用不一致：**
+- 在 `src/modules/logger/tools.js` 中：`var paths = ProjectConfig.get("logging.paths");` **（缺少 window. 前缀）**
+- 在 `src/modules/logger/logic/logic-format.js` 中：`ProjectConfig.get("logging.defaultThreshold")` **（缺少 window. 前缀）**
+- 在 `src/modules/logger/core.js` 中：多处直接使用 `ProjectConfig` **（缺少 window. 前缀）**
+- 在 `src/modules/logger/index.js` 的 `initializeLogger()` 中：`ProjectConfig.has("logging")` **（缺少 window. 前缀）**
+
+**LOG_LEVELS 的使用不一致：**
+- 在 `src/modules/logger/core.js` 中：多处直接使用 `LOG_LEVELS.ERROR` 等 **（缺少 window. 前缀）**
+
+**LoggerInstance 的使用不一致：**
+- 在 `src/modules/logger/index.js` 中：`createLoggerInstance(moduleName)` **（缺少 window. 前缀）**
+
+## 统一修复方案
+
+### 阶段1：修复全局变量访问问题
+
+**需要修复的文件和位置：**
+
+1. **src/modules/logger/tools.js**
+   - `ProjectConfig.get("logging.paths")` → `window.ProjectConfig.get("logging.paths")`
+
+2. **src/modules/logger/logic/logic-format.js**
+   - `ProjectConfig.get("logging.defaultThreshold")` → `window.ProjectConfig.get("logging.defaultThreshold")`
+   - `ProjectConfig.get("logging.fileNameTemplate")` → `window.ProjectConfig.get("logging.fileNameTemplate")`
+   - `ProjectConfig.get("logging.paths")` → `window.ProjectConfig.get("logging.paths")`
+
+3. **src/modules/logger/core.js**
+   - 所有 `ProjectConfig` → `window.ProjectConfig`
+   - 所有 `LOG_LEVELS` → `window.LOG_LEVELS`
+
+4. **src/modules/logger/index.js**
+   - `initializeLogger()` 函数中的所有 `ProjectConfig` → `window.ProjectConfig`
+   - `createLoggerInstance(moduleName)` → `window.createLoggerInstance(moduleName)`
+
+### 阶段2：增强 fallback logger
+
+在 `createFallbackLogger` 中添加 ShowMessage 支持：
+
+```javascript
+error: function(message, context, fileName, functionName) {
+    if (typeof window !== "undefined" && window && window.ShowMessage) {
+        var errorMsg = "[" + moduleName + "] ERROR: " + message;
+        if (fileName && functionName) {
+            errorMsg += " [" + fileName + "][" + functionName + "]";
+        }
+        window.ShowMessage(errorMsg, 0);
+    }
+},
+warn: function(message, context, fileName, functionName) {
+    if (typeof window !== "undefined" && window && window.ShowMessage) {
+        var warnMsg = "[" + moduleName + "] WARN: " + message;
+        if (fileName && functionName) {
+            warnMsg += " [" + fileName + "][" + functionName + "]";
+        }
+        window.ShowMessage(warnMsg, 1);
+    }
+}
+```
+
+### 阶段3：增强 flushAllLogs 错误处理
+
+在每个 flush 失败的地方添加 ShowMessage 调用，提供实时错误反馈。
+
+## 修复优先级
+
+1. **高优先级**：修复所有 `ProjectConfig`、`LOG_LEVELS`、`LoggerInstance` 的直接访问
+2. **中优先级**：增强 fallback logger 的 ShowMessage 支持
+3. **低优先级**：增强 flushAllLogs 的错误处理
+
+这个修复将彻底解决Logger初始化失败的根本问题，确保在AD环境中所有logger实例都能正常工作。
+
+您希望我开始实施这个修复方案吗？我建议先从高优先级的全局变量访问修复开始。

@@ -1,0 +1,25658 @@
+// AD环境兼容性初始化
+(function(){
+    // 如果window不存在，创建一个window对象代替全局作用域，别改这个
+    if (typeof window === "undefined") {
+        window = {};
+    }
+})();
+
+// 全局导出处理 - 确保模块在AD环境中可用
+(function(){
+    // 处理所有_GLOBAL变量的导出
+    var globalVars = [
+        "BaseModule_GLOBAL", "Core_GLOBAL", "LOG_LEVELS_GLOBAL", "LEVEL_NAMES_GLOBAL",
+        "LEVEL_DESCRIPTIONS_GLOBAL", "DEFAULT_CONFIG_GLOBAL", "LOG_ENTRY_TEMPLATE_GLOBAL",
+        "STATS_TEMPLATE_GLOBAL", "INSTANCE_DATA_TEMPLATE_GLOBAL", "ERROR_CODES_GLOBAL",
+        "ERROR_MESSAGES_GLOBAL", "isValidLogLevel_GLOBAL", "getLevelName_GLOBAL",
+        "getLevelDescription_GLOBAL", "isLevelEnabled_GLOBAL", "getErrorMessage_GLOBAL",
+        "createDefaultConfig_GLOBAL", "createStats_GLOBAL", "createLogEntry_GLOBAL",
+        "createInstanceData_GLOBAL", "simpleStringify_GLOBAL", "safeString_GLOBAL",
+        "padString_GLOBAL", "truncateString_GLOBAL", "formatTimestamp_GLOBAL",
+        "getCurrentTime_GLOBAL", "isValidString_GLOBAL", "isValidObject_GLOBAL",
+        "isValidFunction_GLOBAL", "isValidNumber_GLOBAL", "isPositiveInteger_GLOBAL",
+        "isValidBoolean_GLOBAL", "mergeConfig_GLOBAL", "validateConfig_GLOBAL",
+        "estimateLogSize_GLOBAL", "validateLogEntry_GLOBAL", "cleanLogEntry_GLOBAL",
+        "safeExecute_GLOBAL", "createError_GLOBAL", "safeArrayLength_GLOBAL",
+        "safeArrayGet_GLOBAL", "clearArray_GLOBAL", "executeWriteStep_GLOBAL",
+        "getQueueStatus_GLOBAL", "clearWriteQueue_GLOBAL", "DEFAULT_WRITE_CONFIG_GLOBAL",
+        "LoggerModule_GLOBAL", "LoggerModuleIndex_GLOBAL", "UILoggerModule_GLOBAL",
+        "GlobalLogController_GLOBAL", "ObjectFactory_GLOBAL", "ObjectManager_GLOBAL",
+        "MockSystem_GLOBAL", "PCBObjectWrapper_GLOBAL", "GeometryWrapper_GLOBAL",
+        "ObjectModule_GLOBAL", "ObjectCreatorModule_GLOBAL", "PositionManager_GLOBAL", "PCBInterfaces_GLOBAL"
+    ];
+    
+    for (var i = 0; i < globalVars.length; i++) {
+        var varName = globalVars[i];
+        if (typeof this[varName] !== "undefined") {
+            window[varName] = this[varName];
+        }
+    }
+})();
+
+// File: src/json2.js
+//  json2.js
+//  2023-05-10
+//  Public Domain.
+//  NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+
+//  USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
+//  NOT CONTROL.
+
+//  This file creates a global JSON object containing two methods: stringify
+//  and parse. This file provides the ES5 JSON capability to ES3 systems.
+//  If a project might run on IE8 or earlier, then this file should be included.
+//  This file does nothing on ES5 systems.
+
+//      JSON.stringify(value, replacer, space)
+//          value       any JavaScript value, usually an object or array.
+//          replacer    an optional parameter that determines how object
+//                      values are stringified for objects. It can be a
+//                      function or an array of strings.
+//          space       an optional parameter that specifies the indentation
+//                      of nested structures. If it is omitted, the text will
+//                      be packed without extra whitespace. If it is a number,
+//                      it will specify the number of spaces to indent at each
+//                      level. If it is a string (such as "\t" or "&nbsp;"),
+//                      it contains the characters used to indent at each level.
+//          This method produces a JSON text from a JavaScript value.
+//          When an object value is found, if the object contains a toJSON
+//          method, its toJSON method will be called and the result will be
+//          stringified. A toJSON method does not serialize: it returns the
+//          value represented by the name/value pair that should be serialized,
+//          or undefined if nothing should be serialized. The toJSON method
+//          will be passed the key associated with the value, and this will be
+//          bound to the value.
+
+//          For example, this would serialize Dates as ISO strings.
+
+//              Date.prototype.toJSON = function (key) {
+//                  function f(n) {
+//                      // Format integers to have at least two digits.
+//                      return (n < 10)
+//                          ? "0" + n
+//                          : n;
+//                  }
+//                  return this.getUTCFullYear()   + "-" +
+//                       f(this.getUTCMonth() + 1) + "-" +
+//                       f(this.getUTCDate())      + "T" +
+//                       f(this.getUTCHours())     + ":" +
+//                       f(this.getUTCMinutes())   + ":" +
+//                       f(this.getUTCSeconds())   + "Z";
+//              };
+
+//          You can provide an optional replacer method. It will be passed the
+//          key and value of each member, with this bound to the containing
+//          object. The value that is returned from your method will be
+//          serialized. If your method returns undefined, then the member will
+//          be excluded from the serialization.
+
+//          If the replacer parameter is an array of strings, then it will be
+//          used to select the members to be serialized. It filters the results
+//          such that only members with keys listed in the replacer array are
+//          stringified.
+
+//          Values that do not have JSON representations, such as undefined or
+//          functions, will not be serialized. Such values in objects will be
+//          dropped; in arrays they will be replaced with null. You can use
+//          a replacer function to replace those with JSON values.
+
+//          JSON.stringify(undefined) returns undefined.
+
+//          The optional space parameter produces a stringification of the
+//          value that is filled with line breaks and indentation to make it
+//          easier to read.
+
+//          If the space parameter is a non-empty string, then that string will
+//          be used for indentation. If the space parameter is a number, then
+//          the indentation will be that many spaces.
+
+//          Example:
+
+//          text = JSON.stringify(["e", {pluribus: "unum"}]);
+//          // text is '["e",{"pluribus":"unum"}]'
+
+//          text = JSON.stringify(["e", {pluribus: "unum"}], null, "\t");
+//          // text is '[\n\t"e",\n\t{\n\t\t"pluribus":"unum"\n\t}\n]'
+
+//          text = JSON.stringify([new Date()], function (key, value) {
+//              return this[key] instanceof Date
+//                  ? "Date(" + this[key] + ")"
+//                  : value;
+//          });
+//          // text is '["Date(---current time---)"]'
+
+//      JSON.parse(text, reviver)
+//          This method parses a JSON text to produce an object or array.
+//          It can throw a SyntaxError exception.
+
+//          The optional reviver parameter is a function that can filter and
+//          transform the results. It receives each of the keys and values,
+//          and its return value is used instead of the original value.
+//          If it returns what it received, then the structure is not modified.
+//          If it returns undefined then the member is deleted.
+
+//          Example:
+
+//          // Parse the text. Values that look like ISO date strings will
+//          // be converted to Date objects.
+
+//          myData = JSON.parse(text, function (key, value) {
+//              var a;
+//              if (typeof value === "string") {
+//                  a =
+//   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
+//                  if (a) {
+//                      return new Date(Date.UTC(
+//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]
+//                      ));
+//                  }
+//                  return value;
+//              }
+//          });
+
+//          myData = JSON.parse(
+//              "[\"Date(09/09/2001)\"]",
+//              function (key, value) {
+//                  var d;
+//                  if (
+//                      typeof value === "string"
+//                      && value.slice(0, 5) === "Date("
+//                      && value.slice(-1) === ")"
+//                  ) {
+//                      d = new Date(value.slice(5, -1));
+//                      if (d) {
+//                          return d;
+//                  }
+//                  }
+//                  return value;
+//              }
+//          );
+
+//  This is a reference implementation. You are free to copy, modify, or
+//  redistribute.
+
+/*jslint
+    eval, for, this
+*/
+
+/*property
+    JSON, apply, call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
+    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
+    lastIndex, length, parse, prototype, push, replace, slice, stringify,
+    test, toJSON, toString, valueOf
+*/
+
+
+// Create a JSON object only if one does not already exist. We create the
+// methods in a closure to avoid creating global variables.
+
+if (typeof JSON !== "object") {
+    JSON = {};
+}
+
+(function () {
+    "use strict";
+
+    var rx_one = /^[\],:{}\s]*$/;
+    var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+    var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+    var rx_four = /(?:^|:|,)(?:\s*\[)+/g;
+    var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+    var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+
+    function f(n) {
+        // Format integers to have at least two digits.
+        return (n < 10)
+            ? "0" + n
+            : n;
+    }
+
+    function this_value() {
+        return this.valueOf();
+    }
+
+    if (typeof Date.prototype.toJSON !== "function") {
+
+        Date.prototype.toJSON = function () {
+
+            return isFinite(this.valueOf())
+                ? (
+                    this.getUTCFullYear()
+                    + "-"
+                    + f(this.getUTCMonth() + 1)
+                    + "-"
+                    + f(this.getUTCDate())
+                    + "T"
+                    + f(this.getUTCHours())
+                    + ":"
+                    + f(this.getUTCMinutes())
+                    + ":"
+                    + f(this.getUTCSeconds())
+                    + "Z"
+                )
+                : null;
+        };
+
+        Boolean.prototype.toJSON = this_value;
+        Number.prototype.toJSON = this_value;
+        String.prototype.toJSON = this_value;
+    }
+
+    var gap;
+    var indent;
+    var meta;
+    var rep;
+
+
+    function quote(string) {
+
+// If the string contains no control characters, no quote characters, and no
+// backslash characters, then we can safely slap some quotes around it.
+// Otherwise we must also replace the offending characters with safe escape
+// sequences.
+
+        rx_escapable.lastIndex = 0;
+        return rx_escapable.test(string)
+            ? "\"" + string.replace(rx_escapable, function (a) {
+                var c = meta[a];
+                return typeof c === "string"
+                    ? c
+                    : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+            }) + "\""
+            : "\"" + string + "\"";
+    }
+
+
+    function str(key, holder) {
+
+// Produce a string from holder[key].
+
+        var i;          // The loop counter.
+        var k;          // The member key.
+        var v;          // The member value.
+        var length;
+        var mind = gap;
+        var partial;
+        var value = holder[key];
+
+// If the value has a toJSON method, call it to obtain a replacement value.
+
+        if (
+            value
+            && typeof value === "object"
+            && typeof value.toJSON === "function"
+        ) {
+            value = value.toJSON(key);
+        }
+
+// If we were called with a replacer function, then call the replacer to
+// obtain a replacement value.
+
+        if (typeof rep === "function") {
+            value = rep.call(holder, key, value);
+        }
+
+// What happens next depends on the value's type.
+
+        switch (typeof value) {
+        case "string":
+            return quote(value);
+
+        case "number":
+
+// JSON numbers must be finite. Encode non-finite numbers as null.
+
+            return (isFinite(value))
+                ? String(value)
+                : "null";
+
+        case "boolean":
+        case "null":
+
+// If the value is a boolean or null, convert it to a string. Note:
+// typeof null does not produce "null". The case is included here in
+// the remote chance that this gets fixed someday.
+
+            return String(value);
+
+// If the type is "object", we might be dealing with an object or an array or
+// null.
+
+        case "object":
+
+// Due to a specification blunder in ECMAScript, typeof null is "object",
+// so watch out for that case.
+
+            if (!value) {
+                return "null";
+            }
+
+// Make an array to hold the partial results of stringifying this object value.
+
+            gap += indent;
+            partial = [];
+
+// Is the value an array?
+
+            if (Object.prototype.toString.apply(value) === "[object Array]") {
+
+// The value is an array. Stringify every element. Use null as a placeholder
+// for non-JSON values.
+
+                length = value.length;
+                for (i = 0; i < length; i += 1) {
+                    partial[i] = str(i, value) || "null";
+                }
+
+// Join all of the elements together, separated with commas, and wrap them in
+// brackets.
+
+                v = partial.length === 0
+                    ? "[]"
+                    : gap
+                        ? (
+                            "[\n"
+                            + gap
+                            + partial.join(",\n" + gap)
+                            + "\n"
+                            + mind
+                            + "]"
+                        )
+                        : "[" + partial.join(",") + "]";
+                gap = mind;
+                return v;
+            }
+
+// If the replacer is an array, use it to select the members to be stringified.
+
+            if (rep && typeof rep === "object") {
+                length = rep.length;
+                for (i = 0; i < length; i += 1) {
+                    if (typeof rep[i] === "string") {
+                        k = rep[i];
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (
+                                (gap)
+                                    ? ": "
+                                    : ":"
+                            ) + v);
+                        }
+                    }
+                }
+            } else {
+
+// Otherwise, iterate through all of the keys in the object.
+
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (
+                                (gap)
+                                    ? ": "
+                                    : ":"
+                            ) + v);
+                        }
+                    }
+                }
+            }
+
+// Join all of the member texts together, separated with commas,
+// and wrap them in braces.
+
+            v = partial.length === 0
+                ? "{}"
+                : gap
+                    ? "{\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "}"
+                    : "{" + partial.join(",") + "}";
+            gap = mind;
+            return v;
+        }
+    }
+
+// If the JSON object does not yet have a stringify method, give it one.
+
+    if (typeof JSON.stringify !== "function") {
+        meta = {    // table of character substitutions
+            "\b": "\\b",
+            "\t": "\\t",
+            "\n": "\\n",
+            "\f": "\\f",
+            "\r": "\\r",
+            "\"": "\\\"",
+            "\\": "\\\\"
+        };
+        JSON.stringify = function (value, replacer, space) {
+
+// The stringify method takes a value and an optional replacer, and an optional
+// space parameter, and returns a JSON text. The replacer can be a function
+// that can replace values, or an array of strings that will select the keys.
+// A default replacer method can be provided. Use of the space parameter can
+// produce text that is more easily readable.
+
+            var i;
+            gap = "";
+            indent = "";
+
+// If the space parameter is a number, make an indent string containing that
+// many spaces.
+
+            if (typeof space === "number") {
+                for (i = 0; i < space; i += 1) {
+                    indent += " ";
+                }
+
+// If the space parameter is a string, it will be used as the indent string.
+
+            } else if (typeof space === "string") {
+                indent = space;
+            }
+
+// If there is a replacer, it must be a function or an array.
+// Otherwise, throw an error.
+
+            rep = replacer;
+            if (replacer && typeof replacer !== "function" && (
+                typeof replacer !== "object"
+                || typeof replacer.length !== "number"
+            )) {
+                throw new Error("JSON.stringify");
+            }
+
+// Make a fake root object containing our value under the key of "".
+// Return the result of stringifying the value.
+
+            return str("", {"": value});
+        };
+    }
+
+
+// If the JSON object does not yet have a parse method, give it one.
+
+    if (typeof JSON.parse !== "function") {
+        JSON.parse = function () {
+            throw new SyntaxError("JSON.parse unavailable (eval disabled)");
+        };
+    }
+}());
+
+
+// File: src/core/__adGetHostGlobal.js
+/**
+ * __adGetHostGlobal
+ *
+ * ?? 例外函数：全仓库唯一允许触达 eval 的地方
+ *
+ * 目的：
+ * - 解决“合并后同一作用域”导致的宿主全局变量遮蔽问题
+ *
+ * 约束：
+ * - 禁止在其它任何文件出现 eval/new Function
+ * - 业务代码不得直接调用本函数；必须通过「全局符号桥」间接访问
+ *
+ * @param {String} name 宿主全局符号名
+ * @returns {*} 取到的全局符号值；失败返回 undefined
+ */
+function __adGetHostGlobal(name) {
+    // “间接 eval”：在 JScript 中可在全局作用域解析符号名
+    var _geval = eval;
+    try {
+        return _geval(String(name));
+    } catch (e) {
+        return undefined;
+    }
+}
+
+
+// File: src/core/__adJsonParse.js
+/**
+ * __adJsonParse
+ *
+ * ?? 例外函数：全仓库 JSON 解析唯一允许触达 eval 的地方
+ *
+ * 安全策略：
+ * - 正则校验 JSON token
+ * - 校验通过后 eval('(' + text + ')')
+ *
+ * @param {String} text JSON 字符串
+ * @returns {*} 解析后的对象
+ * @throws {Error} JSON 无效时抛异常
+ */
+function __adJsonParse(text) {
+    var _geval = eval;
+
+    if (text && text.charCodeAt(0) === 0xFEFF) {
+        text = text.substring(1);
+    }
+
+    try {
+        var iObj = text.indexOf("{");
+        var iArr = text.indexOf("[");
+        var iMin = -1;
+        if (iObj >= 0 && iArr >= 0) iMin = (iObj < iArr ? iObj : iArr);
+        else if (iObj >= 0) iMin = iObj;
+        else if (iArr >= 0) iMin = iArr;
+        if (iMin > 0) text = text.substring(iMin);
+    } catch (e0) {}
+
+    var rxOne = /^[\],:{}\s]*$/;
+    var rxTwo = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+    var rxThree = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+    var rxFour = /(?:^|:|,)(?:\s*\[)+/g;
+
+    var ok = false;
+    try {
+        ok = rxOne.test(
+            text
+                .replace(rxTwo, "@")
+                .replace(rxThree, "]")
+                .replace(rxFour, "")
+        );
+    } catch (e1) {
+        ok = false;
+    }
+
+    if (!ok) {
+        throw new Error("Invalid JSON text");
+    }
+
+    return _geval("(" + text + ")");
+}
+
+
+// File: src/core/JsonUtil.js
+/**
+ * JsonUtil
+ *
+ * 业务统一 JSON 入口，禁止直接使用 eval
+ */
+var JsonUtil = (function () {
+    function parse(text) {
+        try {
+            if (typeof JSON !== "undefined" && JSON && typeof JSON.parse === "function") {
+                return JSON.parse(text);
+            }
+        } catch (e1) {}
+
+        try {
+            if (typeof __adJsonParse === "function") {
+                return __adJsonParse(text);
+            }
+        } catch (e2) {}
+
+        return null;
+    }
+
+    function stringify(obj) {
+        try {
+            if (typeof JSON !== "undefined" && JSON && typeof JSON.stringify === "function") {
+                return JSON.stringify(obj);
+            }
+        } catch (e1) {}
+        try {
+            return String(obj);
+        } catch (e2) {
+            return "";
+        }
+    }
+
+    return {
+        parse: parse,
+        stringify: stringify
+    };
+})();
+
+
+// File: src/core/全局符号桥.js
+/**
+ * 全局符号桥
+ *
+ * 用途：
+ * - 提供“安全访问 AD 宿主全局符号”的统一入口
+ * - 默认不使用 eval；仅当直接不可达时走 __adGetHostGlobal
+ */
+var 全局符号桥 = (function () {
+    var _enableHostBridge = true;
+    var _allow = {
+        "PCBServer": 1,
+        "Client": 1,
+        "SchServer": 1,
+        "GetWorkspace": 1,
+        "Workspace": 1
+    };
+
+    function _isAllowed(name) {
+        return !!_allow[String(name)];
+    }
+
+    function get(name) {
+        name = String(name);
+        if (!_isAllowed(name)) return undefined;
+
+        try {
+            if (name === "PCBServer" && typeof PCBServer !== "undefined") return PCBServer;
+            if (name === "Client" && typeof Client !== "undefined") return Client;
+            if (name === "SchServer" && typeof SchServer !== "undefined") return SchServer;
+            if (name === "GetWorkspace" && typeof GetWorkspace !== "undefined") return GetWorkspace;
+            if (name === "Workspace" && typeof Workspace !== "undefined") return Workspace;
+        } catch (e1) {}
+
+        if (_enableHostBridge && typeof __adGetHostGlobal === "function") {
+            return __adGetHostGlobal(name);
+        }
+
+        return undefined;
+    }
+
+    function mustGet(name, logFn) {
+        var v = get(name);
+        if (!v) {
+            try {
+                if (logFn) {
+                    logFn("HOST_GLOBAL_MISSING: " + name, { name: name });
+                }
+            } catch (e) {}
+            return null;
+        }
+        return v;
+    }
+
+    function allow(name) {
+        _allow[String(name)] = 1;
+    }
+
+    return {
+        get: get,
+        mustGet: mustGet,
+        allow: allow
+    };
+})();
+
+// 统一导出
+(function () {
+    if (typeof exportModule !== "undefined" && exportModule) {
+        try { exportModule("全局符号桥", 全局符号桥); } catch (e0) {}
+    }
+    if (typeof window !== "undefined") {
+        window["全局符号桥"] = 全局符号桥;
+    }
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = 全局符号桥;
+    }
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global["全局符号桥"] = 全局符号桥;
+    }
+})();
+
+
+// File: src/core/module-accessor.js
+/**
+ * ModuleAccessor - 统一的模块访问器
+ * 
+ * 提供跨环境的统一模块访问接口
+ * 按照优先级顺序获取模块：直接变量 > window > module.exports > global
+ * 严格遵循ES3语法规范，兼容AD环境
+ * 
+ * @author AD21 Module Accessor
+ * @version 1.0.0
+ */
+
+var ModuleAccessor = (function(){
+    
+    // 私有变量
+    var _cache = {};  // 模块缓存
+    var _config = {
+        enableCache: true,
+        enableLogging: true
+    };
+    
+    // 简化的日志系统
+    var _logger = {
+        debug: function(msg) { 
+            if (_config.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[ModuleAccessor][DEBUG] " + msg); 
+            }
+        },
+        info: function(msg) { 
+            if (_config.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[ModuleAccessor][INFO] " + msg); 
+            }
+        },
+        warn: function(msg) { 
+            if (_config.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[ModuleAccessor][WARN] " + msg); 
+            }
+        },
+        error: function(msg) { 
+            if (_config.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[ModuleAccessor][ERROR] " + msg); 
+            }
+        }
+    };
+    
+    /**
+     * 获取直接变量引用
+     * @param {string} moduleName 模块名称
+     * @returns {*} 模块引用或null
+     */
+    function _getDirectVariable(moduleName) {
+        try {
+            switch (moduleName) {
+                case "BaseModule": return (typeof BaseModule !== "undefined") ? BaseModule : null;
+                case "CoreModule": return (typeof CoreModule !== "undefined") ? CoreModule : null;
+                case "LogController": return (typeof LogController !== "undefined") ? LogController : null;
+                case "LoggerModule": return (typeof LoggerModule !== "undefined") ? LoggerModule : null;
+                case "LoggerModuleIndex": return (typeof LoggerModuleIndex !== "undefined") ? LoggerModuleIndex : null;
+                case "UILoggerModule": return (typeof UILoggerModule !== "undefined") ? UILoggerModule : null;
+                case "ObjectFactory": return (typeof ObjectFactory !== "undefined") ? ObjectFactory : null;
+                case "ObjectManager": return (typeof ObjectManager !== "undefined") ? ObjectManager : null;
+                case "MockSystem": return (typeof MockSystem !== "undefined") ? MockSystem : null;
+                case "PCBObjectWrapper": return (typeof PCBObjectWrapper !== "undefined") ? PCBObjectWrapper : null;
+                case "GeometryWrapper": return (typeof GeometryWrapper !== "undefined") ? GeometryWrapper : null;
+                case "ObjectModule": return (typeof ObjectModule !== "undefined") ? ObjectModule : null;
+                case "BasePCBWrapper": return (typeof BasePCBWrapper !== "undefined") ? BasePCBWrapper : null;
+                case "PCBMockSystem": return (typeof PCBMockSystem !== "undefined") ? PCBMockSystem : null;
+                case "PCBObjectFactory": return (typeof PCBObjectFactory !== "undefined") ? PCBObjectFactory : null;
+                case "PCBObjectManager": return (typeof PCBObjectManager !== "undefined") ? PCBObjectManager : null;
+                case "PCBObjectPool": return (typeof PCBObjectPool !== "undefined") ? PCBObjectPool : null;
+                case "StackMap": return (typeof StackMap !== "undefined") ? StackMap : null;
+                case "GeometryCalculator": return (typeof GeometryCalculator !== "undefined") ? GeometryCalculator : null;
+                case "ArcWrapper": return (typeof ArcWrapper !== "undefined") ? ArcWrapper : null;
+                case "PadWrapper": return (typeof PadWrapper !== "undefined") ? PadWrapper : null;
+                case "TrackWrapper": return (typeof TrackWrapper !== "undefined") ? TrackWrapper : null;
+                case "ViaWrapper": return (typeof ViaWrapper !== "undefined") ? ViaWrapper : null;
+                case "PCBInterfaces": return (typeof PCBInterfaces !== "undefined") ? PCBInterfaces : null;
+                case "PositionManager": return (typeof PositionManager !== "undefined") ? PositionManager : null;
+                case "ObjectCreator": return (typeof ObjectCreator !== "undefined") ? ObjectCreator : null;
+                case "ObjectCreatorModule": return (typeof ObjectCreatorModule !== "undefined") ? ObjectCreatorModule : null;
+                case "GlobalEvents": return (typeof GlobalEvents !== "undefined") ? GlobalEvents : null;
+                default: return null;
+            }
+        } catch (e) {
+            _logger.error("_getDirectVariable failed for " + moduleName + ": " + e.message);
+            return null;
+        }
+    }
+    
+    /**
+     * 获取window对象中的模块
+     * @param {string} moduleName 模块名称
+     * @returns {*} 模块引用或null
+     */
+    function _getWindowModule(moduleName) {
+        try {
+            if (typeof window !== "undefined" && window && typeof window[moduleName] !== "undefined") {
+                return window[moduleName];
+            }
+            return null;
+        } catch (e) {
+            _logger.error("_getWindowModule failed for " + moduleName + ": " + e.message);
+            return null;
+        }
+    }
+    
+    /**
+     * 获取module.exports中的模块
+     * @param {string} moduleName 模块名称
+     * @returns {*} 模块引用或null
+     */
+    function _getModuleExports(moduleName) {
+        try {
+            if (typeof module !== "undefined" && module.exports && typeof module.exports[moduleName] !== "undefined") {
+                return module.exports[moduleName];
+            }
+            return null;
+        } catch (e) {
+            _logger.error("_getModuleExports failed for " + moduleName + ": " + e.message);
+            return null;
+        }
+    }
+    
+    /**
+     * 获取global对象中的模块
+     * @param {string} moduleName 模块名称
+     * @returns {*} 模块引用或null
+     */
+    function _getGlobalModule(moduleName) {
+        try {
+            if (typeof global !== "undefined" && global && typeof global[moduleName] !== "undefined") {
+                return global[moduleName];
+            }
+            return null;
+        } catch (e) {
+            _logger.error("_getGlobalModule failed for " + moduleName + ": " + e.message);
+            return null;
+        }
+    }
+    
+    /**
+     * 按优先级顺序获取模块引用
+     * 优先级：1.直接变量 > 2.window > 3.module.exports > 4.global
+     * @param {string} moduleName 模块名称
+     * @returns {*} 模块引用或null
+     */
+    function _getModuleByPriority(moduleName) {
+        // 1. 优先：直接检查全局变量（已知模块名）
+        var module = _getDirectVariable(moduleName);
+        if (module !== null) {
+            _logger.debug("Found " + moduleName + " via direct variable");
+            return module;
+        }
+        
+        // 2. 其次：window对象（浏览器或jsdom测试环境）
+        module = _getWindowModule(moduleName);
+        if (module !== null) {
+            _logger.debug("Found " + moduleName + " via window object");
+            return module;
+        }
+        
+        // 3. 再次：module.exports（标准Node.js模块）
+        module = _getModuleExports(moduleName);
+        if (module !== null) {
+            _logger.debug("Found " + moduleName + " via module.exports");
+            return module;
+        }
+        
+        // 4. 最后：global对象（Node.js全局）
+        module = _getGlobalModule(moduleName);
+        if (module !== null) {
+            _logger.debug("Found " + moduleName + " via global object");
+            return module;
+        }
+        
+        _logger.warn("Module " + moduleName + " not found in any location");
+        return null;
+    }
+    
+    /**
+     * 验证模块是否有效
+     * @param {*} module 模块引用
+     * @returns {boolean} 是否有效
+     */
+    function _validateModule(module) {
+        return module !== null && 
+               module !== undefined && 
+               typeof module === "object";
+    }
+    
+    // 公共接口
+    
+    /**
+     * 获取模块引用
+     * @param {string} moduleName 模块名称
+     * @returns {*} 模块引用或null
+     */
+    function getModule(moduleName) {
+        if (!moduleName || typeof moduleName !== "string") {
+            _logger.error("Invalid module name: " + moduleName);
+            return null;
+        }
+        
+        // 检查缓存
+        if (_config.enableCache && _cache.hasOwnProperty(moduleName)) {
+            return _cache[moduleName];
+        }
+        
+        // 按优先级获取模块
+        var module = _getModuleByPriority(moduleName);
+        
+        // 验证模块
+        if (_validateModule(module)) {
+            // 缓存模块
+            if (_config.enableCache) {
+                _cache[moduleName] = module;
+            }
+            _logger.info("Successfully loaded module: " + moduleName);
+            return module;
+        }
+        
+        _logger.error("Failed to load module: " + moduleName);
+        return null;
+    }
+    
+    /**
+     * 检查模块是否可用
+     * @param {string} moduleName 模块名称
+     * @returns {boolean} 是否可用
+     */
+    function isModuleAvailable(moduleName) {
+        var module = getModule(moduleName);
+        return _validateModule(module);
+    }
+    
+    /**
+     * 清除模块缓存
+     * @param {string} moduleName 模块名称（可选，不提供则清除所有）
+     */
+    function clearCache(moduleName) {
+        if (moduleName && typeof moduleName === "string") {
+            delete _cache[moduleName];
+            _logger.debug("Cleared cache for module: " + moduleName);
+        } else {
+            _cache = {};
+            _logger.debug("Cleared all module cache");
+        }
+    }
+    
+    /**
+     * 获取缓存统计信息
+     * @returns {Object} 缓存统计
+     */
+    function getCacheStats() {
+        var stats = {
+            cacheEnabled: _config.enableCache,
+            cacheSize: 0,
+            cachedModules: []
+        };
+        
+        if (_config.enableCache) {
+            for (var key in _cache) {
+                if (_cache.hasOwnProperty(key)) {
+                    stats.cacheSize++;
+                    stats.cachedModules.push(key);
+                }
+            }
+        }
+        
+        return stats;
+    }
+    
+    /**
+     * 配置模块访问器
+     * @param {Object} config 配置选项
+     */
+    function configure(config) {
+        if (!config || typeof config !== "object") {
+            return;
+        }
+        
+        for (var key in config) {
+            if (config.hasOwnProperty(key) && _config.hasOwnProperty(key)) {
+                _config[key] = config[key];
+            }
+        }
+        
+        _logger.info("ModuleAccessor configured: " + JSON.stringify(_config));
+    }
+    
+    /**
+     * 获取当前配置
+     * @returns {Object} 当前配置
+     */
+    function getConfiguration() {
+        var result = {};
+        for (var key in _config) {
+            if (_config.hasOwnProperty(key)) {
+                result[key] = _config[key];
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 获取所有可用的模块列表
+     * @returns {Array} 可用模块名称列表
+     */
+    function getAvailableModules() {
+        var availableModules = [];
+        
+        // 检查常见的模块名称
+        var commonModules = [
+            "BaseModule", "CoreModule", "LogController",
+            "LoggerModule", "LoggerModuleIndex", "UILoggerModule",
+            "ObjectFactory", "ObjectManager", "MockSystem", "PCBObjectWrapper", "GeometryWrapper",
+            "ObjectModule",
+            "BasePCBWrapper", "PCBMockSystem", "PCBObjectFactory", "PCBObjectManager", "PCBObjectPool", "StackMap",
+            "GeometryCalculator", "ArcWrapper", "PadWrapper", "TrackWrapper", "ViaWrapper",
+            "PCBInterfaces",
+            "PositionManager", "ObjectCreator", "ObjectCreatorModule",
+            "GlobalEvents"
+        ];
+        
+        for (var i = 0; i < commonModules.length; i++) {
+            var moduleName = commonModules[i];
+            if (isModuleAvailable(moduleName)) {
+                availableModules.push(moduleName);
+            }
+        }
+        
+        return availableModules;
+    }
+    
+    /**
+     * 获取模块访问器统计信息
+     * @returns {Object} 统计信息
+     */
+    function getStatistics() {
+        return {
+            configuration: getConfiguration(),
+            cacheStats: getCacheStats(),
+            availableModules: getAvailableModules()
+        };
+    }
+    
+    // 导出接口
+    return {
+        // 核心功能
+        getModule: getModule,
+        isModuleAvailable: isModuleAvailable,
+        
+        // 缓存管理
+        clearCache: clearCache,
+        getCacheStats: getCacheStats,
+        
+        // 配置管理
+        configure: configure,
+        getConfiguration: getConfiguration,
+        
+        // 查询功能
+        getAvailableModules: getAvailableModules,
+        getStatistics: getStatistics
+    };
+    
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.ModuleAccessor = ModuleAccessor;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = ModuleAccessor;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.ModuleAccessor = ModuleAccessor;
+    }
+})();
+
+
+// File: src/modules/base/index.js
+/**
+ * IIFE模块架构说明
+ * 
+ * 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();
+ * 2. 构建后所有模块变量在同一作用域，可直接引用
+ * 3. 不处理模块间依赖，需构建到一个文件中使用
+ * 4. 通过window导出，确保AD环境可访问
+ * 5. 依赖的模块必须在当前模块之前加载（通过merge-order.json控制）
+ */
+
+/**
+ * BaseModule - AD ES3 模块基础架构
+ * 提供标准的模块生命周期、状态管理、Hook系统
+ * 100% 兼容 JScript 5.8 (ES3)
+ */
+
+var BaseModule = (function(){
+    
+    // 私有变量
+    var _moduleVersion = "1.0.0";
+    var _defaultOptions = {
+        moduleName: "BaseModule",
+        autoInit: false,
+        autoTime: true,
+        debugMode: false
+    };
+    
+    // 私有工具函数
+    function _mergeOptions(userOptions, defaults) {
+        var result = {};
+        var key;
+        
+        // 复制默认值
+        for (key in defaults) {
+            if (defaults.hasOwnProperty(key)) {
+                result[key] = defaults[key];
+            }
+        }
+        
+        // 覆盖用户值
+        for (key in userOptions) {
+            if (userOptions.hasOwnProperty(key)) {
+                result[key] = userOptions[key];
+            }
+        }
+        
+        return result;
+    }
+    
+    function _createHooks() {
+        return {
+            onBeforeInit: null,
+            onAfterInit: null,
+            onBeforeRun: null,
+            onAfterRun: null,
+            onBeforeDestroy: null,
+            onAfterDestroy: null
+        };
+    }
+    
+    function _createState() {
+        return {
+            initialized: false,
+            running: false,
+            destroyed: false,
+            errorCount: 0,
+            lastError: null
+        };
+    }
+    
+    function _createContext() {
+        return {
+            startTime: null,
+            endTime: null,
+            executionTime: 0
+        };
+    }
+    
+    function _executeHook(hook, instance, data) {
+        if (hook && typeof hook === "function") {
+            try {
+                return hook(instance, data);
+            } catch (error) {
+                // 直接输出到UI，不再静默处理
+                try {
+                    if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+                        memLog.Lines.Add("[BaseModule][ERROR] Hook execution failed: " + error.message);
+                    }
+                } catch (e) {
+                    // 如果连UI输出都失败，那就真的没办法了
+                }
+                return null;
+            }
+        }
+        return null;
+    }
+    
+    // 可重写的核心方法（子模块重写这些）
+    function _performInitialization(inst) {
+        // 子模块重写此方法实现具体初始化
+        return true;
+    }
+    
+    function _executeMainLogic(inst) {
+        // 子模块重写此方法实现主要逻辑
+        return {
+            success: true,
+            message: "BaseModule executed successfully",
+            data: null,
+            time: inst.context.executionTime
+        };
+    }
+    
+    function _performDestroy(inst) {
+        // 子模块重写此方法实现资源清理
+        return true;
+    }
+    
+    // 公有API函数
+    function create(userOptions) {
+        var options = _mergeOptions(userOptions || {}, _defaultOptions);
+        
+        var instance = {
+            // 配置选项
+            options: options,
+            
+            // 运行状态
+            state: _createState(),
+            
+            // 执行上下文
+            context: _createContext(),
+            
+            // Hook系统
+            hooks: _createHooks(),
+            
+            // 生命周期方法
+            init: function() { return init(instance); },
+            run: function() { return run(instance); },
+            destroy: function() { return destroy(instance); },
+            
+            // 内部方法引用（子模块可重写）
+            _performInitialization: function() { return _performInitialization(instance); },
+            _executeMainLogic: function() { return _executeMainLogic(instance); },
+            _performDestroy: function() { return _performDestroy(instance); }
+        };
+        
+        // 创建日志记录器（移除Logger依赖，避免循环依赖）
+        // 注意：BaseModule不应该依赖Logger，Logger应该依赖BaseModule
+        instance.logger = null;
+        
+        // 自动初始化
+        if (options.autoInit) {
+            init(instance);
+        }
+        
+        return instance;
+    }
+    
+    function init(instance) {
+        if (!instance) {
+            throw new Error("[BaseModule][index.js][init] Instance is required");
+        }
+        
+        if (instance.state.initialized) {
+            if (instance.logger && instance.logger.warn) {
+                instance.logger.warn("[BaseModule][index.js][init] Module already initialized");
+            }
+            return true;
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeInit, instance);
+            
+            // 设置开始时间
+            if (instance.options.autoTime) {
+                instance.context.startTime = new Date();
+            }
+            
+            // 执行具体初始化
+            var initResult = instance._performInitialization();
+            
+            if (initResult) {
+                instance.state.initialized = true;
+                
+                // 执行After Hook
+                _executeHook(instance.hooks.onAfterInit, instance);
+                
+                if (instance.logger && instance.logger.info) {
+                    instance.logger.info("[BaseModule][index.js][init] Module initialized successfully: " + instance.options.moduleName);
+                }
+                
+                return true;
+            } else {
+                throw new Error("[BaseModule][index.js][init] Initialization failed");
+            }
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BaseModule][index.js][init] Initialization error: " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    function run(instance) {
+        if (!instance) {
+            throw new Error("[BaseModule][index.js][run] Instance is required");
+        }
+        
+        if (!instance.state.initialized) {
+            throw new Error("[BaseModule][index.js][run] Module not initialized");
+        }
+        
+        if (instance.state.running) {
+            if (instance.logger && instance.logger.warn) {
+                instance.logger.warn("[BaseModule][index.js][run] Module already running");
+            }
+            return null;
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeRun, instance);
+            
+            // 设置运行状态
+            instance.state.running = true;
+            
+            // 设置开始时间
+            if (instance.options.autoTime) {
+                instance.context.startTime = new Date();
+            }
+            
+            // 执行主要逻辑
+            var result = instance._executeMainLogic();
+            
+            // 设置结束时间和执行时间
+            if (instance.options.autoTime && instance.context.startTime) {
+                instance.context.endTime = new Date();
+                instance.context.executionTime = instance.context.endTime.getTime() - instance.context.startTime.getTime();
+                
+                if (result) {
+                    result.time = instance.context.executionTime;
+                }
+            }
+            
+            // 执行After Hook
+            _executeHook(instance.hooks.onAfterRun, instance, result);
+            
+            if (instance.logger && instance.logger.info) {
+                instance.logger.info("[BaseModule][index.js][run] Module executed successfully: " + instance.options.moduleName + " (" + instance.context.executionTime + "ms)");
+            }
+            
+            return result;
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BaseModule][index.js][run] Execution error: " + error.message);
+            }
+            
+            throw error;
+        } finally {
+            instance.state.running = false;
+        }
+    }
+    
+    function destroy(instance) {
+        if (!instance) {
+            throw new Error("[BaseModule][index.js][destroy] Instance is required");
+        }
+        
+        if (instance.state.destroyed) {
+            if (instance.logger && instance.logger.warn) {
+                instance.logger.warn("[BaseModule][index.js][destroy] Module already destroyed");
+            }
+            return true;
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeDestroy, instance);
+            
+            // 执行具体销毁逻辑
+            var destroyResult = instance._performDestroy();
+            
+            if (destroyResult) {
+                // 清理状态
+                instance.state.destroyed = true;
+                instance.state.initialized = false;
+                instance.state.running = false;
+                
+                // 清理上下文
+                instance.context.startTime = null;
+                instance.context.endTime = null;
+                instance.context.executionTime = 0;
+                
+                // 清理Hook
+                instance.hooks.onBeforeInit = null;
+                instance.hooks.onAfterInit = null;
+                instance.hooks.onBeforeRun = null;
+                instance.hooks.onAfterRun = null;
+                instance.hooks.onBeforeDestroy = null;
+                instance.hooks.onAfterDestroy = null;
+                
+                // 执行After Hook
+                _executeHook(instance.hooks.onAfterDestroy, instance);
+                
+                if (instance.logger && instance.logger.info) {
+                    instance.logger.info("[BaseModule][index.js][destroy] Module destroyed successfully: " + instance.options.moduleName);
+                }
+                
+                return true;
+            } else {
+                throw new Error("[BaseModule][index.js][destroy] Destruction failed");
+            }
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BaseModule][index.js][destroy] Destruction error: " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    // 返回模块接口
+    return {
+        create: create,
+        init: init,
+        run: run,
+        destroy: destroy,
+        
+        // 版本信息
+        version: _moduleVersion,
+        
+        // 默认选项（供参考）
+        defaultOptions: _defaultOptions
+    };
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.BaseModule = BaseModule;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = BaseModule;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.BaseModule = BaseModule;
+    }
+})();
+
+
+// File: src/core/core.js
+/**
+ * Core - 核心系统模块
+ * 基于BaseModule的核心系统管理器
+ * 提供系统级别的配置、状态管理和协调功能
+ * 100% 兼容 JScript 5.8 (ES3)
+ */
+
+var Core = (function(){
+    
+    // 依赖引用（直接使用，构建后自动可访问）
+    // 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+    
+    // 私有变量
+    var _moduleVersion = "1.0.0";
+    var _defaultOptions = {
+        moduleName: "Core",
+        autoInit: true,
+        autoTime: true,
+        debugMode: false,
+        enableLogging: true,
+        systemConfig: {}
+    };
+    
+    // 私有工具函数
+    function _mergeOptions(userOptions, defaults) {
+        var result = {};
+        var key;
+        
+        // 复制默认值
+        for (key in defaults) {
+            if (defaults.hasOwnProperty(key)) {
+                result[key] = defaults[key];
+            }
+        }
+        
+        // 覆盖用户值
+        for (key in userOptions) {
+            if (userOptions.hasOwnProperty(key)) {
+                result[key] = userOptions[key];
+            }
+        }
+        
+        return result;
+    }
+    
+    function _createSystemState() {
+        return {
+            initialized: false,
+            modulesLoaded: 0,
+            modulesTotal: 0,
+            lastActivity: null,
+            errorCount: 0,
+            warnings: []
+        };
+    }
+    
+    // Core构造函数
+    function Core(userOptions) {
+        var options = _mergeOptions(userOptions || {}, _defaultOptions);
+        
+        // 创建BaseModule实例
+        var baseInstance = BaseModule.create(options);
+        
+        // 扩展BaseInstance以添加Core特定功能
+        var coreInstance = {
+            // 继承BaseModule的所有属性和方法
+            options: baseInstance.options,
+            state: baseInstance.state,
+            context: baseInstance.context,
+            hooks: baseInstance.hooks,
+            init: function() { return baseInstance.init(); },
+            run: function() { return baseInstance.run(); },
+            destroy: function() { return baseInstance.destroy(); },
+            
+            // 确保logger字段存在（初始为null，在初始化时设置）
+            logger: null,
+            
+            // Core特有属性
+            systemState: _createSystemState(),
+            
+            // Core特有方法
+            getSystemState: function() {
+                return this.systemState;
+            },
+            
+            updateSystemState: function(updates) {
+                if (updates && typeof updates === "object") {
+                    var key;
+                    for (key in updates) {
+                        if (updates.hasOwnProperty(key)) {
+                            this.systemState[key] = updates[key];
+                        }
+                    }
+                }
+                return this.systemState;
+            },
+            
+            addWarning: function(message) {
+                if (message && typeof message === "string") {
+                    this.systemState.warnings.push({
+                        message: message,
+                        timestamp: new Date(),
+                        level: "WARNING"
+                    });
+                }
+            },
+            
+            clearWarnings: function() {
+                this.systemState.warnings = [];
+            },
+            
+            getWarnings: function() {
+                return this.systemState.warnings.slice(); // 返回副本
+            },
+            
+            // 重写BaseModule的初始化方法
+            _performInitialization: function() {
+                try {
+                    // Core特定的初始化逻辑
+                    this.systemState.initialized = true;
+                    this.systemState.lastActivity = new Date();
+                    
+                    // 尝试创建Logger实例
+                    if (this.options.enableLogging) {
+                        try {
+                            if (typeof Logger !== "undefined") {
+                                this.logger = Logger.create("Core");
+                            }
+                        } catch (error) {
+                            // Logger创建失败不应该阻止Core初始化
+                            this.addWarning("Logger creation failed: " + error.message);
+                        }
+                    }
+                    
+                    return true;
+                } catch (error) {
+                    this.systemState.errorCount++;
+                    throw error;
+                }
+            },
+            
+            // 重写BaseModule的主逻辑方法
+            _executeMainLogic: function() {
+                try {
+                    this.systemState.lastActivity = new Date();
+                    
+                    var result = {
+                        success: true,
+                        message: "Core executed successfully",
+                        data: {
+                            systemState: this.systemState,
+                            moduleState: this.state,
+                            warnings: this.getWarnings()
+                        },
+                        time: this.context.executionTime
+                    };
+                    
+                    return result;
+                } catch (error) {
+                    this.systemState.errorCount++;
+                    throw error;
+                }
+            },
+            
+            // 重写BaseModule的销毁方法
+            _performDestroy: function() {
+                try {
+                    // Core特定的清理逻辑
+                    this.systemState.initialized = false;
+                    this.clearWarnings();
+                    
+                    return true;
+                } catch (error) {
+                    this.systemState.errorCount++;
+                    throw error;
+                }
+            },
+            
+            // Core特有的健康检查
+            isHealthy: function() {
+                return this.state.initialized && 
+                       !this.state.destroyed && 
+                       this.systemState.errorCount === 0;
+            },
+            
+            // 获取Core信息
+            getInfo: function() {
+                return {
+                    name: "Core",
+                    version: _moduleVersion,
+                    state: this.state,
+                    systemState: this.systemState,
+                    options: this.options,
+                    healthy: this.isHealthy()
+                };
+            }
+        };
+        
+        // 自动初始化
+        if (options.autoInit) {
+            coreInstance.init();
+        }
+        
+        return coreInstance;
+    }
+    
+    // 静态方法
+    Core.create = function(options) {
+        return new Core(options);
+    };
+    
+    Core.version = _moduleVersion;
+    Core.defaultOptions = _defaultOptions;
+    
+    return Core;
+})();
+
+// 通过window导出，确保AD环境可访问
+if (typeof window !== "undefined") {
+    window.Core = Core;
+}
+
+
+// File: src/modules/log-controller/index.js
+/**
+ * GlobalLogController 全局日志控制器
+ * 
+ * 提供日志级别的生成和显示控制，实现性能优化
+ * ES3/JScript 5.8 兼容
+ * 
+ * IIFE模块架构说明
+ * 
+ * 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();
+ * 2. 构建后所有模块变量在同一作用域，可直接引用
+ * 3. 不处理模块间依赖，需构建到一个文件中使用
+ * 4. 不需要window对象，不需要额外的导出操作
+ * 5. 依赖的模块必须在当前模块之前加载（通过merge-order.json控制）
+ */
+
+var GlobalLogController = (function() {
+        
+        // ---------------------------------------------------------
+        // 1.1 私有变量
+        // ---------------------------------------------------------
+        
+        // 生成级开关 - 控制日志是否被创建和处理
+        var _generationSwitches = {
+            debug: true,    // 默认开启
+            info: true,     // 默认开启  
+            warn: true,     // 默认开启
+            error: true     // 默认开启（通常不建议关闭）
+        };
+        
+        // 显示级开关 - 控制日志是否输出到UI
+        var _displaySwitches = {
+            debug: true,    // 默认开启
+            info: true,     // 默认开启
+            warn: true,     // 默认开启
+            error: true     // 默认开启
+        };
+        
+        // 性能统计
+        var _stats = {
+            generated: {
+                debug: 0,
+                info: 0,
+                warn: 0,
+                error: 0
+            },
+            filtered: {
+                debug: 0,
+                info: 0,
+                warn: 0,
+                error: 0
+            },
+            displayed: {
+                debug: 0,
+                info: 0,
+                warn: 0,
+                error: 0
+            }
+        };
+        
+        // 防重复统计机制
+        var _processedLogs = {};  // 存储已处理的日志ID
+        var _logIdCounter = 0;     // 日志ID计数器
+        
+        // 模块配置
+        var _moduleConfig = {
+            enableStats: true,           // 启用性能统计
+            enableAutoOptimization: false, // 启用自动优化
+            maxDebugPerSecond: 100,      // 每秒最大DEBUG日志数
+            performanceThreshold: 1000   // 性能阈值（毫秒）
+        };
+        
+        // 性能监控变量
+        var _lastOptimizationTime = 0;
+        var _debugCountInSecond = 0;
+        var _secondStartTime = new Date().getTime();
+        
+        // ---------------------------------------------------------
+        // 1.2 私有函数
+        // ---------------------------------------------------------
+        
+        /**
+         * 验证日志级别
+         * @param {string} level 日志级别
+         * @returns {boolean} 是否有效
+         */
+        function _isValidLevel(level) {
+            return level === "debug" || 
+                   level === "info" || 
+                   level === "warn" || 
+                   level === "error";
+        }
+        
+        /**
+         * 更新性能统计
+         * @param {string} level 日志级别
+         * @param {string} type 统计类型（generated/filtered/displayed）
+         */
+        function _updateStats(level, type) {
+            if (!_moduleConfig.enableStats) {
+                return;
+            }
+            
+            try {
+                if (_stats[type] && typeof _stats[type][level] === "number") {
+                    _stats[type][level]++;
+                }
+            } catch (e) {
+                // 静默处理统计错误
+            }
+        }
+        
+        /**
+         * 自动性能优化
+         */
+        function _autoOptimization() {
+            if (!_moduleConfig.enableAutoOptimization) {
+                return;
+            }
+            
+        var now = new Date().getTime();
+            
+            // 检查是否需要进行优化（每秒检查一次）
+            if (now - _lastOptimizationTime < 1000) {
+                return;
+            }
+            
+            _lastOptimizationTime = now;
+            
+            // 检查DEBUG日志频率
+            if (_debugCountInSecond > _moduleConfig.maxDebugPerSecond) {
+                // 自动关闭DEBUG级别
+                _generationSwitches.debug = false;
+                _displaySwitches.debug = false;
+                
+                // 输出警告信息
+                try {
+                    if (typeof uiWarn !== "undefined") {
+                        uiWarn("自动性能优化：DEBUG日志过多，已自动关闭", {
+                            debugCount: _debugCountInSecond,
+                            threshold: _moduleConfig.maxDebugPerSecond
+                        }, "log-controller", "_autoOptimization");
+                    }
+                } catch (e) {
+                    // 静默处理
+                }
+            }
+            
+            // 重置计数器
+            _debugCountInSecond = 0;
+            _secondStartTime = now;
+        }
+        
+        /**
+         * 检查DEBUG日志频率
+         */
+        function _checkDebugFrequency() {
+            if (!_moduleConfig.enableAutoOptimization) {
+                return;
+            }
+            
+            var now = new Date().getTime();
+            
+            // 如果超过1秒，重置计数器
+            if (now - _secondStartTime >= 1000) {
+                _debugCountInSecond = 0;
+                _secondStartTime = now;
+            }
+            
+            _debugCountInSecond++;
+            
+            // 触发自动优化检查
+            _autoOptimization();
+        }
+        
+        /**
+         * 生成唯一的日志ID
+         * @param {string} level 日志级别
+         * @param {string} message 日志消息
+         * @param {string} moduleName 模块名
+         * @param {string} functionName 函数名
+         * @returns {string} 唯一的日志ID
+         */
+        function _generateLogId(level, message, moduleName, functionName) {
+            // 使用时间戳、计数器和消息内容生成唯一ID
+            var timestamp = new Date().getTime();
+            var content = (level || "") + "|" + (message || "") + "|" + (moduleName || "") + "|" + (functionName || "");
+            var hash = 0;
+            
+            // 简单的字符串哈希算法
+            for (var i = 0; i < content.length; i++) {
+                var charCode = content.charCodeAt(i);
+                hash = ((hash << 5) - hash) + charCode;
+                hash = hash & hash; // 转换为32位整数
+            }
+            
+            return timestamp + "_" + Math.abs(hash) + "_" + (_logIdCounter++);
+        }
+        
+        /**
+         * 检查日志是否已被处理
+         * @param {string} logId 日志ID
+         * @returns {boolean} 是否已被处理
+         */
+        function _isLogProcessed(logId) {
+            return _processedLogs.hasOwnProperty(logId);
+        }
+        
+        /**
+         * 标记日志为已处理
+         * @param {string} logId 日志ID
+         */
+        function _markLogProcessed(logId) {
+            _processedLogs[logId] = true;
+            
+            // 清理旧的日志ID（保持最近1000个）
+            var keys = [];
+            for (var key in _processedLogs) {
+                if (_processedLogs.hasOwnProperty(key)) {
+                    keys.push(key);
+                }
+            }
+            
+            if (keys.length > 1000) {
+                // 按时间戳排序，删除最旧的一半
+                keys.sort();
+                var deleteCount = Math.floor(keys.length / 2);
+                for (var i = 0; i < deleteCount; i++) {
+                    delete _processedLogs[keys[i]];
+                }
+            }
+        }
+        
+        /**
+         * 统一的日志统计更新函数
+         * @param {string} level 日志级别
+         * @param {string} type 统计类型（generated/filtered/displayed）
+         * @param {string} logId 日志ID（可选，用于防重复）
+         * @returns {boolean} 是否成功更新统计
+         */
+        function _updateStatsUnified(level, type, logId) {
+            if (!_moduleConfig.enableStats) {
+                return false;
+            }
+            
+            // 如果提供了logId，检查是否已处理
+            if (logId) {
+                if (_isLogProcessed(logId)) {
+                    return false; // 已处理，跳过统计
+                }
+                _markLogProcessed(logId);
+            }
+            
+            try {
+                if (_stats[type] && typeof _stats[type][level] === "number") {
+                    _stats[type][level]++;
+                    return true;
+                }
+            } catch (e) {
+                // 静默处理统计错误
+            }
+            
+            return false;
+        }
+        
+        /**
+         * 处理日志统计的统一入口
+         * @param {string} level 日志级别
+         * @param {string} message 日志消息
+         * @param {string} moduleName 模块名
+         * @param {string} functionName 函数名
+         * @param {boolean} wasGenerated 是否被生成
+         * @param {boolean} wasFiltered 是否被过滤
+         * @param {boolean} wasDisplayed 是否被显示
+         * @returns {Object} 处理结果
+         */
+        function _processLogStats(level, message, moduleName, functionName, wasGenerated, wasFiltered, wasDisplayed) {
+            var logId = _generateLogId(level, message, moduleName, functionName);
+            var result = {
+                logId: logId,
+                generated: false,
+                filtered: false,
+                displayed: false
+            };
+            
+            if (wasGenerated) {
+                result.generated = _updateStatsUnified(level, "generated", logId);
+            }
+            
+            if (wasFiltered) {
+                result.filtered = _updateStatsUnified(level, "filtered", logId);
+            }
+            
+            if (wasDisplayed) {
+                result.displayed = _updateStatsUnified(level, "displayed", logId);
+            }
+            
+            return result;
+        }
+        
+        // ---------------------------------------------------------
+        // 1.3 公共API - 生成级控制
+        // ---------------------------------------------------------
+        
+        /**
+         * 设置生成级开关
+         * @param {string} level 日志级别
+         * @param {boolean} enabled 是否启用
+         * @returns {boolean} 是否成功
+         */
+        function setGenerationLevel(level, enabled) {
+            if (!_isValidLevel(level)) {
+                return false;
+            }
+            
+            var oldValue = _generationSwitches[level];
+            _generationSwitches[level] = enabled;
+            
+            // 输出状态变更信息
+            try {
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo("生成级开关变更", {
+                        level: level.toUpperCase(),
+                        oldValue: oldValue,
+                        newValue: enabled
+                    }, "log-controller", "setGenerationLevel");
+                }
+            } catch (e) {
+                // 静默处理
+            }
+            
+            return true;
+        }
+        
+        /**
+         * 检查生成级开关是否启用
+         * @param {string} level 日志级别
+         * @returns {boolean} 是否启用
+         */
+        function isGenerationEnabled(level) {
+            if (!_isValidLevel(level)) {
+                return false;
+            }
+            
+            var enabled = _generationSwitches[level];
+            
+            // 如果启用，更新统计和检查频率
+            if (enabled) {
+                _updateStats(level, "generated");
+                
+                // 特殊处理DEBUG级别的频率检查
+                if (level === "debug") {
+                    _checkDebugFrequency();
+                }
+            } else {
+                _updateStats(level, "filtered");
+            }
+            
+            return enabled;
+        }
+        
+        /**
+         * 获取生成级开关状态
+         * @param {string} level 日志级别（可选）
+         * @returns {Object|boolean} 开关状态
+         */
+        function getGenerationSwitches(level) {
+            if (level && _isValidLevel(level)) {
+                return _generationSwitches[level];
+            }
+            
+            // 返回所有状态的副本
+            var result = {};
+            for (var key in _generationSwitches) {
+                if (_generationSwitches.hasOwnProperty(key)) {
+                    result[key] = _generationSwitches[key];
+                }
+            }
+            return result;
+        }
+        
+        // ---------------------------------------------------------
+        // 1.4 公共API - 显示级控制
+        // ---------------------------------------------------------
+        
+        /**
+         * 设置显示级开关
+         * @param {string} level 日志级别
+         * @param {boolean} enabled 是否启用
+         * @returns {boolean} 是否成功
+         */
+        function setDisplayLevel(level, enabled) {
+            if (!_isValidLevel(level)) {
+                return false;
+            }
+            
+            var oldValue = _displaySwitches[level];
+            _displaySwitches[level] = enabled;
+            
+            // 输出状态变更信息
+            try {
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo("显示级开关变更", {
+                        level: level.toUpperCase(),
+                        oldValue: oldValue,
+                        newValue: enabled
+                    }, "log-controller", "setDisplayLevel");
+                }
+            } catch (e) {
+                // 静默处理
+            }
+            
+            return true;
+        }
+        
+        /**
+         * 检查显示级开关是否启用
+         * @param {string} level 日志级别
+         * @returns {boolean} 是否启用
+         */
+        function isDisplayEnabled(level) {
+            if (!_isValidLevel(level)) {
+                return false;
+            }
+            
+            var enabled = _displaySwitches[level];
+            
+            // 更新统计
+            if (enabled) {
+                _updateStats(level, "displayed");
+            }
+            
+            return enabled;
+        }
+        
+        /**
+         * 获取显示级开关状态
+         * @param {string} level 日志级别（可选）
+         * @returns {Object|boolean} 开关状态
+         */
+        function getDisplaySwitches(level) {
+            if (level && _isValidLevel(level)) {
+                return _displaySwitches[level];
+            }
+            
+            // 返回所有状态的副本
+            var result = {};
+            for (var key in _displaySwitches) {
+                if (_displaySwitches.hasOwnProperty(key)) {
+                    result[key] = _displaySwitches[key];
+                }
+            }
+            return result;
+        }
+        
+        // ---------------------------------------------------------
+        // 1.5 公共API - 批量操作
+        // ---------------------------------------------------------
+        
+        /**
+         * 开启所有级别
+         */
+        function enableAllLevels() {
+            var changed = [];
+            
+            for (var level in _generationSwitches) {
+                if (_generationSwitches.hasOwnProperty(level)) {
+                    if (!_generationSwitches[level]) {
+                        _generationSwitches[level] = true;
+                        changed.push("GEN-" + level.toUpperCase());
+                    }
+                }
+            }
+            
+            for (var level in _displaySwitches) {
+                if (_displaySwitches.hasOwnProperty(level)) {
+                    if (!_displaySwitches[level]) {
+                        _displaySwitches[level] = true;
+                        changed.push("DISP-" + level.toUpperCase());
+                    }
+                }
+            }
+            
+            // 输出变更信息
+            try {
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo("开启所有日志级别", {
+                        changed: changed
+                    }, "log-controller", "enableAllLevels");
+                }
+            } catch (e) {
+                // 静默处理
+            }
+        }
+        
+        /**
+         * 关闭所有级别
+         */
+        function disableAllLevels() {
+            var changed = [];
+            
+            for (var level in _generationSwitches) {
+                if (_generationSwitches.hasOwnProperty(level)) {
+                    if (_generationSwitches[level]) {
+                        _generationSwitches[level] = false;
+                        changed.push("GEN-" + level.toUpperCase());
+                    }
+                }
+            }
+            
+            for (var level in _displaySwitches) {
+                if (_displaySwitches.hasOwnProperty(level)) {
+                    if (_displaySwitches[level]) {
+                        _displaySwitches[level] = false;
+                        changed.push("DISP-" + level.toUpperCase());
+                    }
+                }
+            }
+            
+            // 输出变更信息
+            try {
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo("关闭所有日志级别", {
+                        changed: changed
+                    }, "log-controller", "disableAllLevels");
+                }
+            } catch (e) {
+                // 静默处理
+            }
+        }
+        
+        /**
+         * 生产模式：仅ERROR级别
+         */
+        function enableProductionMode() {
+            var changed = [];
+            
+            // 设置生成级开关
+            for (var level in _generationSwitches) {
+                if (_generationSwitches.hasOwnProperty(level)) {
+                    var newValue = (level === "error");
+                    if (_generationSwitches[level] !== newValue) {
+                        _generationSwitches[level] = newValue;
+                        changed.push("GEN-" + level.toUpperCase() + ":" + (newValue ? "ON" : "OFF"));
+                    }
+                }
+            }
+            
+            // 设置显示级开关
+            for (var level in _displaySwitches) {
+                if (_displaySwitches.hasOwnProperty(level)) {
+                    var newValue = (level === "error");
+                    if (_displaySwitches[level] !== newValue) {
+                        _displaySwitches[level] = newValue;
+                        changed.push("DISP-" + level.toUpperCase() + ":" + (newValue ? "ON" : "OFF"));
+                    }
+                }
+            }
+            
+            // 输出变更信息
+            try {
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo("切换到生产模式", {
+                        changed: changed,
+                        mode: "PRODUCTION"
+                    }, "log-controller", "enableProductionMode");
+                }
+            } catch (e) {
+                // 静默处理
+            }
+        }
+        
+        /**
+         * 调试模式：DEBUG + INFO + ERROR
+         */
+        function enableDebugMode() {
+            var changed = [];
+            
+            // 设置生成级开关
+            for (var level in _generationSwitches) {
+                if (_generationSwitches.hasOwnProperty(level)) {
+                    var newValue = (level !== "warn");
+                    if (_generationSwitches[level] !== newValue) {
+                        _generationSwitches[level] = newValue;
+                        changed.push("GEN-" + level.toUpperCase() + ":" + (newValue ? "ON" : "OFF"));
+                    }
+                }
+            }
+            
+            // 设置显示级开关
+            for (var level in _displaySwitches) {
+                if (_displaySwitches.hasOwnProperty(level)) {
+                    var newValue = (level !== "warn");
+                    if (_displaySwitches[level] !== newValue) {
+                        _displaySwitches[level] = newValue;
+                        changed.push("DISP-" + level.toUpperCase() + ":" + (newValue ? "ON" : "OFF"));
+                    }
+                }
+            }
+            
+            // 输出变更信息
+            try {
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo("切换到调试模式", {
+                        changed: changed,
+                        mode: "DEBUG"
+                    }, "log-controller", "enableDebugMode");
+                }
+            } catch (e) {
+                // 静默处理
+            }
+        }
+        
+        // ---------------------------------------------------------
+        // 1.6 公共API - 统计和监控
+        // ---------------------------------------------------------
+        
+        /**
+         * 获取性能统计
+         * @returns {Object} 统计信息
+         */
+        function getStats() {
+            if (!_moduleConfig.enableStats) {
+                return {enabled: false};
+            }
+            
+            // 返回统计信息的副本
+            var result = {
+                enabled: true,
+                generated: {},
+                filtered: {},
+                displayed: {},
+                summary: {}
+            };
+            
+            // 复制统计数据
+            for (var type in _stats) {
+                if (_stats.hasOwnProperty(type)) {
+                    result[type] = {};
+                    for (var level in _stats[type]) {
+                        if (_stats[type].hasOwnProperty(level)) {
+                            result[type][level] = _stats[type][level];
+                        }
+                    }
+                }
+            }
+            
+            // 计算汇总信息
+            for (var level in _stats.generated) {
+                if (_stats.generated.hasOwnProperty(level)) {
+                    var total = _stats.generated[level];
+                    var filtered = _stats.filtered[level];
+                    var displayed = _stats.displayed[level];
+                    
+                    result.summary[level] = {
+                        total: total,
+                        filtered: filtered,
+                        displayed: displayed,
+                        filterRate: total > 0 ? (filtered / total * 100).toFixed(2) + "%" : "0%",
+                        displayRate: total > 0 ? (displayed / total * 100).toFixed(2) + "%" : "0%"
+                    };
+                }
+            }
+            
+            return result;
+        }
+        
+        /**
+         * 重置统计信息
+         */
+        function resetStats() {
+            _stats.generated = {debug: 0, info: 0, warn: 0, error: 0};
+            _stats.filtered = {debug: 0, info: 0, warn: 0, error: 0};
+            _stats.displayed = {debug: 0, info: 0, warn: 0, error: 0};
+            
+            // 清空已处理日志记录
+            _processedLogs = {};
+            _logIdCounter = 0;
+            
+            // 输出重置信息
+            try {
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo("统计信息已重置", null, "log-controller", "resetStats");
+                }
+            } catch (e) {
+                // 静默处理
+            }
+        }
+        
+        /**
+         * 统一的日志统计处理API
+         * @param {string} level 日志级别
+         * @param {string} message 日志消息
+         * @param {string} moduleName 模块名
+         * @param {string} functionName 函数名
+         * @param {boolean} wasGenerated 是否被生成
+         * @param {boolean} wasFiltered 是否被过滤
+         * @param {boolean} wasDisplayed 是否被显示
+         * @returns {Object} 处理结果
+         */
+        function processLogStats(level, message, moduleName, functionName, wasGenerated, wasFiltered, wasDisplayed) {
+            return _processLogStats(level, message, moduleName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+        }
+        
+        /**
+         * 输出详细的debug信息到UI
+         * @param {string} level 日志级别
+         * @param {string} message 日志消息
+         * @param {*} context 上下文信息
+         * @param {string} moduleName 模块名
+         * @param {string} functionName 函数名
+         */
+        function outputDebugInfo(level, message, context, moduleName, functionName) {
+            try {
+                // 检查是否启用debug输出
+                if (!_displaySwitches.debug && level === "debug") {
+                    return;
+                }
+                
+                var timestamp = new Date().toLocaleString();
+                var debugInfo = {
+                    timestamp: timestamp,
+                    level: level.toUpperCase(),
+                    message: message,
+                    moduleName: moduleName || "Unknown",
+                    functionName: functionName || "Unknown",
+                    context: context || null,
+                    controllerState: {
+                        generationSwitches: _generationSwitches,
+                        displaySwitches: _displaySwitches,
+                        stats: _stats
+                    }
+                };
+                
+                // 尝试输出到UI
+                if (typeof uiDebug !== "undefined") {
+                    uiDebug(level, message, debugInfo, moduleName, functionName);
+                } else if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+                    // 备用输出方式
+                    var output = "[" + timestamp + "][DEBUG-" + level.toUpperCase() + "][" + moduleName + "][" + functionName + "] " + message;
+                    if (context) {
+                        try {
+                            output += " | " + JSON.stringify(context);
+                        } catch (e) {
+                            output += " | [Context: 无法序列化]";
+                        }
+                    }
+                    memLog.Lines.Add(output);
+                }
+                
+            } catch (e) {
+                // 静默处理debug输出错误
+            }
+        }
+        
+        /**
+         * 获取详细的系统状态信息
+         * @returns {Object} 系统状态
+         */
+        function getDetailedStatus() {
+            var status = {
+                timestamp: new Date().toLocaleString(),
+                controller: {
+                    available: true,
+                    version: "1.0.0"
+                },
+                switches: {
+                    generation: _generationSwitches,
+                    display: _displaySwitches
+                },
+                statistics: _stats,
+                configuration: _moduleConfig,
+                performance: {
+                    lastOptimizationTime: _lastOptimizationTime,
+                    debugCountInSecond: _debugCountInSecond,
+                    secondStartTime: _secondStartTime
+                },
+                processedLogs: {
+                    count: 0,
+                    sampleIds: []
+                }
+            };
+            
+            // 统计已处理日志数量
+            var count = 0;
+            var samples = [];
+            for (var id in _processedLogs) {
+                if (_processedLogs.hasOwnProperty(id)) {
+                    count++;
+                    if (samples.length < 5) {
+                        samples.push(id);
+                    }
+                }
+            }
+            status.processedLogs.count = count;
+            status.processedLogs.sampleIds = samples;
+            
+            return status;
+        }
+        
+        /**
+         * 输出完整的系统诊断信息
+         */
+        function outputSystemDiagnostics() {
+            try {
+                var status = getDetailedStatus();
+                
+                outputDebugInfo("info", "=== GlobalLogController 系统诊断 ===", status, "log-controller", "outputSystemDiagnostics");
+                
+                // 输出各级别开关状态
+                for (var level in _generationSwitches) {
+                    if (_generationSwitches.hasOwnProperty(level)) {
+                        outputDebugInfo("info", "开关状态 - " + level.toUpperCase(), {
+                            generation: _generationSwitches[level],
+                            display: _displaySwitches[level]
+                        }, "log-controller", "outputSystemDiagnostics");
+                    }
+                }
+                
+                // 输出统计信息
+                outputDebugInfo("info", "性能统计", _stats, "log-controller", "outputSystemDiagnostics");
+                
+                // 输出配置信息
+                outputDebugInfo("info", "模块配置", _moduleConfig, "log-controller", "outputSystemDiagnostics");
+                
+                outputDebugInfo("info", "=== 诊断完成 ===", null, "log-controller", "outputSystemDiagnostics");
+                
+            } catch (e) {
+                // 静默处理诊断错误
+            }
+        }
+        
+        /**
+         * 清理过期的已处理日志记录
+         */
+        function cleanupProcessedLogs() {
+            var keys = [];
+            for (var key in _processedLogs) {
+                if (_processedLogs.hasOwnProperty(key)) {
+                    keys.push(key);
+                }
+            }
+            
+            if (keys.length > 500) {
+                // 按时间戳排序，删除最旧的一半
+                keys.sort();
+                var deleteCount = Math.floor(keys.length / 2);
+                for (var i = 0; i < deleteCount; i++) {
+                    delete _processedLogs[keys[i]];
+                }
+            }
+        }
+        
+        /**
+         * 配置模块
+         * @param {Object} config 配置选项
+         */
+        function configure(config) {
+            if (config && typeof config === "object") {
+                for (var key in config) {
+                    if (config.hasOwnProperty(key) && _moduleConfig.hasOwnProperty(key)) {
+                        _moduleConfig[key] = config[key];
+                    }
+                }
+            }
+        }
+        
+        /**
+         * 获取模块配置
+         * @returns {Object} 模块配置
+         */
+        function getConfiguration() {
+            var config = {};
+            for (var key in _moduleConfig) {
+                if (_moduleConfig.hasOwnProperty(key)) {
+                    config[key] = _moduleConfig[key];
+                }
+            }
+            return config;
+        }
+        
+        // ---------------------------------------------------------
+        // 1.7 导出接口
+        // ---------------------------------------------------------
+        
+        return {
+            // 生成级控制
+            setGenerationLevel: setGenerationLevel,
+            isGenerationEnabled: isGenerationEnabled,
+            getGenerationSwitches: getGenerationSwitches,
+            
+            // 显示级控制
+            setDisplayLevel: setDisplayLevel,
+            isDisplayEnabled: isDisplayEnabled,
+            getDisplaySwitches: getDisplaySwitches,
+            
+            // 批量操作
+            enableAllLevels: enableAllLevels,
+            disableAllLevels: disableAllLevels,
+            enableProductionMode: enableProductionMode,
+            enableDebugMode: enableDebugMode,
+            
+            // 统计和监控
+            getStats: getStats,
+            resetStats: resetStats,
+            processLogStats: processLogStats,
+            cleanupProcessedLogs: cleanupProcessedLogs,
+            
+            // Debug和诊断功能
+            outputDebugInfo: outputDebugInfo,
+            getDetailedStatus: getDetailedStatus,
+            outputSystemDiagnostics: outputSystemDiagnostics,
+            
+            // 配置管理
+            configure: configure,
+            getConfiguration: getConfiguration
+        };
+        
+    })();
+
+
+// File: src/modules/logger/types.js
+/**
+ * LoggerModule 类型定义
+ * 
+ * 定义日志级别、默认配置、数据结构等
+ * ES3/JScript 5.8 兼容
+ */
+
+var LoggerTypes = (function(){
+    
+    // -------------------------------------------------------------
+    // 1. 日志级别常量定义
+    // -------------------------------------------------------------
+    
+    /**
+     * 日志级别位掩码定义
+     * 使用位运算支持级别组合
+     */
+    var LOG_LEVELS = {
+        NONE: 0,      // 不记录任何日志
+        ERROR: 1,     // 错误级别
+        WARN: 2,      // 警告级别
+        INFO: 4,      // 信息级别
+        DEBUG: 8,     // 调试级别
+        ALL: 15       // 所有级别
+    };
+    
+    /**
+     * 日志级别名称映射
+     */
+    var LEVEL_NAMES = {
+        1: "ERROR",
+        2: "WARN", 
+        4: "INFO",
+        8: "DEBUG"
+    };
+    
+    /**
+     * 日志级别描述
+     */
+    var LEVEL_DESCRIPTIONS = {
+        0: "无日志",
+        1: "仅错误",
+        2: "警告",
+        3: "错误和警告",
+        4: "信息",
+        5: "错误和信息",
+        6: "警告和信息",
+        7: "错误、警告和信息",
+        8: "调试",
+        9: "错误和调试",
+        10: "警告和调试",
+        11: "错误、警告和调试",
+        12: "信息和调试",
+        13: "错误、信息和调试",
+        14: "警告、信息和调试",
+        15: "所有日志"
+    };
+    
+    // -------------------------------------------------------------
+    // 2. 默认配置定义
+    // -------------------------------------------------------------
+    
+    /**
+     * LoggerModule 默认配置
+     */
+    var DEFAULT_CONFIG = {
+        moduleName: "LoggerModule",
+        autoInit: true,
+        autoTime: true,
+        
+        // 日志特定配置
+        level: LOG_LEVELS.ALL,           // 默认记录所有级别
+        threshold: 50,                   // 默认写入阈值
+        enabled: true,                   // 默认启用日志
+        
+        // 格式化配置
+        includeTimestamp: true,          // 包含时间戳
+        includeModuleName: true,         // 包含模块名
+        includeFileName: true,           // 包含文件名
+        includeFunctionName: true,       // 包含函数名
+        
+        // 写入配置
+        maxLogSize: 5120,               // 单条日志最大大小（5KB）
+        maxCacheSize: 100,              // 最大缓存条数
+        autoFlush: true,                // 自动flush
+        
+        // 调试配置
+        debugMode: false,               // 调试模式
+        captureEnabled: true             // 启用值截获
+    };
+    
+    // -------------------------------------------------------------
+    // 3. 数据结构定义
+    // -------------------------------------------------------------
+    
+    /**
+     * 日志条目结构模板
+     */
+    var LOG_ENTRY_TEMPLATE = {
+        timestamp: "",                  // 时间戳字符串
+        level: "",                      // 日志级别名称
+        message: "",                    // 日志消息
+        moduleName: "",                // 模块名称
+        fileName: "",                   // 文件名称
+        functionName: "",              // 函数名称
+        context: null                  // 上下文信息
+    };
+    
+    /**
+     * 统计信息结构模板
+     */
+    var STATS_TEMPLATE = {
+        totalLogs: 0,                  // 总日志数
+        errorCount: 0,                 // 错误数量
+        warnCount: 0,                  // 警告数量
+        infoCount: 0,                  // 信息数量
+        debugCount: 0,                 // 调试数量
+        cacheSize: 0,                  // 当前缓存大小
+        lastFlushTime: 0,              // 最后写入时间
+        flushCount: 0,                 // 写入次数
+        errorFlushCount: 0             // 写入失败次数
+    };
+    
+    /**
+     * Logger实例数据结构模板
+     */
+    var INSTANCE_DATA_TEMPLATE = {
+        config: null,                  // 配置对象
+        cache: null,                   // 日志缓存数组
+        stats: null,                   // 统计信息对象
+        initialized: false,            // 初始化状态
+        lastLogTime: 0                 // 最后日志时间
+    };
+    
+    // -------------------------------------------------------------
+    // 4. 错误代码定义
+    // -------------------------------------------------------------
+    
+    /**
+     * LoggerModule 错误代码
+     */
+    var ERROR_CODES = {
+        SUCCESS: 0,                    // 成功
+        INVALID_INSTANCE: 1001,        // 无效实例
+        NOT_INITIALIZED: 1002,         // 未初始化
+        INVALID_LEVEL: 1003,           // 无效日志级别
+        INVALID_THRESHOLD: 1004,       // 无效阈值
+        WRITE_FAILED: 1005,           // 写入失败
+        CACHE_FULL: 1006,             // 缓存已满
+        INVALID_PARAMETER: 1007       // 无效参数
+    };
+    
+    /**
+     * 错误消息映射
+     */
+    var ERROR_MESSAGES = {
+        1001: "Logger实例无效",
+        1002: "Logger未初始化",
+        1003: "无效的日志级别",
+        1004: "无效的写入阈值",
+        1005: "日志写入失败",
+        1006: "日志缓存已满",
+        1007: "参数无效"
+    };
+    
+    // -------------------------------------------------------------
+    // 5. 工具函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 验证日志级别是否有效
+     * @param {number} level 日志级别
+     * @returns {boolean} 是否有效
+     */
+    function isValidLogLevel(level) {
+        if (typeof level !== "number") {
+            return false;
+        }
+        
+        return level >= LOG_LEVELS.NONE && level <= LOG_LEVELS.ALL;
+    }
+    
+    /**
+     * 获取日志级别名称
+     * @param {number} level 日志级别
+     * @returns {string} 级别名称
+     */
+    function getLevelName(level) {
+        return LEVEL_NAMES[level] || "UNKNOWN";
+    }
+    
+    /**
+     * 获取日志级别描述
+     * @param {number} level 日志级别
+     * @returns {string} 级别描述
+     */
+    function getLevelDescription(level) {
+        return LEVEL_DESCRIPTIONS[level] || "未知级别";
+    }
+    
+    /**
+     * 检查级别是否启用
+     * @param {number} currentLevel 当前级别
+     * @param {number} checkLevel 检查级别
+     * @returns {boolean} 是否启用
+     */
+    function isLevelEnabled(currentLevel, checkLevel) {
+        return (currentLevel & checkLevel) === checkLevel;
+    }
+    
+    /**
+     * 获取错误消息
+     * @param {number} errorCode 错误代码
+     * @returns {string} 错误消息
+     */
+    function getErrorMessage(errorCode) {
+        return ERROR_MESSAGES[errorCode] || "未知错误";
+    }
+    
+    /**
+     * 创建默认配置的副本
+     * @param {Object} overrides 覆盖配置
+     * @returns {Object} 配置对象
+     */
+    function createDefaultConfig(overrides) {
+        var config = {};
+        var key;
+        
+        // 复制默认配置
+        for (key in DEFAULT_CONFIG) {
+            config[key] = DEFAULT_CONFIG[key];
+        }
+        
+        // 应用覆盖配置
+        if (overrides && typeof overrides === "object") {
+            for (key in overrides) {
+                if (overrides.hasOwnProperty(key)) {
+                    config[key] = overrides[key];
+                }
+            }
+        }
+        
+        return config;
+    }
+    
+    /**
+     * 创建统计信息对象
+     * @returns {Object} 统计信息对象
+     */
+    function createStats() {
+        var stats = {};
+        var key;
+        
+        for (key in STATS_TEMPLATE) {
+            stats[key] = STATS_TEMPLATE[key];
+        }
+        
+        return stats;
+    }
+    
+    /**
+     * 创建日志条目对象
+     * @returns {Object} 日志条目对象
+     */
+    function createLogEntry() {
+        var entry = {};
+        var key;
+        
+        for (key in LOG_ENTRY_TEMPLATE) {
+            entry[key] = LOG_ENTRY_TEMPLATE[key];
+        }
+        
+        return entry;
+    }
+    
+    /**
+     * 创建实例数据对象
+     * @returns {Object} 实例数据对象
+     */
+    function createInstanceData() {
+        var data = {};
+        var key;
+        
+        for (key in INSTANCE_DATA_TEMPLATE) {
+            data[key] = INSTANCE_DATA_TEMPLATE[key];
+        }
+        
+        // 初始化引用类型
+        data.config = createDefaultConfig();
+        data.cache = [];
+        data.stats = createStats();
+        
+        return data;
+    }
+    
+    // -------------------------------------------------------------
+    // 6. 导出接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 常量
+        LOG_LEVELS: LOG_LEVELS,
+        LEVEL_NAMES: LEVEL_NAMES,
+        LEVEL_DESCRIPTIONS: LEVEL_DESCRIPTIONS,
+        DEFAULT_CONFIG: DEFAULT_CONFIG,
+        LOG_ENTRY_TEMPLATE: LOG_ENTRY_TEMPLATE,
+        STATS_TEMPLATE: STATS_TEMPLATE,
+        INSTANCE_DATA_TEMPLATE: INSTANCE_DATA_TEMPLATE,
+        ERROR_CODES: ERROR_CODES,
+        ERROR_MESSAGES: ERROR_MESSAGES,
+        
+        // 工具函数
+        isValidLogLevel: isValidLogLevel,
+        getLevelName: getLevelName,
+        getLevelDescription: getLevelDescription,
+        isLevelEnabled: isLevelEnabled,
+        getErrorMessage: getErrorMessage,
+        createDefaultConfig: createDefaultConfig,
+        createStats: createStats,
+        createLogEntry: createLogEntry,
+        createInstanceData: createInstanceData
+    };
+    
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.LoggerTypes = LoggerTypes;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = LoggerTypes;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.LoggerTypes = LoggerTypes;
+    }
+})();
+
+
+// File: src/modules/logger/tools.js
+/**
+ * LoggerModule 工具函数
+ * 
+ * 提供格式化、验证、字符串处理等工具函数
+ * ES3/JScript 5.8 兼容
+ */
+
+var LoggerTools = (function(){
+    
+    // -------------------------------------------------------------
+    // 1. 字符串处理工具
+    // -------------------------------------------------------------
+    
+    /**
+     * 简单的对象字符串化（ES3兼容）
+     * 使用for...in遍历，无需复杂的深度控制
+     * @param {*} obj 要字符串化的对象
+     * @returns {string} 字符串化结果
+     */
+    function simpleStringify(obj) {
+        if (obj === null || obj === undefined) {
+            return "null";
+        }
+        
+        if (typeof obj === "string") {
+            return "\"" + obj + "\"";
+        }
+        
+        if (typeof obj === "number" || typeof obj === "boolean") {
+            return String(obj);
+        }
+        
+        if (typeof obj !== "object") {
+            return String(obj);
+        }
+        
+        // 对象处理
+        var result = "{";
+        var first = true;
+        var key;
+        
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (!first) {
+                    result += ", ";
+                }
+                result += key + ":" + simpleStringify(obj[key]);
+                first = false;
+            }
+        }
+        
+        result += "}";
+        return result;
+    }
+    
+    /**
+     * 安全的字符串转换
+     * @param {*} value 要转换的值
+     * @returns {string} 转换结果
+     */
+    function safeString(value) {
+        try {
+            if (value === null || value === undefined) {
+                return "";
+            }
+            return String(value);
+        } catch (e) {
+            return "[Conversion Error]";
+        }
+    }
+    
+    /**
+     * 填充字符串到指定长度
+     * @param {string} str 原字符串
+     * @param {number} length 目标长度
+     * @param {string} pad 填充字符（默认为空格）
+     * @returns {string} 填充后的字符串
+     */
+    function padString(str, length, pad) {
+        var result = safeString(str);
+        var padChar = pad || " ";
+        
+        while (result.length < length) {
+            result = padChar + result;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 截断字符串到指定长度
+     * @param {string} str 原字符串
+     * @param {number} maxLength 最大长度
+     * @param {string} suffix 截断后缀（默认为"..."）
+     * @returns {string} 截断后的字符串
+     */
+    function truncateString(str, maxLength, suffix) {
+        var result = safeString(str);
+        var truncSuffix = suffix || "...";
+        
+        if (result.length <= maxLength) {
+            return result;
+        }
+        
+        return result.substring(0, maxLength - truncSuffix.length) + truncSuffix;
+    }
+    
+    // -------------------------------------------------------------
+    // 2. 时间处理工具
+    // -------------------------------------------------------------
+    
+    /**
+     * 格式化时间戳为可读字符串
+     * @param {Date|number} timestamp 时间戳或Date对象
+     * @returns {string} 格式化的时间字符串
+     */
+    function formatTimestamp(timestamp) {
+        var date;
+        
+        if (timestamp instanceof Date) {
+            date = timestamp;
+        } else if (typeof timestamp === "number") {
+            date = new Date(timestamp);
+        } else {
+            date = new Date();
+        }
+        
+        try {
+            var year = date.getFullYear();
+            var month = padString(String(date.getMonth() + 1), 2, "0");
+            var day = padString(String(date.getDate()), 2, "0");
+            var hours = padString(String(date.getHours()), 2, "0");
+            var minutes = padString(String(date.getMinutes()), 2, "0");
+            var seconds = padString(String(date.getSeconds()), 2, "0");
+            
+            return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+        } catch (e) {
+            return "Invalid Date";
+        }
+    }
+    
+    /**
+     * 获取当前时间戳
+     * @returns {number} 当前时间戳（毫秒）
+     */
+    function getCurrentTime() {
+        try {
+            return new Date().getTime();
+        } catch (e) {
+            return 0;
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 3. 验证工具
+    // -------------------------------------------------------------
+    
+    /**
+     * 验证参数是否为有效字符串
+     * @param {*} value 要验证的值
+     * @returns {boolean} 是否为有效字符串
+     */
+    function isValidString(value) {
+        return typeof value === "string" && value.length > 0;
+    }
+    
+    /**
+     * 验证参数是否为有效对象
+     * @param {*} value 要验证的值
+     * @returns {boolean} 是否为有效对象
+     */
+    function isValidObject(value) {
+        return value !== null && typeof value === "object";
+    }
+    
+    /**
+     * 验证参数是否为有效函数
+     * @param {*} value 要验证的值
+     * @returns {boolean} 是否为有效函数
+     */
+    function isValidFunction(value) {
+        return typeof value === "function";
+    }
+    
+    /**
+     * 验证参数是否为有效数字
+     * @param {*} value 要验证的值
+     * @returns {boolean} 是否为有效数字
+     */
+    function isValidNumber(value) {
+        return typeof value === "number" && !isNaN(value) && isFinite(value);
+    }
+    
+    /**
+     * 验证参数是否为正整数
+     * @param {*} value 要验证的值
+     * @returns {boolean} 是否为正整数
+     */
+    function isPositiveInteger(value) {
+        return isValidNumber(value) && value > 0 && Math.floor(value) === value;
+    }
+    
+    /**
+     * 验证参数是否为布尔值
+     * @param {*} value 要验证的值
+     * @returns {boolean} 是否为布尔值
+     */
+    function isValidBoolean(value) {
+        return typeof value === "boolean";
+    }
+    
+    // -------------------------------------------------------------
+    // 4. 配置处理工具
+    // -------------------------------------------------------------
+    
+    /**
+     * 深度合并配置对象
+     * @param {Object} target 目标对象
+     * @param {Object} source 源对象
+     * @returns {Object} 合并后的对象
+     */
+    function mergeConfig(target, source) {
+        var result = {};
+        var key;
+        
+        // 复制目标对象
+        if (target && typeof target === "object") {
+            for (key in target) {
+                if (target.hasOwnProperty(key)) {
+                    result[key] = target[key];
+                }
+            }
+        }
+        
+        // 合并源对象
+        if (source && typeof source === "object") {
+            for (key in source) {
+                if (source.hasOwnProperty(key)) {
+                    result[key] = source[key];
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 验证配置对象
+     * @param {Object} config 配置对象
+     * @returns {Object} 验证结果 {valid: boolean, errors: Array}
+     */
+    function validateConfig(config) {
+        var result = {
+            valid: true,
+            errors: []
+        };
+        
+        if (!isValidObject(config)) {
+            result.valid = false;
+            result.errors.push("配置必须是对象");
+            return result;
+        }
+        
+        // 验证日志级别
+        if (config.level !== undefined && !isValidNumber(config.level)) {
+            result.valid = false;
+            result.errors.push("日志级别必须是数字");
+        }
+        
+        // 验证阈值
+        if (config.threshold !== undefined && !isPositiveInteger(config.threshold)) {
+            result.valid = false;
+            result.errors.push("写入阈值必须是正整数");
+        }
+        
+        // 验证启用状态
+        if (config.enabled !== undefined && !isValidBoolean(config.enabled)) {
+            result.valid = false;
+            result.errors.push("启用状态必须是布尔值");
+        }
+        
+        return result;
+    }
+    
+    // -------------------------------------------------------------
+    // 5. 日志处理工具
+    // -------------------------------------------------------------
+    
+    /**
+     * 估算日志条目大小（字节）
+     * @param {Object} logEntry 日志条目
+     * @returns {number} 估算大小
+     */
+    function estimateLogSize(logEntry) {
+        if (!isValidObject(logEntry)) {
+            return 0;
+        }
+        
+        var size = 0;
+        var key;
+        
+        for (key in logEntry) {
+            if (logEntry.hasOwnProperty(key)) {
+                size += safeString(logEntry[key]).length * 2; // 假设每个字符2字节
+            }
+        }
+        
+        return size;
+    }
+    
+    /**
+     * 验证日志条目
+     * @param {Object} logEntry 日志条目
+     * @returns {boolean} 是否有效
+     */
+    function validateLogEntry(logEntry) {
+        if (!isValidObject(logEntry)) {
+            return false;
+        }
+        
+        // 检查必需字段
+        var requiredFields = ["timestamp", "level", "message"];
+        var i;
+        
+        for (i = 0; i < requiredFields.length; i++) {
+            if (!logEntry.hasOwnProperty(requiredFields[i]) || 
+                !isValidString(logEntry[requiredFields[i]])) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 清理日志条目（移除无效字段）
+     * @param {Object} logEntry 日志条目
+     * @returns {Object} 清理后的日志条目
+     */
+    function cleanLogEntry(logEntry) {
+        if (!isValidObject(logEntry)) {
+            return {};
+        }
+        
+        var cleaned = {};
+        var key;
+        
+        for (key in logEntry) {
+            if (logEntry.hasOwnProperty(key)) {
+                var value = logEntry[key];
+                
+                // 跳过undefined值
+                if (value !== undefined) {
+                    cleaned[key] = value;
+                }
+            }
+        }
+        
+        return cleaned;
+    }
+    
+    // -------------------------------------------------------------
+    // 6. 错误处理工具
+    // -------------------------------------------------------------
+    
+    /**
+     * 安全执行函数
+     * @param {Function} func 要执行的函数
+     * @param {*} defaultValue 默认返回值
+     * @returns {*} 执行结果或默认值
+     */
+    function safeExecute(func, defaultValue) {
+        try {
+            if (isValidFunction(func)) {
+                return func();
+            }
+        } catch (e) {
+            // 静默处理错误
+        }
+        
+        return defaultValue;
+    }
+    
+    /**
+     * 创建错误信息对象
+     * @param {number} code 错误代码
+     * @param {string} message 错误消息
+     * @param {*} details 错误详情
+     * @returns {Object} 错误信息对象
+     */
+    function createError(code, message, details) {
+        return {
+            code: code || 0,
+            message: message || "未知错误",
+            details: details || null,
+            timestamp: getCurrentTime()
+        };
+    }
+    
+    // -------------------------------------------------------------
+    // 7. 数组处理工具
+    // -------------------------------------------------------------
+    
+    /**
+     * 安全的数组长度获取
+     * @param {Array} array 数组
+     * @returns {number} 数组长度
+     */
+    function safeArrayLength(array) {
+        if (array && typeof array.length === "number") {
+            return array.length;
+        }
+        return 0;
+    }
+    
+    /**
+     * 安全的数组元素访问
+     * @param {Array} array 数组
+     * @param {number} index 索引
+     * @param {*} defaultValue 默认值
+     * @returns {*} 数组元素或默认值
+     */
+    function safeArrayGet(array, index, defaultValue) {
+        if (array && typeof array.length === "number" && 
+            index >= 0 && index < array.length) {
+            return array[index];
+        }
+        return defaultValue;
+    }
+    
+    /**
+     * 清空数组
+     * @param {Array} array 数组
+     * @returns {boolean} 是否成功
+     */
+    function clearArray(array) {
+        try {
+            if (array && typeof array.length === "number") {
+                array.length = 0;
+                return true;
+            }
+        } catch (e) {
+            // 静默处理
+        }
+        return false;
+    }
+    
+    // -------------------------------------------------------------
+    // 8. 导出接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 字符串处理工具
+        simpleStringify: simpleStringify,
+        safeString: safeString,
+        padString: padString,
+        truncateString: truncateString,
+        
+        // 时间处理工具
+        formatTimestamp: formatTimestamp,
+        getCurrentTime: getCurrentTime,
+        
+        // 验证工具
+        isValidString: isValidString,
+        isValidObject: isValidObject,
+        isValidFunction: isValidFunction,
+        isValidNumber: isValidNumber,
+        isPositiveInteger: isPositiveInteger,
+        isValidBoolean: isValidBoolean,
+        
+        // 配置处理工具
+        mergeConfig: mergeConfig,
+        validateConfig: validateConfig,
+        
+        // 日志处理工具
+        estimateLogSize: estimateLogSize,
+        validateLogEntry: validateLogEntry,
+        cleanLogEntry: cleanLogEntry,
+        
+        // 错误处理工具
+        safeExecute: safeExecute,
+        createError: createError,
+        
+        // 数组处理工具
+        safeArrayLength: safeArrayLength,
+        safeArrayGet: safeArrayGet,
+        clearArray: clearArray
+    };
+    
+})();
+
+
+// File: src/modules/logger/steps/step_format.js
+/**
+ * LoggerModule 日志格式化步骤
+ * 
+ * 负责日志条目格式化的步骤逻辑
+ * ES3/JScript 5.8 兼容
+ */
+
+var StepFormat = (function(){
+    
+    // -------------------------------------------------------------
+    // 1. 格式化配置
+    // -------------------------------------------------------------
+    
+    /**
+     * 默认格式化配置
+     */
+    var DEFAULT_FORMAT_CONFIG = {
+        includeTimestamp: true,
+        includeModuleName: true,
+        includeFileName: true,
+        includeFunctionName: true,
+        includeContext: true,
+        timestampFormat: "YYYY-MM-DD HH:mm:ss",
+        levelPadding: 5,
+        modulePadding: 15,
+        filePadding: 20,
+        functionPadding: 20,
+        maxMessageLength: 200,
+        maxContextLength: 500
+    };
+    
+    // -------------------------------------------------------------
+    // 2. 核心格式化函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 格式化单个日志条目
+     * @param {Object} logEntry 日志条目
+     * @param {Object} config 格式化配置（可选）
+     * @returns {string} 格式化后的日志字符串
+     */
+    function formatLogEntry(logEntry, config) {
+        if (!logEntry || typeof logEntry !== "object") {
+            return "[Invalid Log Entry]";
+        }
+        
+        var formatConfig = mergeFormatConfig(DEFAULT_FORMAT_CONFIG, config);
+        var parts = [];
+        
+        // 时间戳
+        if (formatConfig.includeTimestamp && logEntry.timestamp) {
+            parts.push("[" + formatTimestamp(logEntry.timestamp) + "]");
+        }
+        
+        // 日志级别
+        if (logEntry.level) {
+            parts.push("[" + padString(logEntry.level, formatConfig.levelPadding) + "]");
+        }
+        
+        // 模块名
+        if (formatConfig.includeModuleName && logEntry.moduleName) {
+            parts.push("[" + padString(truncateString(logEntry.moduleName, formatConfig.modulePadding), formatConfig.modulePadding) + "]");
+        }
+        
+        // 文件名
+        if (formatConfig.includeFileName && logEntry.fileName) {
+            parts.push("[" + padString(truncateString(logEntry.fileName, formatConfig.filePadding), formatConfig.filePadding) + "]");
+        }
+        
+        // 函数名
+        if (formatConfig.includeFunctionName && logEntry.functionName) {
+            parts.push("[" + padString(truncateString(logEntry.functionName, formatConfig.functionPadding), formatConfig.functionPadding) + "]");
+        }
+        
+        // 消息
+        var message = safeString(logEntry.message);
+        if (message.length > formatConfig.maxMessageLength) {
+            message = truncateString(message, formatConfig.maxMessageLength);
+        }
+        parts.push(message);
+        
+        // 上下文
+        if (formatConfig.includeContext && logEntry.context) {
+            var contextStr = formatContext(logEntry.context, formatConfig.maxContextLength);
+            if (contextStr) {
+                parts.push("| " + contextStr);
+            }
+        }
+        
+        return parts.join(" ");
+    }
+    
+    /**
+     * 格式化上下文信息
+     * @param {*} context 上下文对象
+     * @param {number} maxLength 最大长度
+     * @returns {string} 格式化后的上下文字符串
+     */
+    function formatContext(context, maxLength) {
+        if (context === null || context === undefined) {
+            return "";
+        }
+        
+        var contextStr;
+        
+        if (typeof context === "string") {
+            contextStr = context;
+        } else if (typeof context === "object") {
+            contextStr = simpleStringify(context);
+        } else {
+            contextStr = String(context);
+        }
+        
+        if (maxLength && contextStr.length > maxLength) {
+            contextStr = truncateString(contextStr, maxLength);
+        }
+        
+        return "ctx=" + contextStr;
+    }
+    
+    /**
+     * 批量格式化日志条目
+     * @param {Array} logEntries 日志条目数组
+     * @param {Object} config 格式化配置（可选）
+     * @returns {Array} 格式化后的日志字符串数组
+     */
+    function formatLogEntries(logEntries, config) {
+        if (!logEntries || typeof logEntries.length !== "number") {
+            return [];
+        }
+        
+        var formatted = [];
+        var i;
+        
+        for (i = 0; i < logEntries.length; i++) {
+            var entry = logEntries[i];
+            var formattedEntry = formatLogEntry(entry, config);
+            formatted.push(formattedEntry);
+        }
+        
+        return formatted;
+    }
+    
+    // -------------------------------------------------------------
+    // 3. 特殊格式化函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 格式化为JSON格式
+     * @param {Object} logEntry 日志条目
+     * @returns {string} JSON格式的日志字符串
+     */
+    function formatAsJson(logEntry) {
+        if (!logEntry || typeof logEntry !== "object") {
+            return "{\"error\":\"Invalid Log Entry\"}";
+        }
+        
+        try {
+            return simpleStringify(logEntry);
+        } catch (e) {
+            return "{\"error\":\"Format Error\"}";
+        }
+    }
+    
+    /**
+     * 格式化为CSV格式
+     * @param {Object} logEntry 日志条目
+     * @returns {string} CSV格式的日志字符串
+     */
+    function formatAsCsv(logEntry) {
+        if (!logEntry || typeof logEntry !== "object") {
+            return "\"Invalid Log Entry\"";
+        }
+        
+        var fields = [
+            escapeCsvField(logEntry.timestamp || ""),
+            escapeCsvField(logEntry.level || ""),
+            escapeCsvField(logEntry.moduleName || ""),
+            escapeCsvField(logEntry.fileName || ""),
+            escapeCsvField(logEntry.functionName || ""),
+            escapeCsvField(logEntry.message || ""),
+            escapeCsvField(simpleStringify(logEntry.context))
+        ];
+        
+        return fields.join(",");
+    }
+    
+    /**
+     * 格式化为简洁格式
+     * @param {Object} logEntry 日志条目
+     * @returns {string} 简洁格式的日志字符串
+     */
+    function formatAsCompact(logEntry) {
+        if (!logEntry || typeof logEntry !== "object") {
+            return "[Invalid]";
+        }
+        
+        var parts = [];
+        
+        // 级别
+        if (logEntry.level) {
+            parts.push(logEntry.level.substring(0, 1));
+        }
+        
+        // 消息
+        if (logEntry.message) {
+            parts.push(truncateString(logEntry.message, 100));
+        }
+        
+        // 时间（简化）
+        if (logEntry.timestamp) {
+            var time = new Date(logEntry.timestamp);
+            var timeStr = padString(String(time.getHours()), 2, "0") + ":" + 
+                          padString(String(time.getMinutes()), 2, "0") + ":" + 
+                          padString(String(time.getSeconds()), 2, "0");
+            parts.push("(" + timeStr + ")");
+        }
+        
+        return parts.join(" ");
+    }
+    
+    // -------------------------------------------------------------
+    // 4. 格式化工具函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 合并格式化配置
+     * @param {Object} defaultConfig 默认配置
+     * @param {Object} userConfig 用户配置
+     * @returns {Object} 合并后的配置
+     */
+    function mergeFormatConfig(defaultConfig, userConfig) {
+        var result = {};
+        var key;
+        
+        // 复制默认配置
+        for (key in defaultConfig) {
+            if (defaultConfig.hasOwnProperty(key)) {
+                result[key] = defaultConfig[key];
+            }
+        }
+        
+        // 应用用户配置
+        if (userConfig && typeof userConfig === "object") {
+            for (key in userConfig) {
+                if (userConfig.hasOwnProperty(key)) {
+                    result[key] = userConfig[key];
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 转义CSV字段
+     * @param {string} field 字段值
+     * @returns {string} 转义后的字段值
+     */
+    function escapeCsvField(field) {
+        var str = safeString(field);
+        
+        // 如果包含逗号、引号或换行符，需要用引号包围并转义内部引号
+        if (str.indexOf(",") >= 0 || str.indexOf("\"") >= 0 || 
+            str.indexOf("\n") >= 0 || str.indexOf("\r") >= 0) {
+            str = str.replace(/"/g, "\"\"");
+            str = "\"" + str + "\"";
+        }
+        
+        return str;
+    }
+    
+    /**
+     * 格式化时间戳
+     * @param {Date|number|string} timestamp 时间戳
+     * @returns {string} 格式化的时间字符串
+     */
+    function formatTimestamp(timestamp) {
+        try {
+            var date;
+            
+            if (timestamp instanceof Date) {
+                date = timestamp;
+            } else if (typeof timestamp === "number") {
+                date = new Date(timestamp);
+            } else if (typeof timestamp === "string") {
+                date = new Date(timestamp);
+            } else {
+                date = new Date();
+            }
+            
+            var year = date.getFullYear();
+            var month = padString(String(date.getMonth() + 1), 2, "0");
+            var day = padString(String(date.getDate()), 2, "0");
+            var hours = padString(String(date.getHours()), 2, "0");
+            var minutes = padString(String(date.getMinutes()), 2, "0");
+            var seconds = padString(String(date.getSeconds()), 2, "0");
+            
+            return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+        } catch (e) {
+            return "Invalid Date";
+        }
+    }
+    
+    /**
+     * 填充字符串
+     * @param {string} str 原字符串
+     * @param {number} length 目标长度
+     * @param {string} pad 填充字符
+     * @returns {string} 填充后的字符串
+     */
+    function padString(str, length, pad) {
+        var result = safeString(str);
+        var padChar = pad || " ";
+        
+        while (result.length < length) {
+            result = padChar + result;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 截断字符串
+     * @param {string} str 原字符串
+     * @param {number} maxLength 最大长度
+     * @param {string} suffix 截断后缀
+     * @returns {string} 截断后的字符串
+     */
+    function truncateString(str, maxLength, suffix) {
+        var result = safeString(str);
+        var truncSuffix = suffix || "...";
+        
+        if (result.length <= maxLength) {
+            return result;
+        }
+        
+        return result.substring(0, maxLength - truncSuffix.length) + truncSuffix;
+    }
+    
+    /**
+     * 安全字符串转换
+     * @param {*} value 要转换的值
+     * @returns {string} 转换结果
+     */
+    function safeString(value) {
+        try {
+            if (value === null || value === undefined) {
+                return "";
+            }
+            return String(value);
+        } catch (e) {
+            return "[Conversion Error]";
+        }
+    }
+    
+    /**
+     * 简单的对象字符串化
+     * @param {*} obj 要字符串化的对象
+     * @returns {string} 字符串化结果
+     */
+    function simpleStringify(obj) {
+        if (obj === null || obj === undefined) {
+            return "null";
+        }
+        
+        if (typeof obj === "string") {
+            return "\"" + obj + "\"";
+        }
+        
+        if (typeof obj === "number" || typeof obj === "boolean") {
+            return String(obj);
+        }
+        
+        if (typeof obj !== "object") {
+            return String(obj);
+        }
+        
+        // 对象处理
+        var result = "{";
+        var first = true;
+        var key;
+        
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (!first) {
+                    result += ", ";
+                }
+                result += key + ":" + simpleStringify(obj[key]);
+                first = false;
+            }
+        }
+        
+        result += "}";
+        return result;
+    }
+    
+    // -------------------------------------------------------------
+    // 5. 格式化器工厂
+    // -------------------------------------------------------------
+    
+    /**
+     * 创建格式化器
+     * @param {string} type 格式化类型 ("standard", "json", "csv", "compact")
+     * @param {Object} config 格式化配置
+     * @returns {Function} 格式化函数
+     */
+    function createFormatter(type, config) {
+        switch (type) {
+            case "json":
+                return function(logEntry) {
+                    return formatAsJson(logEntry);
+                };
+            case "csv":
+                return function(logEntry) {
+                    return formatAsCsv(logEntry);
+                };
+            case "compact":
+                return function(logEntry) {
+                    return formatAsCompact(logEntry);
+                };
+            case "standard":
+            default:
+                return function(logEntry) {
+                    return formatLogEntry(logEntry, config);
+                };
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 6. 导出接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 核心格式化函数
+        formatLogEntry: formatLogEntry,
+        formatLogEntries: formatLogEntries,
+        
+        // 特殊格式化函数
+        formatAsJson: formatAsJson,
+        formatAsCsv: formatAsCsv,
+        formatAsCompact: formatAsCompact,
+        
+        // 格式化器工厂
+        createFormatter: createFormatter,
+        
+        // 配置
+        DEFAULT_FORMAT_CONFIG: DEFAULT_FORMAT_CONFIG
+    };
+    
+})();
+
+
+// File: src/modules/logger/steps/step_write.js
+/**
+ * LoggerModule 日志写入步骤
+ * 
+ * 负责日志文件写入的步骤逻辑
+ * ES3/JScript 5.8 兼容
+ */
+
+var StepWrite = (function(){
+    
+    // -------------------------------------------------------------
+    // 1. 写入配置
+    // -------------------------------------------------------------
+    
+    /**
+     * 默认写入配置
+     */
+    var DEFAULT_WRITE_CONFIG = {
+        // 文件配置 - 修复：使用绝对路径
+        logDirectory: "D:\\!Work\\AD21_JS_Project\\logs",
+        logFileName: "DefaultLogger",
+        logFileExtension: ".log",
+        maxFileSize: 1024 * 1024,        // 1MB
+        maxFileCount: 10,                // 最多保留10个文件
+        
+        // 写入配置
+        bufferSize: 8192,                // 8KB缓冲区
+        flushInterval: 5000,             // 5秒自动刷新
+        retryCount: 3,                   // 失败重试次数
+        retryDelay: 1000,                // 重试延迟（毫秒）
+        
+        // 格式配置
+        encoding: "UTF-8",               // 文件编码
+        lineEnding: "\n",                 // 行结束符
+        includeBom: false,               // 是否包含BOM
+        
+        // 安全配置
+        backupOnWrite: true,            // 写入前备份
+        validatePath: true,              // 验证路径
+        atomicWrite: false               // 修复：暂时禁用原子写入，避免重命名问题
+    };
+    
+    // -------------------------------------------------------------
+    // 2. 写入状态管理
+    // -------------------------------------------------------------
+    
+    /**
+     * 写入状态对象
+     */
+    var writeState = {
+        isWriting: false,
+        lastWriteTime: 0,
+        writeQueue: [],
+        errorCount: 0,
+        lastError: null,
+        currentFile: null,
+        fileHandle: null
+    };
+    
+    // -------------------------------------------------------------
+    // 3. 核心写入函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 执行日志写入步骤
+     * @param {Array} logEntries 日志条目数组
+     * @param {string} moduleName 模块名称
+     * @param {Object} config 写入配置（可选）
+     * @returns {Object} 写入结果 {success: boolean, message: string, written: number}
+     */
+    function executeWriteStep(logEntries, moduleName, config) {
+        var result = {
+            success: false,
+            message: "",
+            written: 0,
+            timestamp: getCurrentTime()
+        };
+        
+        try {
+            // 参数验证
+            if (!logEntries || typeof logEntries.length !== "number") {
+                result.message = "无效的日志条目数组";
+                return result;
+            }
+            
+            if (logEntries.length === 0) {
+                result.success = true;
+                result.message = "没有日志需要写入";
+                return result;
+            }
+            
+            var writeConfig = mergeWriteConfig(DEFAULT_WRITE_CONFIG, config);
+            
+            // 检查写入状态
+            if (writeState.isWriting) {
+                // 如果正在写入，加入队列
+                writeState.writeQueue.push({
+                    entries: logEntries,
+                    moduleName: moduleName,
+                    config: writeConfig,
+                    timestamp: getCurrentTime()
+                });
+                result.success = true;
+                result.message = "已加入写入队列";
+                return result;
+            }
+            
+            // 执行写入
+            var writeResult = performWrite(logEntries, moduleName, writeConfig);
+            
+            result.success = writeResult.success;
+            result.message = writeResult.message;
+            result.written = writeResult.written;
+            
+            // 更新状态
+            writeState.lastWriteTime = getCurrentTime();
+            if (!writeResult.success) {
+                writeState.errorCount++;
+                writeState.lastError = writeResult.message;
+            } else {
+                writeState.errorCount = 0;
+                writeState.lastError = null;
+            }
+            
+            return result;
+            
+        } catch (e) {
+            result.message = "写入步骤异常: " + e.message;
+            writeState.errorCount++;
+            writeState.lastError = e.message;
+            return result;
+        }
+    }
+    
+    /**
+     * 执行实际的写入操作
+     * @param {Array} logEntries 日志条目数组
+     * @param {string} moduleName 模块名称
+     * @param {Object} config 写入配置
+     * @returns {Object} 写入结果
+     */
+    function performWrite(logEntries, moduleName, config) {
+        var result = {
+            success: false,
+            message: "",
+            written: 0
+        };
+        
+        writeState.isWriting = true;
+        
+        try {
+            // 格式化日志条目
+            var formattedLogs = formatLogEntriesForWrite(logEntries, config);
+            
+            // 生成文件路径
+            var filePath = generateLogFilePath(moduleName, config);
+            
+            // 检查文件大小，必要时轮转
+            if (config.maxFileSize > 0) {
+                rotateLogFileIfNeeded(filePath, config);
+            }
+            
+            // 写入文件
+            var writeResult = writeToFile(formattedLogs, filePath, config);
+            
+            result.success = writeResult.success;
+            result.message = writeResult.message;
+            result.written = writeResult.written;
+            
+            return result;
+            
+        } catch (e) {
+            result.message = "写入操作异常: " + e.message;
+            return result;
+        } finally {
+            writeState.isWriting = false;
+            
+            // 处理队列中的写入请求
+            processWriteQueue();
+        }
+    }
+    
+    /**
+     * 格式化日志条目用于写入
+     * @param {Array} logEntries 日志条目数组
+     * @param {Object} config 写入配置
+     * @returns {Array} 格式化后的日志字符串数组
+     */
+    function formatLogEntriesForWrite(logEntries, config) {
+        var formatted = [];
+        var i;
+        
+        for (i = 0; i < logEntries.length; i++) {
+            var entry = logEntries[i];
+            var formattedEntry;
+            
+            // 使用标准格式化
+            if (typeof formatLogEntry !== "undefined") {
+                formattedEntry = formatLogEntry(entry);
+            } else {
+                // 备用格式化
+                formattedEntry = formatLogEntrySimple(entry);
+            }
+            
+            formatted.push(formattedEntry);
+        }
+        
+        return formatted;
+    }
+    
+    /**
+     * 简单的日志条目格式化（备用）
+     * @param {Object} logEntry 日志条目
+     * @returns {string} 格式化后的日志字符串
+     */
+    function formatLogEntrySimple(logEntry) {
+        if (!logEntry || typeof logEntry !== "object") {
+            return "[Invalid Log Entry]";
+        }
+        
+        var parts = [];
+        
+        if (logEntry.timestamp) {
+            parts.push("[" + formatTimestamp(logEntry.timestamp) + "]");
+        }
+        
+        if (logEntry.level) {
+            parts.push("[" + logEntry.level + "]");
+        }
+        
+        if (logEntry.moduleName) {
+            parts.push("[" + logEntry.moduleName + "]");
+        }
+        
+        if (logEntry.fileName) {
+            parts.push("[" + logEntry.fileName + "]");
+        }
+        
+        if (logEntry.functionName) {
+            parts.push("[" + logEntry.functionName + "]");
+        }
+        
+        if (logEntry.message) {
+            parts.push(logEntry.message);
+        }
+        
+        if (logEntry.context) {
+            parts.push("| " + simpleStringify(logEntry.context));
+        }
+        
+        return parts.join(" ");
+    }
+    
+    /**
+     * 生成日志文件路径
+     * @param {string} moduleName 模块名称
+     * @param {Object} config 写入配置
+     * @returns {string} 文件路径
+     */
+    function generateLogFilePath(moduleName, config) {
+        var directory = config.logDirectory;
+        var fileName = config.logFileName;
+        var extension = config.logFileExtension;
+        
+        // 使用Windows路径分隔符
+        directory = directory.replace(/\//g, "\\");
+        
+        // 如果指定了模块名，使用模块名作为文件名
+        if (moduleName && moduleName !== "") {
+            fileName = moduleName;
+        }
+        
+        // 增强时间格式：年月日_时分秒_毫秒_随机数
+        var now = new Date();
+        var dateStr = now.getFullYear() + 
+                     padString(String(now.getMonth() + 1), 2, "0") + 
+                     padString(String(now.getDate()), 2, "0") + "_" +
+                     padString(String(now.getHours()), 2, "0") +
+                     padString(String(now.getMinutes()), 2, "0") +
+                     padString(String(now.getSeconds()), 2, "0") + "_" +
+                     padString(String(now.getMilliseconds()), 3, "0") + "_" +
+                     padString(String(Math.floor(Math.random() * 10000)), 4, "0");
+        
+        return directory + "\\" + fileName + "_" + dateStr + extension;
+    }
+    
+    /**
+     * 检查并轮转日志文件
+     * @param {string} filePath 文件路径
+     * @param {Object} config 写入配置
+     */
+    function rotateLogFileIfNeeded(filePath, config) {
+        try {
+            var fileSize = getFileSize(filePath);
+            
+            if (fileSize > 0 && fileSize >= config.maxFileSize) {
+                rotateLogFile(filePath, config);
+            }
+        } catch (e) {
+            // 轮转失败不影响写入
+        }
+    }
+    
+    /**
+     * 轮转日志文件
+     * @param {string} filePath 文件路径
+     * @param {Object} config 写入配置
+     */
+    function rotateLogFile(filePath, config) {
+        var baseName = filePath.substring(0, filePath.lastIndexOf("."));
+        var extension = filePath.substring(filePath.lastIndexOf("."));
+        
+        // 移动现有文件
+        for (var i = config.maxFileCount - 1; i > 0; i--) {
+            var oldFile = baseName + "." + i + extension;
+            var newFile = baseName + "." + (i + 1) + extension;
+            
+            if (i === config.maxFileCount - 1) {
+                // 删除最老的文件
+                deleteFile(newFile);
+            }
+            
+            renameFile(oldFile, newFile);
+        }
+        
+        // 移动当前文件
+        var firstBackup = baseName + ".1" + extension;
+        renameFile(filePath, firstBackup);
+    }
+    
+    /**
+     * 写入文件
+     * @param {Array} formattedLogs 格式化的日志数组
+     * @param {string} filePath 文件路径
+     * @param {Object} config 写入配置
+     * @returns {Object} 写入结果
+     */
+    function writeToFile(formattedLogs, filePath, config) {
+        var result = {
+            success: false,
+            message: "",
+            written: 0
+        };
+        
+        try {
+            // 准备写入内容
+            var content = formattedLogs.join(config.lineEnding);
+            
+            // 原子写入
+            if (config.atomicWrite) {
+                result = atomicWriteToFile(content, filePath, config);
+            } else {
+                result = directWriteToFile(content, filePath, config);
+            }
+            
+            return result;
+            
+        } catch (e) {
+            result.message = "文件写入异常: " + e.message;
+            return result;
+        }
+    }
+    
+    /**
+     * 原子写入文件
+     * @param {string} content 写入内容
+     * @param {string} filePath 目标文件路径
+     * @param {Object} config 写入配置
+     * @returns {Object} 写入结果
+     */
+    function atomicWriteToFile(content, filePath, config) {
+        var result = {
+            success: false,
+            message: "",
+            written: 0
+        };
+        
+        try {
+            // 创建临时文件
+            var tempFilePath = filePath + ".tmp." + getCurrentTime();
+            
+            // 写入临时文件
+            var tempResult = directWriteToFile(content, tempFilePath, config);
+            if (!tempResult.success) {
+                result.message = "临时文件写入失败: " + tempResult.message;
+                return result;
+            }
+            
+            // 重命名为目标文件
+            if (renameFile(tempFilePath, filePath)) {
+                result.success = true;
+                result.message = "原子写入成功";
+                result.written = content.length;
+            } else {
+                result.message = "文件重命名失败";
+                // 清理临时文件
+                deleteFile(tempFilePath);
+            }
+            
+            return result;
+            
+        } catch (e) {
+            result.message = "原子写入异常: " + e.message;
+            return result;
+        }
+    }
+    
+    /**
+     * 直接写入文件
+     * @param {string} content 写入内容
+     * @param {string} filePath 目标文件路径
+     * @param {Object} config 写入配置
+     * @returns {Object} 写入结果
+     */
+    function directWriteToFile(content, filePath, config) {
+        var result = {
+            success: false,
+            message: "",
+            written: 0
+        };
+        
+        try {
+            // 使用真实的文件系统写入
+            var writeSuccess = writeToFileSystem(content, filePath, config);
+            
+            if (writeSuccess) {
+                result.success = true;
+                result.message = "文件写入成功: " + filePath;
+                result.written = content.length;
+            } else {
+                result.message = "文件写入失败: " + filePath + " (请检查路径权限和磁盘空间)";
+            }
+            
+            return result;
+            
+        } catch (e) {
+            result.message = "直接写入异常: " + e.message + " (路径: " + filePath + ")";
+            return result;
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 4. 文件操作函数（真实实现）
+    // -------------------------------------------------------------
+    
+    /**
+     * 真实文件系统写入
+     * @param {string} content 写入内容
+     * @param {string} filePath 文件路径
+     * @param {Object} config 写入配置
+     * @returns {boolean} 是否成功
+     */
+    function writeToFileSystem(content, filePath, config) {
+        try {
+            // AD环境：使用ActiveXObject
+            if (typeof ActiveXObject !== "undefined") {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                
+                // 确保目录存在
+                var pathParts = filePath.split("\\");
+                var dirPath = "";
+                for (var i = 0; i < pathParts.length - 1; i++) {
+                    if (pathParts[i] !== "") {
+                        dirPath += pathParts[i] + "\\";
+                    }
+                }
+                
+                if (dirPath !== "" && !fso.FolderExists(dirPath)) {
+                    fso.CreateFolder(dirPath);
+                }
+                
+                // 创建并写入文件
+                var file = fso.CreateTextFile(filePath, true);
+                file.Write(content);
+                file.Close();
+                
+                return true;
+            }
+            // Node.js测试环境：使用fs模块
+            else if (typeof require !== "undefined") {
+                var fs = require("fs");
+                var path = require("path");
+                
+                // 确保目录存在
+                var dirPath = path.dirname(filePath);
+                if (!fs.existsSync(dirPath)) {
+                    fs.mkdirSync(dirPath, { recursive: true });
+                }
+                
+                // 写入文件
+                fs.writeFileSync(filePath, content, "utf8");
+                return true;
+            }
+            // 其他环境：回退到UI诊断
+            else {
+                // 输出诊断信息到UI
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo("文件写入诊断", {
+                        environment: "非AD环境",
+                        filePath: filePath,
+                        contentLength: content ? content.length : 0,
+                        message: "使用模拟写入模式，文件未实际创建"
+                    }, "step_write.js", "writeToFileSystem");
+                }
+                return false;  // 明确返回失败
+            }
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 获取文件大小
+     * @param {string} filePath 文件路径
+     * @returns {number} 文件大小（字节）
+     */
+    function getFileSize(filePath) {
+        try {
+            // AD环境：使用ActiveXObject
+            if (typeof ActiveXObject !== "undefined") {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                if (!fso.FileExists(filePath)) {
+                    return -1;
+                }
+                var file = fso.GetFile(filePath);
+                return file.Size;
+            }
+            // Node.js测试环境：使用fs模块
+            else if (typeof require !== "undefined") {
+                var fs = require("fs");
+                if (fs.existsSync(filePath)) {
+                    var stats = fs.statSync(filePath);
+                    return stats.size;
+                }
+                return -1;
+            }
+            // 其他环境：回退到模拟
+            else {
+                return Math.floor(Math.random() * 1024 * 1024); // 0-1MB
+            }
+        } catch (e) {
+            return -1;
+        }
+    }
+    
+    /**
+     * 重命名文件
+     * @param {string} oldPath 原路径
+     * @param {string} newPath 新路径
+     * @returns {boolean} 是否成功
+     */
+    function renameFile(oldPath, newPath) {
+        try {
+            // AD环境：使用ActiveXObject
+            if (typeof ActiveXObject !== "undefined") {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                if (fso.FileExists(oldPath)) {
+                    fso.MoveFile(oldPath, newPath);
+                    return true;
+                }
+                return false;
+            }
+            // Node.js测试环境：使用fs模块
+            else if (typeof require !== "undefined") {
+                var fs = require("fs");
+                if (fs.existsSync(oldPath)) {
+                    fs.renameSync(oldPath, newPath);
+                    return true;
+                }
+                return false;
+            }
+            // 其他环境：回退到模拟
+            else {
+                return Math.random() > 0.1; // 90%成功率
+            }
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 删除文件
+     * @param {string} filePath 文件路径
+     * @returns {boolean} 是否成功
+     */
+    function deleteFile(filePath) {
+        try {
+            // AD环境：使用ActiveXObject
+            if (typeof ActiveXObject !== "undefined") {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                if (fso.FileExists(filePath)) {
+                    fso.DeleteFile(filePath);
+                    return true;
+                }
+                return false;
+            }
+            // Node.js测试环境：使用fs模块
+            else if (typeof require !== "undefined") {
+                var fs = require("fs");
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                    return true;
+                }
+                return false;
+            }
+            // 其他环境：回退到模拟
+            else {
+                return Math.random() > 0.1; // 90%成功率
+            }
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 5. 队列处理
+    // -------------------------------------------------------------
+    
+    /**
+     * 处理写入队列
+     */
+    function processWriteQueue() {
+        if (writeState.writeQueue.length === 0) {
+            return;
+        }
+        
+        if (writeState.isWriting) {
+            return;
+        }
+        
+        var queueItem = writeState.writeQueue.shift();
+        if (queueItem) {
+            performWrite(queueItem.entries, queueItem.moduleName, queueItem.config);
+        }
+    }
+    
+    /**
+     * 清空写入队列
+     */
+    function clearWriteQueue() {
+        writeState.writeQueue = [];
+    }
+    
+    /**
+     * 获取队列状态
+     * @returns {Object} 队列状态信息
+     */
+    function getQueueStatus() {
+        return {
+            queueLength: writeState.writeQueue.length,
+            isWriting: writeState.isWriting,
+            lastWriteTime: writeState.lastWriteTime,
+            errorCount: writeState.errorCount,
+            lastError: writeState.lastError
+        };
+    }
+    
+    // -------------------------------------------------------------
+    // 6. 工具函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 合并写入配置
+     * @param {Object} defaultConfig 默认配置
+     * @param {Object} userConfig 用户配置
+     * @returns {Object} 合并后的配置
+     */
+    function mergeWriteConfig(defaultConfig, userConfig) {
+        var result = {};
+        var key;
+        
+        // 复制默认配置
+        for (key in defaultConfig) {
+            if (defaultConfig.hasOwnProperty(key)) {
+                result[key] = defaultConfig[key];
+            }
+        }
+        
+        // 应用用户配置
+        if (userConfig && typeof userConfig === "object") {
+            for (key in userConfig) {
+                if (userConfig.hasOwnProperty(key)) {
+                    result[key] = userConfig[key];
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 格式化时间戳
+     * @param {Date|number} timestamp 时间戳
+     * @returns {string} 格式化的时间字符串
+     */
+    function formatTimestamp(timestamp) {
+        var date;
+        
+        if (timestamp instanceof Date) {
+            date = timestamp;
+        } else if (typeof timestamp === "number") {
+            date = new Date(timestamp);
+        } else {
+            date = new Date();
+        }
+        
+        try {
+            var year = date.getFullYear();
+            var month = padString(String(date.getMonth() + 1), 2, "0");
+            var day = padString(String(date.getDate()), 2, "0");
+            var hours = padString(String(date.getHours()), 2, "0");
+            var minutes = padString(String(date.getMinutes()), 2, "0");
+            var seconds = padString(String(date.getSeconds()), 2, "0");
+            
+            return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+        } catch (e) {
+            return "Invalid Date";
+        }
+    }
+    
+    /**
+     * 填充字符串
+     * @param {string} str 原字符串
+     * @param {number} length 目标长度
+     * @param {string} pad 填充字符
+     * @returns {string} 填充后的字符串
+     */
+    function padString(str, length, pad) {
+        var result = String(str || "");
+        var padChar = pad || " ";
+        
+        while (result.length < length) {
+            result = padChar + result;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 获取当前时间戳
+     * @returns {number} 当前时间戳（毫秒）
+     */
+    function getCurrentTime() {
+        try {
+            return new Date().getTime();
+        } catch (e) {
+            return 0;
+        }
+    }
+    
+    /**
+     * 简单的对象字符串化
+     * @param {*} obj 要字符串化的对象
+     * @returns {string} 字符串化结果
+     */
+    function simpleStringify(obj) {
+        if (obj === null || obj === undefined) {
+            return "null";
+        }
+        
+        if (typeof obj === "string") {
+            return "\"" + obj + "\"";
+        }
+        
+        if (typeof obj === "number" || typeof obj === "boolean") {
+            return String(obj);
+        }
+        
+        if (typeof obj !== "object") {
+            return String(obj);
+        }
+        
+        // 对象处理
+        var result = "{";
+        var first = true;
+        var key;
+        
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (!first) {
+                    result += ", ";
+                }
+                result += key + ":" + simpleStringify(obj[key]);
+                first = false;
+            }
+        }
+        
+        result += "}";
+        return result;
+    }
+    
+    // -------------------------------------------------------------
+    // 7. 导出接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 核心写入函数
+        executeWriteStep: executeWriteStep,
+        
+        // 队列管理
+        getQueueStatus: getQueueStatus,
+        clearWriteQueue: clearWriteQueue,
+        
+        // 配置
+        DEFAULT_WRITE_CONFIG: DEFAULT_WRITE_CONFIG
+    };
+    
+})();
+
+
+// File: src/modules/logger/core.js
+/**
+ * IIFE模块架构说明
+ * 
+ * 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();
+ * 2. 构建后所有模块变量在同一作用域，可直接引用
+ * 3. 不处理模块间依赖，需构建到一个文件中使用
+ * 4. 通过window导出，确保AD环境可访问
+ * 5. 依赖的模块必须在当前模块之前加载（通过merge-order.json控制）
+ */
+
+/**
+ * LoggerModule 核心逻辑
+ * 
+ * 继承BaseModule，实现所有核心逻辑和生命周期方法
+ * ES3/JScript 5.8 兼容
+ */
+
+var LoggerModule = (function(){
+    
+    // -------------------------------------------------------------
+    // 1. 依赖引用（直接使用，构建后自动可访问）
+    // -------------------------------------------------------------
+    // 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+    
+    // -------------------------------------------------------------
+    // 2. LoggerModule 核心实现
+    // -------------------------------------------------------------
+    
+    /**
+     * LoggerModule 默认配置
+     */
+    var _loggerDefaultConfig = {
+        moduleName: "LoggerModule",
+        autoInit: false,  // 改为false，在重写方法后再初始化
+        autoTime: true,
+        
+        // 日志特定配置
+        level: LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.ALL : 15,
+        threshold: 50,
+        enabled: true,
+        
+        // 格式化配置
+        includeTimestamp: true,
+        includeModuleName: true,
+        includeFileName: true,
+        includeFunctionName: true,
+        
+        // 写入配置
+        maxLogSize: 5120,
+        maxCacheSize: 100,
+        autoFlush: true,
+        
+        // 调试配置
+        debugMode: false,
+        captureEnabled: true
+    };
+    
+    // ---------------------------------------------------------
+    // 2.2 私有工具函数
+    // ---------------------------------------------------------
+    
+    /**
+     * 验证Logger实例
+     * @param {Object} inst Logger实例
+     * @returns {boolean} 是否有效
+     */
+    function _isValidLoggerInstance(inst) {
+        return inst && 
+               inst.data && 
+               inst.data.config && 
+               inst.data.cache && 
+               inst.data.stats;
+    }
+    
+    /**
+     * 检查日志级别是否启用
+     * @param {Object} inst Logger实例
+     * @param {number} level 日志级别
+     * @returns {boolean} 是否启用
+     */
+    function _isLogLevelEnabled(inst, level) {
+        if (!_isValidLoggerInstance(inst)) {
+            return false;
+        }
+        
+        // 简化级别检查：直接比较数值
+        return (inst.data.config.level & level) === level;
+    }
+    
+    /**
+     * 创建日志条目
+     * @param {Object} inst Logger实例
+     * @param {number} level 日志级别
+     * @param {string} message 日志消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     * @returns {Object} 日志条目
+     */
+    function _createLogEntry(inst, level, message, context, fileName, functionName) {
+        var entry = {
+            timestamp: "",
+            level: "",
+            message: "",
+            moduleName: "",
+            fileName: "",
+            functionName: "",
+            context: null
+        };
+        
+        // 设置基本信息
+        entry.timestamp = new Date().getTime();
+        
+        // 简化级别名称映射
+        var levelMap = {
+            1: "ERROR",
+            2: "WARN", 
+            4: "INFO",
+            8: "DEBUG"
+        };
+        entry.level = levelMap[level] || "UNKNOWN";
+        entry.message = message || "";
+        entry.moduleName = inst.data.config.moduleName || "LoggerModule";
+        entry.fileName = fileName || "";
+        entry.functionName = functionName || "";
+        
+        // 处理上下文
+        if (context !== null && context !== undefined) {
+            if (inst.data.config.captureEnabled) {
+                try {
+                    entry.context = JSON.stringify(context);
+                } catch (e) {
+                    entry.context = String(context);
+                }
+            } else {
+                entry.context = String(context);
+            }
+        }
+        
+        return entry;
+    }
+    
+    /**
+     * 添加日志到缓存
+     * @param {Object} inst Logger实例
+     * @param {Object} logEntry 日志条目
+     * @returns {boolean} 是否成功
+     */
+    function _addToCache(inst, logEntry) {
+        if (!_isValidLoggerInstance(inst)) {
+            return false;
+        }
+        
+        try {
+            // 验证日志条目
+            if (validateLogEntry && !validateLogEntry(logEntry)) {
+                logEntry = cleanLogEntry ? cleanLogEntry(logEntry) : logEntry;
+            }
+            
+            // 检查缓存大小
+            if (inst.data.cache.length >= inst.data.config.maxCacheSize) {
+                // 自动flush
+                _flushCache(inst);
+            }
+            
+            // 添加到缓存
+            inst.data.cache.push(logEntry);
+            inst.data.lastLogTime = new Date().getTime();
+            
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 检查是否应该显示到UI
+     * @param {string} level 日志级别
+     * @returns {boolean} 是否应该显示
+     */
+    function _shouldDisplayToUI(level) {
+        var globalController = GlobalLogController;
+        return globalController && 
+               typeof globalController.isDisplayEnabled === "function" && 
+               globalController.isDisplayEnabled(level);
+    }
+
+    /**
+     * 更新统计信息
+     * @param {Object} inst Logger实例
+     * @param {number} level 日志级别
+     */
+    function _updateStats(inst, level) {
+        if (!_isValidLoggerInstance(inst)) {
+            return;
+        }
+        
+        var stats = inst.data.stats;
+        stats.totalLogs++;
+        
+        switch (level) {
+            case LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.ERROR : 1:
+                stats.errorCount++;
+                break;
+            case LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.WARN : 2:
+                stats.warnCount++;
+                break;
+            case LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.INFO : 4:
+                stats.infoCount++;
+                break;
+            case LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.DEBUG : 8:
+                stats.debugCount++;
+                break;
+        }
+        
+        stats.cacheSize = inst.data.cache.length;
+    }
+    
+    /**
+     * 检查写入阈值
+     * @param {Object} inst Logger实例
+     */
+    function _checkThreshold(inst) {
+        if (!_isValidLoggerInstance(inst)) {
+            return;
+        }
+        
+        var config = inst.data.config;
+        var cache = inst.data.cache;
+        
+        // 检查数量阈值
+        if (cache.length >= config.threshold) {
+            _flushCache(inst);
+            return;
+        }
+        
+        // 检查大小阈值
+        if (estimateLogSize) {
+            var totalSize = 0;
+            var i;
+            for (i = 0; i < cache.length; i++) {
+                totalSize += estimateLogSize(cache[i]);
+            }
+            
+            if (totalSize >= config.maxLogSize) {
+                _flushCache(inst);
+            }
+        }
+    }
+    
+    /**
+     * 刷新缓存
+     * @param {Object} inst Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function _flushCache(inst) {
+        if (!_isValidLoggerInstance(inst)) {
+            return false;
+        }
+        
+        var cache = inst.data.cache;
+        if (cache.length === 0) {
+            // 缓存为空时返回true，这是正常情况
+            return true;
+        }
+        
+        try {
+            // 复制缓存并清空
+            var logsToWrite = cache.slice();
+            inst.data.cache = [];
+            
+            // 执行写入
+            var writeResult;
+            if (executeWriteStep) {
+                writeResult = executeWriteStep(logsToWrite, inst.data.config.moduleName);
+            } else {
+                // 增强的模拟写入：检查StepWrite是否可用
+                if (typeof StepWrite !== "undefined" && StepWrite.executeWriteStep) {
+                    writeResult = StepWrite.executeWriteStep(logsToWrite, inst.data.config.moduleName);
+                } else {
+                    // 最终回退：模拟写入成功
+                    writeResult = {success: true, message: "模拟写入", written: logsToWrite.length};
+                }
+            }
+            
+            // 更新统计
+            if (writeResult.success) {
+                inst.data.stats.lastFlushTime = new Date().getTime();
+                inst.data.stats.flushCount++;
+            } else {
+                inst.data.stats.errorFlushCount++;
+                // 写入失败，恢复缓存
+                for (var i = 0; i < logsToWrite.length; i++) {
+                    inst.data.cache.push(logsToWrite[i]);
+                }
+                
+                // 增强错误诊断
+                if (typeof console !== "undefined" && console.log) {
+                    console.log("_flushCache写入失败:", {
+                        writeResult: writeResult,
+                        logsCount: logsToWrite.length,
+                        moduleName: inst.data.config.moduleName,
+                        hasExecuteWriteStep: typeof executeWriteStep === "function",
+                        hasStepWrite: typeof StepWrite !== "undefined"
+                    });
+                }
+            }
+            
+            return writeResult.success;
+        } catch (e) {
+            // 异常处理和诊断
+            if (typeof console !== "undefined" && console.log) {
+                console.log("_flushCache异常:", {
+                    error: e.message,
+                    cacheLength: cache.length,
+                    moduleName: inst.data.config.moduleName
+                });
+            }
+            
+            // 异常时也要恢复缓存
+            var logsToWrite = cache.slice();
+            inst.data.cache = [];
+            for (var i = 0; i < logsToWrite.length; i++) {
+                inst.data.cache.push(logsToWrite[i]);
+            }
+            
+            return false;
+        }
+    }
+    
+    // ---------------------------------------------------------
+    // 2.3 重写BaseModule的内部方法
+    // ---------------------------------------------------------
+    
+    /**
+     * 执行Logger特定的初始化逻辑
+     * @param {Object} inst Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function _performInitialization(inst) {
+        try {
+            // 确保moduleName被正确保留
+            var moduleName = inst.options && inst.options.moduleName ? inst.options.moduleName : _loggerDefaultConfig.moduleName;
+            
+            // 简单合并配置，不依赖mergeConfig函数
+            var config = {};
+            var key;
+            for (key in _loggerDefaultConfig) {
+                if (_loggerDefaultConfig.hasOwnProperty(key)) {
+                    config[key] = _loggerDefaultConfig[key];
+                }
+            }
+            if (inst.options) {
+                for (key in inst.options) {
+                    if (inst.options.hasOwnProperty(key)) {
+                        config[key] = inst.options[key];
+                    }
+                }
+            }
+            
+            // 初始化Logger数据结构
+            inst.data = {
+                config: config,
+                cache: [],
+                stats: {
+                    totalLogs: 0,
+                    errorCount: 0,
+                    warnCount: 0,
+                    infoCount: 0,
+                    debugCount: 0,
+                    cacheSize: 0,
+                    lastFlushTime: 0,
+                    flushCount: 0,
+                    errorFlushCount: 0
+                },
+                initialized: true,
+                lastLogTime: 0
+            };
+            
+            // 强制确保moduleName正确设置
+            inst.data.config.moduleName = moduleName;
+            
+            // 验证配置 - 简化验证逻辑
+            if (typeof inst.data.config.level !== "number" || inst.data.config.level < 0) {
+                inst.data.config.level = LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.ALL : 15;
+            }
+            
+            return true;
+        } catch (e) {
+            if (typeof console !== "undefined" && console.log) {
+                console.log("_performInitialization异常:", e.message);
+            }
+            return false;
+        }
+    }
+    
+    /**
+     * 执行Logger的主要逻辑
+     * @param {Object} inst Logger实例
+     * @returns {Object} 执行结果
+     */
+    function _executeMainLogic(inst) {
+        if (!_isValidLoggerInstance(inst)) {
+            return {
+                success: false,
+                message: "Logger实例无效",
+                data: null
+            };
+        }
+        
+        try {
+            // Logger的主要逻辑是处理日志记录
+            // 这里可以执行一些维护任务，如自动flush等
+            
+            if (inst.data.config.autoFlush) {
+                _checkThreshold(inst);
+            }
+            
+            return {
+                success: true,
+                message: "Logger运行完成",
+                data: {
+                    cacheSize: inst.data.cache.length,
+                    stats: inst.data.stats
+                },
+                time: inst.context ? inst.context.executionTime : 0
+            };
+        } catch (e) {
+            return {
+                success: false,
+                message: "Logger运行异常: " + e.message,
+                data: null
+            };
+        }
+    }
+    
+    /**
+     * 执行Logger的销毁逻辑
+     * @param {Object} inst Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function _performDestroy(inst) {
+        if (!_isValidLoggerInstance(inst)) {
+            return true;
+        }
+        
+        try {
+            // 自动flush缓存
+            _flushCache(inst);
+            
+            // 清空数据
+            inst.data.cache = [];
+            inst.data.stats = null;
+            inst.data.config = null;
+            inst.data.initialized = false;
+            
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    // ---------------------------------------------------------
+    // 2.4 公共API实现
+    // ---------------------------------------------------------
+    
+    /**
+     * 记录错误日志
+     * @param {Object} inst Logger实例
+     * @param {string} message 错误消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     */
+    function _error(inst, message, context, fileName, functionName) {
+        // 性能优化：早期检查GlobalLogController生成级开关
+        var globalController = GlobalLogController;
+        
+        var wasGenerated = false;
+        var wasFiltered = false;
+        var wasDisplayed = false;
+        
+        // 检查生成级开关 - 决定是否保存日志
+        if (globalController && typeof globalController.isGenerationEnabled === "function") {
+            if (!globalController.isGenerationEnabled("error")) {
+                wasFiltered = true;
+                // 统一统计处理
+                if (globalController && typeof globalController.processLogStats === "function") {
+                    globalController.processLogStats("error", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+                }
+                return;  // 早期返回，避免不必要的处理
+            }
+            wasGenerated = true;
+        } else {
+            // GlobalLogController不存在时，默认允许生成日志
+            wasGenerated = true;
+        }
+        
+        if (!_isLogLevelEnabled(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.ERROR : 1)) {
+            wasFiltered = true;
+            // 统一统计处理
+            if (globalController && typeof globalController.processLogStats === "function") {
+                globalController.processLogStats("error", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+            }
+            return;
+        }
+        
+        // 创建日志条目并保存到缓存
+        var logEntry = _createLogEntry(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.ERROR : 1, message, context, fileName, functionName);
+        if (_addToCache(inst, logEntry)) {
+            // 移除原有的统计更新，使用统一统计处理
+            _checkThreshold(inst);
+        }
+        
+        // 独立检查显示开关 - 决定是否输出到UI
+        if (_shouldDisplayToUI("error")) {
+            wasDisplayed = true;
+            // 直接输出到UI
+            try {
+                if (typeof uiError !== "undefined") {
+                    uiError(message, context, fileName, functionName);
+                }
+            } catch (e) {
+                // 静默处理UI输出错误
+            }
+        }
+        
+        // 统一统计处理
+        if (globalController && typeof globalController.processLogStats === "function") {
+            globalController.processLogStats("error", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+        }
+    }
+    
+    /**
+     * 记录警告日志
+     * @param {Object} inst Logger实例
+     * @param {string} message 警告消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     */
+    function _warn(inst, message, context, fileName, functionName) {
+        // 性能优化：早期检查GlobalLogController生成级开关
+        var globalController = GlobalLogController;
+        
+        var wasGenerated = false;
+        var wasFiltered = false;
+        var wasDisplayed = false;
+        
+        // 检查生成级开关
+        if (globalController && typeof globalController.isGenerationEnabled === "function") {
+            if (!globalController.isGenerationEnabled("warn")) {
+                wasFiltered = true;
+                // 统一统计处理
+                if (globalController && typeof globalController.processLogStats === "function") {
+                    globalController.processLogStats("warn", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+                }
+                return;  // 早期返回，避免不必要的处理
+            }
+            wasGenerated = true;
+        } else {
+            // GlobalLogController不存在时，默认允许生成日志
+            wasGenerated = true;
+        }
+        
+        if (!_isLogLevelEnabled(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.WARN : 2)) {
+            wasFiltered = true;
+            // 统一统计处理
+            if (globalController && typeof globalController.processLogStats === "function") {
+                globalController.processLogStats("warn", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+            }
+            return;
+        }
+        
+        // 创建日志条目并保存到缓存
+        var logEntry = _createLogEntry(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.WARN : 2, message, context, fileName, functionName);
+        if (_addToCache(inst, logEntry)) {
+            // 移除原有的统计更新，使用统一统计处理
+            _checkThreshold(inst);
+        }
+        
+        // 独立检查显示开关 - 决定是否输出到UI
+        if (_shouldDisplayToUI("warn")) {
+            wasDisplayed = true;
+            // 直接输出到UI
+            try {
+                if (typeof uiWarn !== "undefined") {
+                    uiWarn(message, context, fileName, functionName);
+                }
+            } catch (e) {
+                // 静默处理UI输出错误
+            }
+        }
+        
+        // 统一统计处理
+        if (globalController && typeof globalController.processLogStats === "function") {
+            globalController.processLogStats("warn", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+        }
+    }
+    
+    /**
+     * 记录信息日志
+     * @param {Object} inst Logger实例
+     * @param {string} message 信息消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     */
+    function _info(inst, message, context, fileName, functionName) {
+        // 性能优化：早期检查GlobalLogController生成级开关
+        var globalController = GlobalLogController;
+        
+        var wasGenerated = false;
+        var wasFiltered = false;
+        var wasDisplayed = false;
+        
+        // 检查生成级开关
+        if (globalController && typeof globalController.isGenerationEnabled === "function") {
+            if (!globalController.isGenerationEnabled("info")) {
+                wasFiltered = true;
+                // 统一统计处理
+                if (globalController && typeof globalController.processLogStats === "function") {
+                    globalController.processLogStats("info", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+                }
+                return;  // 早期返回，避免不必要的处理
+            }
+            wasGenerated = true;
+        } else {
+            // GlobalLogController不存在时，默认允许生成日志
+            wasGenerated = true;
+        }
+        
+        if (!_isLogLevelEnabled(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.INFO : 4)) {
+            wasFiltered = true;
+            // 统一统计处理
+            if (globalController && typeof globalController.processLogStats === "function") {
+                globalController.processLogStats("info", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+            }
+            return;
+        }
+        
+        // 创建日志条目并保存到缓存
+        var logEntry = _createLogEntry(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.INFO : 4, message, context, fileName, functionName);
+        if (_addToCache(inst, logEntry)) {
+            // 移除原有的统计更新，使用统一统计处理
+            _checkThreshold(inst);
+        }
+        
+        // 独立检查显示开关 - 决定是否输出到UI
+        if (_shouldDisplayToUI("info")) {
+            wasDisplayed = true;
+            // 直接输出到UI
+            try {
+                if (typeof uiInfo !== "undefined") {
+                    uiInfo(message, context, fileName, functionName);
+                }
+            } catch (e) {
+                // 静默处理UI输出错误
+            }
+        }
+        
+        // 统一统计处理
+        if (globalController && typeof globalController.processLogStats === "function") {
+            globalController.processLogStats("info", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+        }
+    }
+    
+    /**
+     * 记录调试日志
+     * @param {Object} inst Logger实例
+     * @param {string} message 调试消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     */
+    function _debug(inst, message, context, fileName, functionName) {
+        // 性能优化：早期检查GlobalLogController生成级开关
+        var globalController = GlobalLogController;
+        
+        var wasGenerated = false;
+        var wasFiltered = false;
+        var wasDisplayed = false;
+        
+        // 检查生成级开关
+        if (globalController && typeof globalController.isGenerationEnabled === "function") {
+            if (!globalController.isGenerationEnabled("debug")) {
+                wasFiltered = true;
+                // 统一统计处理
+                if (globalController && typeof globalController.processLogStats === "function") {
+                    globalController.processLogStats("debug", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+                }
+                return;  // 早期返回，避免不必要的处理
+            }
+            wasGenerated = true;
+        } else {
+            // GlobalLogController不存在时，默认允许生成日志
+            wasGenerated = true;
+        }
+        
+        if (!_isLogLevelEnabled(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.DEBUG : 8)) {
+            wasFiltered = true;
+            // 统一统计处理
+            if (globalController && typeof globalController.processLogStats === "function") {
+                globalController.processLogStats("debug", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+            }
+            return;
+        }
+        
+        // 创建日志条目并保存到缓存
+        var logEntry = _createLogEntry(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.DEBUG : 8, message, context, fileName, functionName);
+        if (_addToCache(inst, logEntry)) {
+            // 移除原有的统计更新，使用统一统计处理
+            _checkThreshold(inst);
+        }
+        
+        // 独立检查显示开关 - 决定是否输出到UI
+        if (_shouldDisplayToUI("debug")) {
+            wasDisplayed = true;
+            // 直接输出到UI
+            try {
+                if (typeof uiDebug !== "undefined") {
+                    uiDebug(message, context, fileName, functionName);
+                }
+            } catch (e) {
+                // 静默处理UI输出错误
+            }
+        }
+        
+        // 统一统计处理
+        if (globalController && typeof globalController.processLogStats === "function") {
+            globalController.processLogStats("debug", message, fileName, functionName, wasGenerated, wasFiltered, wasDisplayed);
+        }
+    }
+    
+    /**
+     * 设置日志级别
+     * @param {Object} inst Logger实例
+     * @param {number} level 日志级别
+     * @returns {boolean} 是否成功
+     */
+    function _setLevel(inst, level) {
+        if (!_isValidLoggerInstance(inst)) {
+            return false;
+        }
+        
+        if (typeof level !== "number" || level < 0) {
+            return false;
+        }
+        
+        var oldLevel = inst.data.config.level;
+        inst.data.config.level = level;
+        
+        // 记录配置变更
+        _info(inst, "日志级别变更: " + oldLevel + " -> " + level, null, "core.js", "setLevel");
+        
+        return true;
+    }
+    
+    /**
+     * 设置写入阈值
+     * @param {Object} inst Logger实例
+     * @param {number} threshold 阈值
+     * @returns {boolean} 是否成功
+     */
+    function _setThreshold(inst, threshold) {
+        if (!_isValidLoggerInstance(inst)) {
+            return false;
+        }
+        
+        if (typeof threshold !== "number" || threshold <= 0) {
+            return false;
+        }
+        
+        var oldThreshold = inst.data.config.threshold;
+        inst.data.config.threshold = threshold;
+        
+        // 检查是否需要立即写入
+        if (inst.data.cache.length >= threshold) {
+            _flushCache(inst);
+        }
+        
+        // 记录配置变更
+        _info(inst, "写入阈值变更: " + oldThreshold + " -> " + threshold, null, "core.js", "setThreshold");
+        
+        return true;
+    }
+    
+    /**
+     * 启用/禁用日志
+     * @param {Object} inst Logger实例
+     * @param {boolean} enabled 是否启用
+     * @returns {boolean} 是否成功
+     */
+    function _setEnabled(inst, enabled) {
+        if (!_isValidLoggerInstance(inst)) {
+            return false;
+        }
+        
+        if (typeof enabled !== "boolean") {
+            return false;
+        }
+        
+        var oldState = inst.data.config.enabled;
+        inst.data.config.enabled = enabled;
+        
+        // 记录状态变更
+        _info(inst, "日志状态变更: " + oldState + " -> " + enabled, null, "core.js", "setEnabled");
+        
+        return true;
+    }
+    
+    /**
+     * 获取统计信息
+     * @param {Object} inst Logger实例
+     * @returns {Object} 统计信息
+     */
+    function _getStats(inst) {
+        if (!_isValidLoggerInstance(inst)) {
+            return {};
+        }
+        
+        var stats = {};
+        var key;
+        
+        // 复制统计信息
+        for (key in inst.data.stats) {
+            if (inst.data.stats.hasOwnProperty(key)) {
+                stats[key] = inst.data.stats[key];
+            }
+        }
+        
+        // 添加当前状态信息
+        stats.cacheSize = inst.data.cache.length;
+        stats.level = inst.data.config.level;
+        stats.enabled = inst.data.config.enabled;
+        stats.threshold = inst.data.config.threshold;
+        
+        // 添加moduleName属性
+        stats.moduleName = inst.moduleName || inst.data.config.moduleName || "LoggerModule";
+        
+        // 添加级别描述
+        if (typeof getLevelDescription !== "undefined") {
+            stats.levelDescription = getLevelDescription(inst.data.config.level);
+        } else if (typeof inst.getLevelName === "function") {
+            stats.levelDescription = inst.getLevelName(inst.data.config.level);
+        } else {
+            // 使用内置级别映射
+            var levelMap = {
+                0: "TRACE",
+                1: "DEBUG", 
+                2: "INFO",
+                3: "WARN",
+                4: "ERROR",
+                5: "FATAL"
+            };
+            stats.levelDescription = levelMap[inst.data.config.level] || "UNKNOWN";
+        }
+        
+        return stats;
+    }
+    
+    /**
+     * 获取缓存数量
+     * @param {Object} inst Logger实例
+     * @returns {number} 缓存数量
+     */
+    function _getCount(inst) {
+        if (!_isValidLoggerInstance(inst)) {
+            return 0;
+        }
+        
+        return inst.data.cache.length;
+    }
+    
+    /**
+     * 强制写入缓存
+     * @param {Object} inst Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function _flush(inst) {
+        return _flushCache(inst);
+    }
+    
+    /**
+     * 清空缓存
+     * @param {Object} inst Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function _clear(inst) {
+        if (!_isValidLoggerInstance(inst)) {
+            return false;
+        }
+        
+        var count = inst.data.cache.length;
+        inst.data.cache = [];
+        
+        // 记录清空操作
+        _info(inst, "清空日志缓存，数量: " + count, null, "core.js", "clear");
+        
+        return true;
+    }
+    
+    // ---------------------------------------------------------
+    // 2.5 创建Logger实例
+    // ---------------------------------------------------------
+    
+    /**
+     * 创建Logger实例
+     * @param {Object} options 配置选项
+     * @returns {Object} Logger实例
+     */
+    function create(options) {
+        // 创建BaseModule实例
+        var baseInst = BaseModule.create(options);
+        
+        // 重写内部方法
+        baseInst._performInitialization = function() {
+            return _performInitialization(baseInst);
+        };
+        
+        baseInst._executeMainLogic = function() {
+            return _executeMainLogic(baseInst);
+        };
+        
+        baseInst._performDestroy = function() {
+            return _performDestroy(baseInst);
+        };
+        
+        // 先初始化Logger数据，再调用BaseModule的init
+        var initResult = _performInitialization(baseInst);
+        if (!initResult) {
+            throw new Error("Logger初始化失败");
+        }
+        
+        // 如果用户要求autoInit，调用BaseModule的init
+        if (options && options.autoInit) {
+            baseInst.init();
+        }
+        
+        // 添加Logger特定的方法
+        baseInst.error = function(message, context, fileName, functionName) {
+            return _error(baseInst, message, context, fileName, functionName);
+        };
+        
+        baseInst.warn = function(message, context, fileName, functionName) {
+            return _warn(baseInst, message, context, fileName, functionName);
+        };
+        
+        baseInst.info = function(message, context, fileName, functionName) {
+            return _info(baseInst, message, context, fileName, functionName);
+        };
+        
+        baseInst.debug = function(message, context, fileName, functionName) {
+            return _debug(baseInst, message, context, fileName, functionName);
+        };
+        
+        baseInst.setLevel = function(level) {
+            return _setLevel(baseInst, level);
+        };
+        
+        baseInst.setThreshold = function(threshold) {
+            return _setThreshold(baseInst, threshold);
+        };
+        
+        baseInst.setEnabled = function(enabled) {
+            return _setEnabled(baseInst, enabled);
+        };
+        
+        baseInst.getStats = function() {
+            return _getStats(baseInst);
+        };
+        
+        baseInst.getCount = function() {
+            return _getCount(baseInst);
+        };
+        
+        baseInst.flush = function() {
+            return _flush(baseInst);
+        };
+        
+        baseInst.clear = function() {
+            return _clear(baseInst);
+        };
+        
+        // 添加toJSON方法
+        baseInst.toJSON = function() {
+            if (!_isValidLoggerInstance(baseInst)) {
+                return [];
+            }
+            
+            var result = [];
+            var i;
+            for (i = 0; i < baseInst.data.cache.length; i++) {
+                result.push(baseInst.data.cache[i]);
+            }
+            return result;
+        };
+        
+        // 确保moduleName属性正确设置
+        if (baseInst.data && baseInst.data.config && baseInst.data.config.moduleName) {
+            baseInst.moduleName = baseInst.data.config.moduleName;
+        } else if (options && options.moduleName) {
+            baseInst.moduleName = options.moduleName;
+        } else {
+            baseInst.moduleName = "LoggerModule";
+        }
+        
+        // 添加isHealthy方法
+        baseInst.isHealthy = function() {
+            return _isValidLoggerInstance(baseInst) && 
+                   baseInst.data.config.enabled &&
+                   baseInst.data.initialized;
+        };
+        
+        return baseInst;
+    }
+    
+    // ---------------------------------------------------------
+    // 2.6 导出接口
+    // ---------------------------------------------------------
+    
+    return {
+        create: create
+    };
+    
+})();
+
+// 通过window导出，确保AD环境可访问
+if (typeof window !== "undefined") {
+    window.LoggerModule = LoggerModule;
+}
+
+
+// File: src/modules/logger/index.js
+/**
+ * IIFE模块架构说明
+ * 
+ * 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();
+ * 2. 构建后所有模块变量在同一作用域，可直接引用
+ * 3. 不处理模块间依赖，需构建到一个文件中使用
+ * 4. 通过window导出，确保AD环境可访问
+ * 5. 依赖的模块必须在当前模块之前加载（通过merge-order.json控制）
+ */
+
+/**
+ * LoggerModule 模块入口
+ * 
+ * 使用纯大IIFE模式导出LoggerModule接口
+ * ES3/JScript 5.8 兼容
+ */
+
+var LoggerModuleIndex = (function() {
+    
+    // 依赖引用（直接使用，构建后自动可访问）
+    
+    // 私有变量
+    var _instances = {};           // 存储Logger实例
+    var _defaultInstance = null;    // 默认Logger实例
+    var _moduleConfig = {           // 模块配置
+        autoCreateDefault: true,
+        defaultModuleName: "DefaultLogger"
+    };
+    
+    // 私有函数
+    
+    /**
+     * 创建默认Logger实例（单例模式）
+     * @returns {Object} Logger实例 - 始终返回同一个实例
+     */
+    function _createDefaultInstance() {
+        // 单例模式：检查实例是否已存在
+        if (!_defaultInstance) {
+            // 实例不存在时创建新实例
+            var options = {
+                moduleName: _moduleConfig.defaultModuleName,
+                autoInit: true,
+                level: 15,  // ALL
+                threshold: 50,
+                enabled: true
+            };
+            
+            _defaultInstance = LoggerModule.create(options);
+            
+            // 确保实例创建成功
+            if (_defaultInstance) {
+                // 初始化实例
+                if (typeof _defaultInstance.init === "function") {
+                    _defaultInstance.init();
+                }
+                
+                // 存储到实例列表中
+                _instances[_moduleConfig.defaultModuleName] = _defaultInstance;
+                
+                // 添加实例标识用于调试
+                _defaultInstance._isDefaultInstance = true;
+                _defaultInstance._instanceId = "default_" + new Date().getTime();
+                
+                // 调试日志
+                if (typeof console !== "undefined" && console.log) {
+                    console.log("创建默认Logger实例:", {
+                        instanceId: _defaultInstance._instanceId,
+                        moduleName: _moduleConfig.defaultModuleName,
+                        timestamp: new Date().toLocaleString()
+                    });
+                }
+            } else {
+                // 实例创建失败
+                if (typeof console !== "undefined" && console.log) {
+                    console.log("默认Logger实例创建失败");
+                }
+                return null;
+            }
+        } else {
+            // 调试日志：返回已存在的实例（单例模式验证）
+            if (typeof console !== "undefined" && console.log) {
+                console.log("返回已存在的默认Logger实例（单例模式）:", {
+                    instanceId: _defaultInstance._instanceId || "unknown",
+                    moduleName: _moduleConfig.defaultModuleName,
+                    cacheSize: (_defaultInstance && typeof _defaultInstance.getCount === "function") ? _defaultInstance.getCount() : 0,
+                    timestamp: new Date().toLocaleString()
+                });
+            }
+        }
+        
+        // 始终返回同一个实例 - 单例模式核心
+        return _defaultInstance;
+    }
+    
+    /**
+     * 获取或创建Logger实例
+     * @param {string} moduleName 模块名称
+     * @param {Object} options 配置选项
+     * @returns {Object} Logger实例
+     */
+    function _getOrCreateInstance(moduleName, options) {
+        var instanceName = moduleName || _moduleConfig.defaultModuleName;
+        
+        // 如果实例已存在，直接返回
+        if (_instances[instanceName]) {
+            return _instances[instanceName];
+        }
+        
+        // 创建新实例
+        var instanceOptions = options || {};
+        instanceOptions.moduleName = instanceName;
+        
+        var instance = LoggerModule.create(instanceOptions);
+        
+        // 初始化实例
+        if (instance && typeof instance.init === "function") {
+            instance.init();
+        }
+        
+        // 确保moduleName属性正确设置
+        if (instance) {
+            instance.moduleName = instanceName;
+        }
+        
+        // 存储实例
+        _instances[instanceName] = instance;
+        
+        return instance;
+    }
+    
+    /**
+     * 验证Logger实例
+     * @param {Object} instance Logger实例
+     * @returns {boolean} 是否有效
+     */
+    function _validateInstance(instance) {
+        return instance && 
+               typeof instance === "object" &&
+               typeof instance.error === "function" &&
+               typeof instance.warn === "function" &&
+               typeof instance.info === "function" &&
+               typeof instance.debug === "function";
+    }
+    
+    /**
+     * 安全调用Logger方法
+     * @param {Object} instance Logger实例
+     * @param {string} methodName 方法名
+     * @param {Array} args 参数数组
+     */
+    function _safeCall(instance, methodName, args) {
+        try {
+            if (_validateInstance(instance) && typeof instance[methodName] === "function") {
+                instance[methodName].apply(instance, args);
+            }
+        } catch (e) {
+            // 静默处理错误
+        }
+    }
+    
+    // 公共API - 实例管理
+    
+    /**
+     * 创建Logger实例
+     * @param {Object|string} options 配置选项或模块名称
+     * @returns {Object} Logger实例
+     */
+    function create(options) {
+        // 支持字符串参数作为模块名
+        if (typeof options === "string") {
+            options = {moduleName: options};
+        }
+        
+        var instance = LoggerModule.create(options);
+        
+        // 确保moduleName属性正确设置
+        if (instance) {
+            if (options && options.moduleName) {
+                instance.moduleName = options.moduleName;
+            } else if (instance.data && instance.data.config && instance.data.config.moduleName) {
+                instance.moduleName = instance.data.config.moduleName;
+            } else {
+                instance.moduleName = "LoggerModule";
+            }
+        }
+        
+        return instance;
+    }
+    
+    /**
+     * 初始化Logger实例
+     * @param {Object} instance Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function init(instance) {
+        if (!instance) {
+            return false;
+        }
+        
+        try {
+            if (typeof instance.init === "function") {
+                return instance.init();
+            }
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 运行Logger实例
+     * @param {Object} instance Logger实例
+     * @param {*} data 运行数据
+     * @returns {Object} 运行结果
+     */
+    function run(instance, data) {
+        if (!instance) {
+            return {success: false, message: "实例无效"};
+        }
+        
+        try {
+            if (typeof instance.run === "function") {
+                return instance.run(data);
+            }
+            return {success: false, message: "run方法不存在"};
+        } catch (e) {
+            return {success: false, message: "运行异常: " + e.message};
+        }
+    }
+    
+    /**
+     * 销毁Logger实例
+     * @param {Object} instance Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function destroy(instance) {
+        if (!instance) {
+            return false;
+        }
+        
+        try {
+            if (typeof instance.destroy === "function") {
+                var result = instance.destroy();
+                
+                // 从实例列表中移除
+                for (var name in _instances) {
+                    if (_instances[name] === instance) {
+                        delete _instances[name];
+                        break;
+                    }
+                }
+                
+                // 如果是默认实例，清空引用
+                if (_defaultInstance === instance) {
+                    _defaultInstance = null;
+                }
+                
+                return result;
+            }
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    // 公共API - 便捷方法
+    
+    /**
+     * 获取指定模块的Logger实例
+     * @param {string} moduleName 模块名称
+     * @param {Object} options 配置选项
+     * @returns {Object} Logger实例
+     */
+    function getLogger(moduleName, options) {
+        return _getOrCreateInstance(moduleName, options);
+    }
+    
+    /**
+     * 获取默认Logger实例
+     * @returns {Object} 默认Logger实例
+     */
+    function getDefaultLogger() {
+        if (_moduleConfig.autoCreateDefault) {
+            var instance = _createDefaultInstance();
+            
+            // 调试日志：验证单例
+            if (typeof console !== "undefined" && console.log) {
+                console.log("getDefaultLogger返回实例:", {
+                    instanceId: (instance && instance._instanceId) ? instance._instanceId : "unknown",
+                    isDefaultInstance: (instance && instance._isDefaultInstance) ? true : false,
+                    cacheSize: (instance && typeof instance.getCount === "function") ? instance.getCount() : 0,
+                    timestamp: new Date().toLocaleString()
+                });
+            }
+            
+            return instance;
+        }
+        return _defaultInstance;
+    }
+    
+    /**
+     * 记录错误日志（使用默认实例）
+     * @param {string} message 错误消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     */
+    function error(message, context, fileName, functionName) {
+        var instance = getDefaultLogger();
+        if (instance) {
+            _safeCall(instance, "error", [message, context, fileName, functionName]);
+        }
+    }
+    
+    /**
+     * 记录警告日志（使用默认实例）
+     * @param {string} message 警告消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     */
+    function warn(message, context, fileName, functionName) {
+        var instance = getDefaultLogger();
+        if (instance) {
+            _safeCall(instance, "warn", [message, context, fileName, functionName]);
+        }
+    }
+    
+    /**
+     * 记录信息日志（使用默认实例）
+     * @param {string} message 信息消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     */
+    function info(message, context, fileName, functionName) {
+        var instance = getDefaultLogger();
+        if (instance) {
+            _safeCall(instance, "info", [message, context, fileName, functionName]);
+        }
+    }
+    
+    /**
+     * 记录调试日志（使用默认实例）
+     * @param {string} message 调试消息
+     * @param {*} context 上下文信息
+     * @param {string} fileName 文件名
+     * @param {string} functionName 函数名
+     */
+    function debug(message, context, fileName, functionName) {
+        var instance = getDefaultLogger();
+        if (instance) {
+            _safeCall(instance, "debug", [message, context, fileName, functionName]);
+        }
+    }
+    
+    // 公共API - 配置管理
+    
+    /**
+     * 配置模块
+     * @param {Object} config 模块配置
+     */
+    function configure(config) {
+        if (config && typeof config === "object") {
+            for (var key in config) {
+                if (config.hasOwnProperty(key)) {
+                    _moduleConfig[key] = config[key];
+                }
+            }
+        }
+    }
+    
+    /**
+     * 获取模块配置
+     * @returns {Object} 模块配置
+     */
+    function getConfiguration() {
+        var config = {};
+        for (var key in _moduleConfig) {
+            if (_moduleConfig.hasOwnProperty(key)) {
+                config[key] = _moduleConfig[key];
+            }
+        }
+        return config;
+    }
+    
+    /**
+     * 设置默认日志级别
+     * @param {number} level 日志级别
+     */
+    function setDefaultLevel(level) {
+        var instance = getDefaultLogger();
+        if (instance && typeof instance.setLevel === "function") {
+            instance.setLevel(level);
+        }
+    }
+    
+    /**
+     * 设置默认写入阈值
+     * @param {number} threshold 阈值
+     */
+    function setDefaultThreshold(threshold) {
+        var instance = getDefaultLogger();
+        if (instance && typeof instance.setThreshold === "function") {
+            instance.setThreshold(threshold);
+        }
+    }
+    
+    /**
+     * 启用/禁用默认日志
+     * @param {boolean} enabled 是否启用
+     */
+    function setDefaultEnabled(enabled) {
+        var instance = getDefaultLogger();
+        if (instance && typeof instance.setEnabled === "function") {
+            instance.setEnabled(enabled);
+        }
+    }
+    
+    // 公共API - 状态查询
+    
+    /**
+     * 获取默认实例统计信息
+     * @returns {Object} 统计信息
+     */
+    function getStats() {
+        var instance = getDefaultLogger();
+        if (instance && typeof instance.getStats === "function") {
+            return instance.getStats();
+        }
+        return {};
+    }
+    
+    /**
+     * 获取默认实例缓存数量
+     * @returns {number} 缓存数量
+     */
+    function getCount() {
+        var instance = getDefaultLogger();
+        if (instance && typeof instance.getCount === "function") {
+            return instance.getCount();
+        }
+        return 0;
+    }
+    
+    /**
+     * 强制写入默认实例缓存
+     * @returns {boolean} 是否成功
+     */
+    function flush() {
+        try {
+            var instance = getDefaultLogger();
+            if (instance && typeof instance.flush === "function") {
+                var result = instance.flush();
+                
+                // 增强错误处理和诊断
+                if (result === false) {
+                    // 尝试诊断失败原因
+                    var cacheCount = instance.getCount ? instance.getCount() : 0;
+                    var stats = instance.getStats ? instance.getStats() : {};
+                    
+                    // 如果缓存为空，返回true（没有内容需要写入）
+                    if (cacheCount === 0) {
+                        return true;
+                    }
+                    
+                    // 记录详细的失败信息
+                    if (typeof console !== "undefined" && console.log) {
+                        console.log("flush失败诊断:", {
+                            cacheCount: cacheCount,
+                            stats: stats,
+                            instanceType: typeof instance,
+                            hasFlush: typeof instance.flush === "function"
+                        });
+                    }
+                }
+                
+                return result;
+            }
+            
+            // 如果没有实例或flush方法，返回false
+            if (typeof console !== "undefined" && console.log) {
+                console.log("flush失败: 无效实例或方法", {
+                    hasInstance: !!instance,
+                    hasFlushMethod: instance && typeof instance.flush === "function"
+                });
+            }
+            
+            return false;
+        } catch (e) {
+            // 异常处理
+            if (typeof console !== "undefined" && console.log) {
+                console.log("flush异常:", e.message);
+            }
+            return false;
+        }
+    }
+    
+    /**
+     * 清空默认实例缓存
+     * @returns {boolean} 是否成功
+     */
+    function clear() {
+        var instance = getDefaultLogger();
+        if (instance && typeof instance.clear === "function") {
+            return instance.clear();
+        }
+        return false;
+    }
+    
+    /**
+     * 获取所有实例信息
+     * @returns {Object} 实例信息
+     */
+    function getInstances() {
+        var instances = {};
+        for (var name in _instances) {
+            if (_instances.hasOwnProperty(name)) {
+                var instance = _instances[name];
+                instances[name] = {
+                    moduleName: name,
+                    initialized: instance.state ? instance.state.initialized : false,
+                    stats: (typeof instance.getStats === "function") ? instance.getStats() : {}
+                };
+            }
+        }
+        return instances;
+    }
+    
+    // 公共API - 批量操作
+    
+    /**
+     * 批量操作所有实例
+     * @param {string} operation 操作名称
+     * @param {*} args 操作参数
+     * @returns {Object} 操作结果
+     */
+    function batchOperation(operation, args) {
+        var results = {
+            success: 0,
+            failed: 0,
+            total: 0,
+            details: {}
+        };
+        
+        for (var name in _instances) {
+            if (_instances.hasOwnProperty(name)) {
+                results.total++;
+                var instance = _instances[name];
+                
+                try {
+                    if (typeof instance[operation] === "function") {
+                        var result = instance[operation].apply(instance, args);
+                        results.details[name] = {success: true, result: result};
+                        results.success++;
+                    } else {
+                        results.details[name] = {success: false, error: "方法不存在"};
+                        results.failed++;
+                    }
+                } catch (e) {
+                    results.details[name] = {success: false, error: e.message};
+                    results.failed++;
+                }
+            }
+        }
+        
+        return results;
+    }
+    
+    /**
+     * 刷新所有实例缓存
+     * @returns {Object} 操作结果
+     */
+    function flushAll() {
+        return batchOperation("flush", []);
+    }
+    
+    /**
+     * 清空所有实例缓存
+     * @returns {Object} 操作结果
+     */
+    function clearAll() {
+        return batchOperation("clear", []);
+    }
+    
+    /**
+     * 销毁所有实例
+     * @returns {Object} 操作结果
+     */
+    function destroyAll() {
+        var results = flushAll();
+        
+        // 清空实例列表
+        for (var name in _instances) {
+            if (_instances.hasOwnProperty(name)) {
+                var instance = _instances[name];
+                if (typeof instance.destroy === "function") {
+                    try {
+                        instance.destroy();
+                    } catch (e) {
+                        // 静默处理
+                    }
+                }
+            }
+        }
+        
+        _instances = {};
+        _defaultInstance = null;
+        
+        return results;
+    }
+    
+    /**
+     * 获取全局统计信息
+     * @returns {Object} 全局统计信息
+     */
+    function getGlobalStats() {
+        var globalStats = {
+            totalInstances: 0,
+            totalLogs: 0,
+            totalCacheSize: 0,
+            instances: {}
+        };
+        
+        for (var name in _instances) {
+            if (_instances.hasOwnProperty(name)) {
+                var instance = _instances[name];
+                var stats = {};
+                
+                if (typeof instance.getStats === "function") {
+                    stats = instance.getStats();
+                }
+                
+                globalStats.instances[name] = {
+                    moduleName: name,
+                    stats: stats,
+                    cacheSize: (typeof instance.getCount === "function") ? instance.getCount() : 0
+                };
+                
+                globalStats.totalInstances++;
+                globalStats.totalLogs += (stats.totalLogs || 0);
+                globalStats.totalCacheSize += globalStats.instances[name].cacheSize;
+            }
+        }
+        
+        return globalStats;
+    }
+    
+    // 导出接口
+    
+    return {
+        // 生命周期方法
+        create: create,
+        init: init,
+        run: run,
+        destroy: destroy,
+        
+        // 实例管理
+        getLogger: getLogger,
+        getDefaultLogger: getDefaultLogger,
+        getInstances: getInstances,
+        
+        // 便捷日志方法（使用默认实例）
+        error: error,
+        warn: warn,
+        info: info,
+        debug: debug,
+        
+        // 配置管理
+        configure: configure,
+        getConfiguration: getConfiguration,
+        setDefaultLevel: setDefaultLevel,
+        setDefaultThreshold: setDefaultThreshold,
+        setDefaultEnabled: setDefaultEnabled,
+        
+        // 状态查询
+        getStats: getStats,
+        getCount: getCount,
+        flush: flush,
+        clear: clear,
+        
+        // 批量操作
+        flushAll: flushAll,
+        clearAll: clearAll,
+        destroyAll: destroyAll,
+        batchOperation: batchOperation,
+        
+        // 全局统计
+        getGlobalStats: getGlobalStats,
+        
+        // 工具方法
+        isHealthy: function() {
+            var instance = getDefaultLogger();
+            if (instance && typeof instance.isHealthy === "function") {
+                return instance.isHealthy();
+            }
+            return false;
+        },
+        
+        getInfo: function() {
+            return {
+                name: "LoggerModule",
+                version: "1.0.0",
+                description: "AD21 JS Project Logger Module",
+                author: "AD21 JS Project Team"
+            };
+        }
+    };
+    
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.LoggerModuleIndex = LoggerModuleIndex;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = LoggerModuleIndex;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.LoggerModuleIndex = LoggerModuleIndex;
+    }
+})();
+
+
+// File: src/modules/ui-logger/index.js
+/**
+ * IIFE模块架构说明
+ * 
+ * 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();
+ * 2. 构建后所有模块变量在同一作用域，可直接引用
+ * 3. 不处理模块间依赖，需构建到一个文件中使用
+ * 4. 通过window导出，确保AD环境可访问
+ * 5. 依赖的模块必须在当前模块之前加载（通过merge-order.json控制）
+ */
+
+/**
+ * UILoggerModule 模块入口
+ * 
+ * 专门用于UI日志显示的模块，基于LoggerModule构建
+ * ES3/JScript 5.8 兼容
+ */
+
+var UILoggerModule = (function() {
+    
+    // 依赖引用（直接使用，构建后自动可访问）
+    
+    // 私有变量
+    var _instances = {};           // 存储UI Logger实例
+    var _defaultInstance = null;    // 默认UI Logger实例
+    var _moduleConfig = {           // 模块配置
+        autoCreateDefault: true,
+        defaultModuleName: "UILogger",
+        maxDisplayLines: 1000,      // 最大显示行数
+        autoScroll: true,           // 自动滚动
+        showTimestamp: true,        // 显示时间戳
+        showLevel: true,            // 显示日志级别
+        showModule: true            // 显示模块名
+    };
+    
+    // 私有函数
+    
+    /**
+     * 创建默认UI Logger实例
+     * @returns {Object} UI Logger实例
+     */
+    function _createDefaultInstance() {
+        if (!_defaultInstance) {
+            var options = {
+                moduleName: _moduleConfig.defaultModuleName,
+                autoInit: true,
+                level: 15,  // ALL
+                threshold: 1,   // 立即写入UI
+                enabled: true
+            };
+            
+            _defaultInstance = LoggerModule.create(options);
+            
+            // 初始化实例
+            if (_defaultInstance && typeof _defaultInstance.init === "function") {
+                _defaultInstance.init();
+            }
+        }
+        
+        return _defaultInstance;
+    }
+    
+    /**
+     * 格式化日志消息用于UI显示
+     * @param {string} level 日志级别
+     * @param {string} message 日志消息
+     * @param {string} moduleName 模块名
+     * @param {string} functionName 函数名
+     * @returns {string} 格式化后的消息
+     */
+    function _formatUIMessage(level, message, moduleName, functionName) {
+        var parts = [];
+        
+        // 添加时间戳
+        if (_moduleConfig.showTimestamp) {
+            parts.push("[" + new Date().toLocaleString() + "]");
+        }
+        
+        // 添加日志级别
+        if (_moduleConfig.showLevel) {
+            parts.push("[" + level.toUpperCase() + "]");
+        }
+        
+        // 添加模块名
+        if (_moduleConfig.showModule && moduleName) {
+            parts.push("[" + moduleName + "]");
+        }
+        
+        // 添加函数名
+        if (functionName) {
+            parts.push("[" + functionName + "]");
+        }
+        
+        // 添加消息
+        parts.push(message);
+        
+        return parts.join(" ");
+    }
+    
+    /**
+     * 安全地向UI添加日志行
+     * @param {string} message 日志消息
+     */
+    function _safeAddToUI(message) {
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+                // 检查最大行数限制
+                if (_moduleConfig.maxDisplayLines > 0 && memLog.Lines.Count >= _moduleConfig.maxDisplayLines) {
+                    // 删除最早的行
+                    while (memLog.Lines.Count >= _moduleConfig.maxDisplayLines) {
+                        memLog.Lines.Delete(0);
+                    }
+                }
+                
+                // 添加新行
+                memLog.Lines.Add(message);
+                
+                // 自动滚动到底部
+                if (_moduleConfig.autoScroll) {
+                    try {
+                        // 尝试滚动到底部（如果支持）
+                        if (memLog.Perform && typeof memLog.Perform === "function") {
+                            memLog.Perform(EM_SCROLLCARET, 0);
+                        }
+                    } catch (e) {
+                        // 忽略滚动错误
+                    }
+                }
+            }
+        } catch (e) {
+            // 静默处理UI更新错误
+        }
+    }
+    
+    /**
+     * 获取或创建UI Logger实例
+     * @param {string} moduleName 模块名称
+     * @param {Object} options 配置选项
+     * @returns {Object} UI Logger实例
+     */
+    function _getOrCreateInstance(moduleName, options) {
+        var instanceName = moduleName || _moduleConfig.defaultModuleName;
+        
+        // 如果实例已存在，直接返回
+        if (_instances[instanceName]) {
+            return _instances[instanceName];
+        }
+        
+        // 创建新实例
+        var instanceOptions = options || {};
+        instanceOptions.moduleName = instanceName;
+        instanceOptions.threshold = 1;  // UI日志立即显示
+        
+        var instance = LoggerModule.create(instanceOptions);
+        
+        // 初始化实例
+        if (instance && typeof instance.init === "function") {
+            instance.init();
+        }
+        
+        // 存储实例
+        _instances[instanceName] = instance;
+        
+        return instance;
+    }
+    
+    // 公共API - 实例管理
+    
+    /**
+     * 创建UI Logger实例
+     * @param {Object} options 配置选项
+     * @returns {Object} UI Logger实例
+     */
+    function create(options) {
+        return LoggerModule.create(options);
+    }
+    
+    /**
+     * 初始化UI Logger实例
+     * @param {Object} instance UI Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function init(instance) {
+        if (!instance) {
+            return false;
+        }
+        
+        try {
+            if (typeof instance.init === "function") {
+                return instance.init();
+            }
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 运行UI Logger实例
+     * @param {Object} instance UI Logger实例
+     * @param {*} data 运行数据
+     * @returns {Object} 运行结果
+     */
+    function run(instance, data) {
+        if (!instance) {
+            return {success: false, message: "实例无效"};
+        }
+        
+        try {
+            if (typeof instance.run === "function") {
+                return instance.run(data);
+            }
+            return {success: false, message: "run方法不存在"};
+        } catch (e) {
+            return {success: false, message: "运行异常: " + e.message};
+        }
+    }
+    
+    /**
+     * 销毁UI Logger实例
+     * @param {Object} instance UI Logger实例
+     * @returns {boolean} 是否成功
+     */
+    function destroy(instance) {
+        if (!instance) {
+            return false;
+        }
+        
+        try {
+            if (typeof instance.destroy === "function") {
+                var result = instance.destroy();
+                
+                // 从实例列表中移除
+                for (var name in _instances) {
+                    if (_instances[name] === instance) {
+                        delete _instances[name];
+                        break;
+                    }
+                }
+                
+                // 如果是默认实例，清空引用
+                if (_defaultInstance === instance) {
+                    _defaultInstance = null;
+                }
+                
+                return result;
+            }
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    // 公共API - UI专用日志方法
+    
+    /**
+     * 直接在UI中显示错误日志
+     * @param {string} message 错误消息
+     * @param {*} context 上下文信息
+     * @param {string} moduleName 模块名
+     * @param {string} functionName 函数名
+     */
+    function uiError(message, context, moduleName, functionName) {
+        var formattedMessage = _formatUIMessage("ERROR", message, moduleName, functionName);
+        _safeAddToUI(formattedMessage);
+        
+        // 同时记录到LoggerModule
+        var instance = _createDefaultInstance();
+        if (instance && typeof instance.error === "function") {
+            instance.error(message, context, moduleName, functionName);
+        }
+    }
+    
+    /**
+     * 直接在UI中显示警告日志
+     * @param {string} message 警告消息
+     * @param {*} context 上下文信息
+     * @param {string} moduleName 模块名
+     * @param {string} functionName 函数名
+     */
+    function uiWarn(message, context, moduleName, functionName) {
+        var formattedMessage = _formatUIMessage("WARN", message, moduleName, functionName);
+        _safeAddToUI(formattedMessage);
+        
+        // 同时记录到LoggerModule
+        var instance = _createDefaultInstance();
+        if (instance && typeof instance.warn === "function") {
+            instance.warn(message, context, moduleName, functionName);
+        }
+    }
+    
+    /**
+     * 直接在UI中显示信息日志
+     * @param {string} message 信息消息
+     * @param {*} context 上下文信息
+     * @param {string} moduleName 模块名
+     * @param {string} functionName 函数名
+     */
+    function uiInfo(message, context, moduleName, functionName) {
+        var formattedMessage = _formatUIMessage("INFO", message, moduleName, functionName);
+        _safeAddToUI(formattedMessage);
+        
+        // 同时记录到LoggerModule
+        var instance = _createDefaultInstance();
+        if (instance && typeof instance.info === "function") {
+            instance.info(message, context, moduleName, functionName);
+        }
+    }
+    
+    /**
+     * 直接在UI中显示调试日志
+     * @param {string} message 调试消息
+     * @param {*} context 上下文信息
+     * @param {string} moduleName 模块名
+     * @param {string} functionName 函数名
+     */
+    function uiDebug(message, context, moduleName, functionName) {
+        var formattedMessage = _formatUIMessage("DEBUG", message, moduleName, functionName);
+        _safeAddToUI(formattedMessage);
+        
+        // 同时记录到LoggerModule
+        var instance = _createDefaultInstance();
+        if (instance && typeof instance.debug === "function") {
+            instance.debug(message, context, moduleName, functionName);
+        }
+    }
+    
+    /**
+     * 直接在UI中显示原始消息
+     * @param {string} message 原始消息
+     */
+    function uiRaw(message) {
+        _safeAddToUI(message);
+    }
+    
+    /**
+     * 清空UI显示
+     */
+    function uiClear() {
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+                memLog.Lines.Clear();
+            }
+        } catch (e) {
+            // 静默处理清空错误
+        }
+    }
+    
+    // 公共API - 配置管理
+    
+    /**
+     * 配置UI Logger模块
+     * @param {Object} config 模块配置
+     */
+    function configure(config) {
+        if (config && typeof config === "object") {
+            for (var key in config) {
+                if (config.hasOwnProperty(key)) {
+                    _moduleConfig[key] = config[key];
+                }
+            }
+        }
+    }
+    
+    /**
+     * 获取模块配置
+     * @returns {Object} 模块配置
+     */
+    function getConfiguration() {
+        var config = {};
+        for (var key in _moduleConfig) {
+            if (_moduleConfig.hasOwnProperty(key)) {
+                config[key] = _moduleConfig[key];
+            }
+        }
+        return config;
+    }
+    
+    // 导出接口
+    
+    return {
+        // 生命周期方法
+        create: create,
+        init: init,
+        run: run,
+        destroy: destroy,
+        
+        // UI专用日志方法
+        uiError: uiError,
+        uiWarn: uiWarn,
+        uiInfo: uiInfo,
+        uiDebug: uiDebug,
+        uiRaw: uiRaw,
+        uiClear: uiClear,
+        
+        // 配置管理
+        configure: configure,
+        getConfiguration: getConfiguration
+    };
+    
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.UILoggerModule = UILoggerModule;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = UILoggerModule;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.UILoggerModule = UILoggerModule;
+    }
+})();
+
+
+// File: src/modules/http-client/index.js
+/**
+ * HTTPClientModule
+ *
+ * AD 侧同步 HTTP 客户端（ES3）：
+ * - GET /ping
+ * - POST /api/command
+ * - GET /api/latest-report?full=0|1
+ *
+ * 统一返回：
+ * { ok:Boolean, status:Number, text:String, json:Object|null, error:String|null }
+ */
+var HTTPClientModule = (function () {
+  var DEFAULT_BASE_URL = "http://127.0.0.1:8080";
+
+  function createHttp() {
+    var progIds = [
+      "MSXML2.XMLHTTP",
+      "MSXML2.ServerXMLHTTP",
+      "Microsoft.XMLHTTP",
+      "WinHttp.WinHttpRequest.5.1"
+    ];
+
+    var i;
+    for (i = 0; i < progIds.length; i++) {
+      try {
+        return new ActiveXObject(progIds[i]);
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  function ui(level, msg, ctx) {
+    var text = String(msg);
+    var payload = ctx || null;
+
+    try {
+      if (typeof UILoggerModule !== "undefined" && UILoggerModule) {
+        if (level === "error" && UILoggerModule.uiError) {
+          UILoggerModule.uiError(text, payload, "HTTPClientModule", "ui");
+          return;
+        }
+        if (level === "warn" && UILoggerModule.uiWarn) {
+          UILoggerModule.uiWarn(text, payload, "HTTPClientModule", "ui");
+          return;
+        }
+        if (UILoggerModule.uiInfo) {
+          UILoggerModule.uiInfo(text, payload, "HTTPClientModule", "ui");
+          return;
+        }
+      }
+    } catch (e1) {}
+
+    try {
+      if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) {
+        var line = "[" + String(level).toUpperCase() + "] " + text;
+        if (payload) {
+          try {
+            line += " " + JSON.stringify(payload);
+          } catch (e2) {}
+        }
+        memLog.Lines.Add(line);
+        return;
+      }
+    } catch (e3) {}
+
+    try {
+      if (typeof ShowMessage !== "undefined") {
+        ShowMessage(text);
+      }
+    } catch (e4) {}
+  }
+
+  function request(method, url, body, headers) {
+    var http = createHttp();
+    if (!http) {
+      return { ok: false, status: 0, text: "", json: null, error: "XMLHTTP not available" };
+    }
+
+    try {
+      http.open(method, url, false);
+
+      if (headers) {
+        var k;
+        for (k in headers) {
+          if (headers.hasOwnProperty(k)) {
+            try {
+              http.setRequestHeader(k, headers[k]);
+            } catch (e1) {}
+          }
+        }
+      }
+
+      http.send(body || "");
+
+      var status = 0;
+      var text = "";
+      try {
+        status = http.status;
+      } catch (e2) {}
+      try {
+        text = http.responseText;
+      } catch (e3) {}
+
+      var json = null;
+      var parseError = null;
+      try {
+        if (typeof JsonUtil !== "undefined" && JsonUtil && JsonUtil.parse) {
+          json = JsonUtil.parse(text);
+          if (!json) parseError = "JsonUtil.parse returned null";
+        } else {
+          parseError = "JsonUtil missing";
+        }
+      } catch (e4) {
+        parseError = "parse throws: " + String(e4);
+      }
+
+      return {
+        ok: status >= 200 && status < 300,
+        status: status,
+        text: text,
+        json: json,
+        parseError: parseError,
+        error: null
+      };
+    } catch (e) {
+      return { ok: false, status: 0, text: "", json: null, error: String(e) };
+    }
+  }
+
+  function getBaseUrl() {
+    return DEFAULT_BASE_URL;
+  }
+
+  function setBaseUrl(url) {
+    if (typeof url === "string" && url) {
+      DEFAULT_BASE_URL = url;
+    }
+  }
+
+  function _resolveBaseUrl(baseUrl) {
+    if (typeof baseUrl === "string" && baseUrl) return baseUrl;
+    return DEFAULT_BASE_URL;
+  }
+
+  function ping(baseUrl) {
+    var base = _resolveBaseUrl(baseUrl);
+    var r = request("GET", base + "/ping", "", null);
+    ui(r.ok ? "info" : "error", "PING", {
+      url: base + "/ping",
+      status: r.status,
+      text: r.text,
+      error: r.error
+    });
+    return r.ok && String(r.text) === "pong";
+  }
+
+  function _normalizeCommandArgs(baseUrl, cmd, params) {
+    if (typeof cmd === "string") {
+      return { baseUrl: _resolveBaseUrl(baseUrl), cmd: cmd, params: params || {} };
+    }
+    return { baseUrl: DEFAULT_BASE_URL, cmd: String(baseUrl || ""), params: cmd || {} };
+  }
+
+  function sendCommand(baseUrl, cmd, params) {
+    var args = _normalizeCommandArgs(baseUrl, cmd, params);
+    var reqObj = {
+      id: String(new Date().getTime()),
+      cmd: args.cmd,
+      params: args.params || {}
+    };
+
+    var body = "{}";
+    try {
+      if (typeof JsonUtil !== "undefined" && JsonUtil && JsonUtil.stringify) {
+        body = JsonUtil.stringify(reqObj);
+      } else if (typeof JSON !== "undefined" && JSON && JSON.stringify) {
+        body = JSON.stringify(reqObj);
+      }
+    } catch (e1) {}
+
+    var r = request("POST", args.baseUrl + "/api/command", body, { "Content-Type": "application/json" });
+
+    if (r.json) {
+      ui(r.json.ok ? "info" : "warn", "COMMAND " + args.cmd, {
+        ok: r.json.ok,
+        id: r.json.id || null,
+        error: r.json.error || null
+      });
+      return r.json;
+    }
+
+    ui("error", "COMMAND " + args.cmd + " (json-parse-failed)", {
+      status: r.status,
+      parseError: r.parseError,
+      textHead: r.text ? r.text.substring(0, 80) : "",
+      error: r.error
+    });
+    return { ok: false, error: { code: "NON_JSON", message: r.text || r.error } };
+  }
+
+  function command(cmd, params) {
+    return sendCommand(DEFAULT_BASE_URL, cmd, params);
+  }
+
+  function latestReport(full, baseUrl) {
+    if (typeof full === "string") {
+      baseUrl = full;
+      full = false;
+    }
+    var base = _resolveBaseUrl(baseUrl);
+    var q = full ? "1" : "0";
+    var r = request("GET", base + "/api/latest-report?full=" + q, "", null);
+    ui(r.ok ? "info" : "warn", "LATEST_REPORT", {
+      status: r.status,
+      hasJson: !!r.json,
+      parseError: r.parseError
+    });
+    return r.json || null;
+  }
+
+  return {
+    getBaseUrl: getBaseUrl,
+    setBaseUrl: setBaseUrl,
+    request: request,
+    ping: ping,
+    sendCommand: sendCommand,
+    command: command,
+    latestReport: latestReport,
+    ui: ui
+  };
+})();
+
+// 兼容中文命名的最小闭环示例（便于AD侧手动调用）
+try {
+  if (typeof HTTP客户端 === "undefined") {
+    var HTTP客户端 = HTTPClientModule;
+  }
+} catch (e) {}
+
+// 可选导出（模块即接口）
+try {
+  if (typeof exportModule !== "undefined" && exportModule) {
+    exportModule("HTTPClientModule", HTTPClientModule);
+  }
+} catch (e1) {}
+
+
+// File: src/环境探测/EnvironmentProbeModule.js
+/**
+ * EnvironmentProbeModule
+ *
+ * AD 脚本环境“可用组件/能力”探测器（尽可能多 & 尽可能安全）
+ *
+ * 设计目标：
+ * 1) 探测 ActiveX/COM 组件：按 ProgID 列表尝试实例化，记录成功/失败与错误信息
+ * 2) 探测全局对象：Client / PCBServer / WorkspaceManager / ShowMessage / memLog / UILoggerModule 等
+ * 3) 探测关键能力：JSON/Date/Math、HTTP、TEMP路径、MSXML loadXML
+ * 4) 输出统一报告：仅通过 LoggerModule 输出摘要；报告可上传到 Node
+ *
+ * 风险控制：
+ * - 默认“安全模式”：只实例化对象，不调用可能有副作用的方法
+ * - Office/IE/Outlook 等“高风险组件”默认不测，除非显式开启 allowRiskyProbes
+ *
+ * 兼容性：
+ * - ES3 风格（var/function）
+ * - AD 环境：new ActiveXObject(progId)
+ */
+var EnvironmentProbeModule = (function () {
+
+    // -----------------------------
+    // 配置区
+    // -----------------------------
+    var CONFIG = {
+        /** 是否启用安全模式（默认 true：只创建对象，不做危险调用） */
+        safeMode: true,
+
+        /** 是否探测高风险组件（默认 false：Office/IE/Outlook 等不测） */
+        allowRiskyProbes: false,
+
+        /** 是否扫描 maybe 组（默认 true） */
+        includeMaybeProbes: true,
+
+        /** risky 扫描后尝试清理进程（默认 false） */
+        cleanupRisky: false,
+
+        /** ProgID 候选清单路径（外置 JSON） */
+        progIdCandidatesPath: "config\\ActiveX-ProgID-超级候选清单.v2.json",
+
+        /** HTTP 基地址（ping/upload） */
+        httpBaseUrl: "http://127.0.0.1:8080",
+
+        /** 上传报告接口 */
+        uploadPath: "/api/upload-report",
+
+        /** 是否上传报告（默认 true） */
+        enableUploadReport: true,
+
+        /** 输出到 UI 的最大单行长度（避免 UI 爆） */
+        maxLineLen: 400
+    };
+
+    // -----------------------------
+    // 日志输出（只走 LoggerModule）
+    // -----------------------------
+    var _loggerInstance = null;
+
+    function _getLogger() {
+        try {
+            if (typeof LoggerModuleIndex !== "undefined" && LoggerModuleIndex && LoggerModuleIndex.getLogger) {
+                return LoggerModuleIndex.getLogger("EnvironmentProbeModule");
+            }
+        } catch (e1) {}
+
+        try {
+            if (typeof LoggerModuleIndex !== "undefined" && LoggerModuleIndex && LoggerModuleIndex.info) {
+                return LoggerModuleIndex;
+            }
+        } catch (e2) {}
+
+        try {
+            if (typeof LoggerModule !== "undefined" && LoggerModule && LoggerModule.create) {
+                if (!_loggerInstance) {
+                    _loggerInstance = LoggerModule.create({
+                        moduleName: "EnvironmentProbeModule",
+                        autoInit: true,
+                        threshold: 1,
+                        enabled: true
+                    });
+                    if (_loggerInstance && _loggerInstance.init) {
+                        _loggerInstance.init();
+                    }
+                }
+                return _loggerInstance;
+            }
+        } catch (e3) {}
+
+        return null;
+    }
+
+    function _log(level, msg, ctx, functionName) {
+        var logger = _getLogger();
+        if (!logger) return;
+
+        var text = _trimLine(String(msg), CONFIG.maxLineLen);
+        try {
+            if (typeof logger[level] === "function") {
+                logger[level](text, ctx || null, "EnvironmentProbeModule", functionName || "");
+            }
+        } catch (e1) {}
+    }
+
+    function _logInfo(msg, ctx, fn) {
+        _log("info", msg, ctx, fn);
+    }
+
+    function _logWarn(msg, ctx, fn) {
+        _log("warn", msg, ctx, fn);
+    }
+
+    function _logError(msg, ctx, fn) {
+        _log("error", msg, ctx, fn);
+    }
+
+    // -----------------------------
+    // 工具：安全 stringify / 截断
+    // -----------------------------
+    function _safeStringify(obj) {
+        try {
+            if (typeof JSON !== "undefined" && JSON && JSON.stringify) {
+                return JSON.stringify(obj);
+            }
+        } catch (e1) {}
+        try { return String(obj); } catch (e2) {}
+        return "[unstringifiable]";
+    }
+
+    function _trimLine(s, maxLen) {
+        var str = String(s);
+        if (str.length <= maxLen) return str;
+        return str.substring(0, maxLen) + "...(trimmed)";
+    }
+
+    // -----------------------------
+    // 错误信息提取（AD 环境常见：number/description/message）
+    // -----------------------------
+    function _getErrorInfo(e) {
+        var info = {};
+        try { info.name = e && e.name ? String(e.name) : ""; } catch (x1) {}
+        try { info.message = e && e.message ? String(e.message) : ""; } catch (x2) {}
+        try { info.description = e && e.description ? String(e.description) : ""; } catch (x3) {}
+        try { info.number = (e && typeof e.number !== "undefined") ? e.number : null; } catch (x4) {}
+        try { info.toString = e ? String(e) : ""; } catch (x5) {}
+        return info;
+    }
+
+    function _compactError(e) {
+        var info = _getErrorInfo(e);
+        return {
+            number: info.number,
+            message: info.message || info.description || info.toString || ""
+        };
+    }
+
+    // -----------------------------
+    // 外置 ProgID 清单（默认值）
+    // -----------------------------
+    var DEFAULT_PROGID_CANDIDATES = {
+        safe: {
+            http: [
+                "WinHttp.WinHttpRequest.5.1",
+                "MSXML2.ServerXMLHTTP",
+                "MSXML2.ServerXMLHTTP.3.0",
+                "MSXML2.ServerXMLHTTP.6.0",
+                "MSXML2.XMLHTTP",
+                "MSXML2.XMLHTTP.3.0",
+                "MSXML2.XMLHTTP.6.0",
+                "Microsoft.XMLHTTP"
+            ],
+            xml_dom_sax_xslt: [
+                "MSXML2.DOMDocument",
+                "MSXML2.DOMDocument.3.0",
+                "MSXML2.DOMDocument.4.0",
+                "MSXML2.DOMDocument.6.0",
+                "Microsoft.XMLDOM",
+                "MSXML2.FreeThreadedDOMDocument",
+                "MSXML2.FreeThreadedDOMDocument.3.0",
+                "MSXML2.FreeThreadedDOMDocument.6.0",
+                "MSXML2.SAXXMLReader",
+                "MSXML2.SAXXMLReader.3.0",
+                "MSXML2.SAXXMLReader.6.0",
+                "MSXML2.MXXMLWriter",
+                "MSXML2.MXXMLWriter.3.0",
+                "MSXML2.MXXMLWriter.6.0",
+                "MSXML2.XMLSchemaCache",
+                "MSXML2.XMLSchemaCache.3.0",
+                "MSXML2.XMLSchemaCache.6.0",
+                "MSXML2.XSLTemplate",
+                "MSXML2.XSLTemplate.3.0",
+                "MSXML2.XSLTemplate.6.0"
+            ],
+            html_dom: ["htmlfile"],
+            collections: ["Scripting.Dictionary"],
+            wsh_core: ["WScript.Shell", "WScript.Network", "VBScript.RegExp", "Scriptlet.TypeLib"],
+            file_io_stream: ["Scripting.FileSystemObject", "ADODB.Stream"],
+            ado_db: ["ADODB.Connection", "ADODB.Recordset", "ADODB.Command"],
+            wmi: ["WbemScripting.SWbemLocator", "WbemScripting.SWbemNamedValueSet", "WbemScripting.SWbemRefresher"],
+            msi: ["WindowsInstaller.Installer"],
+            sapi: ["SAPI.SpVoice", "SAPI.SpFileStream", "SAPI.SpMemoryStream"],
+            imaging_wia: ["WIA.ImageFile", "WIA.CommonDialog", "WIA.Vector"],
+            xml_signature_maybe: ["Microsoft.XMLDSig"],
+            clipboard_maybe: ["MSForms.DataObject"],
+            update_maybe: ["Microsoft.Update.Session", "Microsoft.Update.ServiceManager"],
+            compression_maybe: ["ADODB.Stream"],
+            net_misc_maybe: ["Msxml2.XMLHTTP.6.0", "Msxml2.ServerXMLHTTP.6.0"]
+        },
+        maybe: {
+            type_library_introspection: ["TLI.TLIApplication", "TLBINF32.TLIApplication", "OLEVIEW.OLEView"],
+            crypto_capicom: ["CAPICOM.HashedData", "CAPICOM.Utilities", "CAPICOM.SignedData", "CAPICOM.Store"],
+            crypto_csp_maybe: [
+                "X509Enrollment.CX509Enrollment",
+                "X509Enrollment.CX509CertificateRequestPkcs10",
+                "X509Enrollment.CObjectId",
+                "X509Enrollment.CX500DistinguishedName"
+            ],
+            cert_store_maybe: ["CAPICom.Store"],
+            json_maybe: ["MSScriptControl.ScriptControl"],
+            windows_scripting_extra: ["Scripting.Encoder", "Scripting.Signer", "Scripting.Dictionary.1"],
+            zip_maybe: ["CompressedFolder"],
+            network_discovery_maybe: ["HNetCfg.FwMgr", "HNetCfg.FwPolicy2"],
+            http_alt_maybe: ["Microsoft.WinHttp.WinHttpRequest.5.1"],
+            msxml_alt_maybe: ["Msxml2.DOMDocument.6.0", "Msxml2.FreeThreadedDOMDocument.6.0", "Msxml2.XMLSchemaCache.6.0"],
+            shell_exec_maybe: ["WScript.Shell.1"],
+            windows_task_scheduler_maybe: ["Schedule.Service"],
+            windows_management_maybe: ["Microsoft.WMI"]
+        },
+        risky: {
+            shell: ["Shell.Application"],
+            browser: ["InternetExplorer.Application"],
+            office: ["Excel.Application", "Word.Application", "Outlook.Application", "PowerPoint.Application", "Access.Application"],
+            process: ["WScript.Shell"],
+            scheduler: ["Schedule.Service"]
+        }
+    };
+
+    // -----------------------------
+    // 读取外置 JSON
+    // -----------------------------
+    function _readTextFile(path) {
+        try {
+            if (typeof ActiveXObject !== "undefined") {
+                var fso = new ActiveXObject("Scripting.FileSystemObject");
+                if (!fso.FileExists(path)) {
+                    return { ok: false, error: { message: "file not found: " + path } };
+                }
+                var file = fso.OpenTextFile(path, 1, false);
+                var text = file.ReadAll();
+                file.Close();
+                return { ok: true, text: text };
+            }
+        } catch (e1) {
+            return { ok: false, error: _compactError(e1) };
+        }
+
+        try {
+            if (typeof require !== "undefined") {
+                var fs = require("fs");
+                if (!fs.existsSync(path)) {
+                    return { ok: false, error: { message: "file not found: " + path } };
+                }
+                return { ok: true, text: String(fs.readFileSync(path, "utf8")) };
+            }
+        } catch (e2) {
+            return { ok: false, error: _compactError(e2) };
+        }
+
+        return { ok: false, error: { message: "no file reader available" } };
+    }
+
+    function _normalizeProgIdCandidates(obj) {
+        if (!obj || typeof obj !== "object") return null;
+        if (!obj.safe || typeof obj.safe !== "object") obj.safe = {};
+        if (!obj.maybe || typeof obj.maybe !== "object") obj.maybe = {};
+        if (!obj.risky || typeof obj.risky !== "object") obj.risky = {};
+        return obj;
+    }
+
+    function _loadProgIdCandidates() {
+        var r = _readTextFile(CONFIG.progIdCandidatesPath);
+        if (!r.ok) return null;
+
+        try {
+            if (typeof JSON !== "undefined" && JSON && JSON.parse) {
+                return _normalizeProgIdCandidates(JSON.parse(r.text || "{}"));
+            }
+        } catch (e1) {
+            _logWarn("ProgID candidates JSON parse failed", _compactError(e1), "_loadProgIdCandidates");
+        }
+
+        return null;
+    }
+
+    function _getProgIdCandidates() {
+        var candidates = _loadProgIdCandidates();
+        if (candidates) return candidates;
+        return DEFAULT_PROGID_CANDIDATES;
+    }
+
+    // -----------------------------
+    // 探测：ActiveX/COM 实例化
+    // -----------------------------
+    function _tryCreateActiveX(progId) {
+        var r = {
+            progId: progId,
+            ok: false,
+            error: null,
+            _obj: null
+        };
+
+        if (typeof ActiveXObject === "undefined") {
+            r.ok = false;
+            r.error = { number: null, message: "ActiveXObject is undefined" };
+            return r;
+        }
+
+        try {
+            var obj = new ActiveXObject(progId);
+            r.ok = true;
+            r._obj = obj;
+            try { r.type = (obj && obj.toString) ? String(obj.toString()) : ""; } catch (e1) {}
+            return r;
+
+        } catch (e) {
+            r.ok = false;
+            r.error = _compactError(e);
+            return r;
+        }
+    }
+
+    function _cleanupRiskyObject(progId, obj) {
+        if (!obj) return;
+        var lower = String(progId || "").toLowerCase();
+        var skipQuit = (lower.indexOf("outlook.application") >= 0);
+
+        try {
+            if (typeof obj.Visible !== "undefined") {
+                obj.Visible = false;
+            }
+        } catch (e1) {}
+
+        if (skipQuit) return;
+
+        try {
+            if (obj.Quit && typeof obj.Quit === "function") {
+                obj.Quit();
+            }
+        } catch (e2) {}
+    }
+
+    /**
+     * 扫描指定 ProgID 列表
+     * @param {String} groupType safe/risky
+     * @param {String} groupName 分组名
+     * @param {Array} progIds ProgID 列表
+     * @param {Object} report 报告对象
+     */
+    function _probeProgIdGroup(groupType, groupName, progIds, report) {
+        var i;
+        var resultGroup = {
+            ok: 0,
+            fail: 0,
+            skipped: 0,
+            total: progIds.length,
+            items: []
+        };
+
+        for (i = 0; i < progIds.length; i++) {
+            var progId = progIds[i];
+
+            if (groupType === "risky" && !CONFIG.allowRiskyProbes) {
+                resultGroup.skipped++;
+                resultGroup.items.push({
+                    progId: progId,
+                    ok: false,
+                    skipped: true,
+                    reason: "risky probe disabled"
+                });
+                continue;
+            }
+
+            var r = _tryCreateActiveX(progId);
+            if (r.ok && groupType === "risky" && CONFIG.cleanupRisky) {
+                _cleanupRiskyObject(progId, r._obj);
+            }
+            r._obj = null;
+            if (r.ok) {
+                resultGroup.ok++;
+            } else {
+                resultGroup.fail++;
+            }
+            resultGroup.items.push(r);
+        }
+
+        if (!report.progIdResults[groupType]) {
+            report.progIdResults[groupType] = {
+                groups: {},
+                totals: { ok: 0, fail: 0, skipped: 0, total: 0 }
+            };
+        }
+
+        report.progIdResults[groupType].groups[groupName] = resultGroup;
+        report.progIdResults[groupType].totals.ok += resultGroup.ok;
+        report.progIdResults[groupType].totals.fail += resultGroup.fail;
+        report.progIdResults[groupType].totals.skipped += resultGroup.skipped;
+        report.progIdResults[groupType].totals.total += resultGroup.total;
+
+        _logInfo("ProgID group done: " + groupType + "." + groupName, {
+            ok: resultGroup.ok,
+            fail: resultGroup.fail,
+            skipped: resultGroup.skipped,
+            total: resultGroup.total
+        }, "_probeProgIdGroup");
+    }
+
+    function _probeProgIdGroups(groupType, groups, report) {
+        var groupName;
+        for (groupName in groups) {
+            if (groups.hasOwnProperty(groupName)) {
+                _probeProgIdGroup(groupType, groupName, groups[groupName], report);
+            }
+        }
+    }
+
+    // -----------------------------
+    // 探测：全局对象/函数是否存在（AD 内置）
+    // -----------------------------
+    function _probeGlobals(report) {
+        var names = [
+            "window",
+            "Client",
+            "WorkspaceManager",
+            "PCBServer",
+            "SchServer",
+            "IntegratedLibraryManager",
+            "ServerProcess",
+            "ShowMessage",
+            "memLog",
+            "UILoggerModule",
+            "UIEventManager",
+            "exportModule",
+            "module"
+        ];
+
+        report.globals = [];
+
+        function _getGlobalByName(name) {
+            try {
+                if (name === "window") return (typeof window !== "undefined") ? window : undefined;
+                if (name === "Client") return (typeof Client !== "undefined") ? Client : undefined;
+                if (name === "WorkspaceManager") return (typeof WorkspaceManager !== "undefined") ? WorkspaceManager : undefined;
+                if (name === "PCBServer") return (typeof PCBServer !== "undefined") ? PCBServer : undefined;
+                if (name === "SchServer") return (typeof SchServer !== "undefined") ? SchServer : undefined;
+                if (name === "IntegratedLibraryManager") return (typeof IntegratedLibraryManager !== "undefined") ? IntegratedLibraryManager : undefined;
+                if (name === "ServerProcess") return (typeof ServerProcess !== "undefined") ? ServerProcess : undefined;
+                if (name === "ShowMessage") return (typeof ShowMessage !== "undefined") ? ShowMessage : undefined;
+                if (name === "memLog") return (typeof memLog !== "undefined") ? memLog : undefined;
+                if (name === "UILoggerModule") return (typeof UILoggerModule !== "undefined") ? UILoggerModule : undefined;
+                if (name === "UIEventManager") return (typeof UIEventManager !== "undefined") ? UIEventManager : undefined;
+                if (name === "exportModule") return (typeof exportModule !== "undefined") ? exportModule : undefined;
+                if (name === "module") return (typeof module !== "undefined") ? module : undefined;
+            } catch (e1) {}
+            return undefined;
+        }
+
+        var i;
+        for (i = 0; i < names.length; i++) {
+            var name = names[i];
+            var item = { name: name, exists: false, type: "" };
+            try {
+                var v = _getGlobalByName(name);
+                item.exists = (typeof v !== "undefined" && v !== null);
+                if (item.exists) item.type = typeof v;
+            } catch (e) {
+                item.exists = false;
+                item.error = _compactError(e);
+            }
+            report.globals.push(item);
+        }
+
+        _logInfo("Global probe done", { count: report.globals.length }, "_probeGlobals");
+    }
+
+    // -----------------------------
+    // 探测：基础语言能力
+    // -----------------------------
+    function _probeLanguage(report) {
+        report.language = {
+            hasJSON: false,
+            jsonSource: "",
+            hasDate: false,
+            hasMath: false,
+            hasActiveXObject: false
+        };
+
+        try { report.language.hasJSON = (typeof JSON !== "undefined" && JSON && JSON.parse && JSON.stringify); } catch (e1) {}
+        if (report.language.hasJSON) {
+            report.language.jsonSource = "projectProvided(json2.js)";
+        }
+        try { report.language.hasDate = (typeof Date !== "undefined"); } catch (e2) {}
+        try { report.language.hasMath = (typeof Math !== "undefined"); } catch (e3) {}
+        try { report.language.hasActiveXObject = (typeof ActiveXObject !== "undefined"); } catch (e4) {}
+
+        _logInfo("Language probe done", report.language, "_probeLanguage");
+    }
+
+    // -----------------------------
+    // 探测：关键能力
+    // -----------------------------
+    function _probeCapabilities(report) {
+        report.capabilityChecks = {
+            json: { ok: false, source: "", error: null },
+            tempPath: { ok: false, value: "", error: null },
+            httpPing: { ok: false, status: 0, text: "", via: "", error: null },
+            msxmlLoadXml: { ok: false, via: "", error: null }
+        };
+
+        var hasJSON = false;
+        try { hasJSON = (typeof JSON !== "undefined" && JSON && JSON.parse && JSON.stringify); } catch (e1) {}
+        report.capabilityChecks.json.ok = hasJSON;
+        report.capabilityChecks.json.source = hasJSON ? "projectProvided(json2.js)" : "missing";
+        if (!hasJSON) report.capabilityChecks.json.error = { message: "JSON unavailable" };
+
+        // TEMP 路径
+        try {
+            var shell = null;
+            if (typeof ActiveXObject !== "undefined") {
+                shell = new ActiveXObject("WScript.Shell");
+            }
+            if (shell && shell.ExpandEnvironmentStrings) {
+                var tempPath = shell.ExpandEnvironmentStrings("%TEMP%");
+                report.capabilityChecks.tempPath.value = String(tempPath);
+                report.capabilityChecks.tempPath.ok = (String(tempPath).length > 0);
+            } else {
+                report.capabilityChecks.tempPath.error = { message: "WScript.Shell unavailable" };
+            }
+        } catch (e2) {
+            report.capabilityChecks.tempPath.error = _compactError(e2);
+        }
+
+        // HTTP ping
+        report.capabilityChecks.httpPing = _httpPing(CONFIG.httpBaseUrl);
+
+        // MSXML loadXML
+        report.capabilityChecks.msxmlLoadXml = _probeMsxmlLoadXml();
+
+        _logInfo("Capability checks done", report.capabilityChecks, "_probeCapabilities");
+    }
+
+    function _httpPing(baseUrl) {
+        var result = { ok: false, status: 0, text: "", via: "", error: null };
+        var url = baseUrl + "/ping";
+        var progIds = [
+            "WinHttp.WinHttpRequest.5.1",
+            "MSXML2.ServerXMLHTTP.6.0",
+            "MSXML2.ServerXMLHTTP.3.0",
+            "MSXML2.XMLHTTP.6.0",
+            "MSXML2.XMLHTTP.3.0",
+            "MSXML2.XMLHTTP",
+            "Microsoft.XMLHTTP"
+        ];
+
+        var i;
+        for (i = 0; i < progIds.length; i++) {
+            var progId = progIds[i];
+            try {
+                var http = new ActiveXObject(progId);
+                if (!http) continue;
+
+                if (progId.indexOf("WinHttp.") === 0 || progId.indexOf("WinHttp") === 0) {
+                    http.Open("GET", url, false);
+                    http.Send();
+                    try { result.status = http.Status; } catch (e1) { result.status = http.status; }
+                    try { result.text = http.ResponseText; } catch (e2) { result.text = http.responseText; }
+                } else {
+                    http.open("GET", url, false);
+                    http.send();
+                    try { result.status = http.status; } catch (e3) { result.status = 0; }
+                    try { result.text = http.responseText; } catch (e4) { result.text = ""; }
+                }
+
+                result.via = progId;
+                result.ok = (result.status >= 200 && result.status < 300 && String(result.text) === "pong");
+                if (result.ok) return result;
+            } catch (e5) {
+                result.error = _compactError(e5);
+            }
+        }
+
+        if (!result.error) {
+            result.error = { message: "HTTP ping failed" };
+        }
+        return result;
+    }
+
+    function _probeMsxmlLoadXml() {
+        var result = { ok: false, via: "", error: null };
+        var progIds = ["MSXML2.DOMDocument.6.0", "MSXML2.DOMDocument.4.0", "Microsoft.XMLDOM", "MSXML2.DOMDocument"];
+        var i;
+        for (i = 0; i < progIds.length; i++) {
+            try {
+                var dom = new ActiveXObject(progIds[i]);
+                if (!dom) continue;
+                try { dom.async = false; } catch (e1) {}
+                var ok = false;
+                try { ok = dom.loadXML("<a/>"); } catch (e2) { ok = false; }
+                if (ok && dom.documentElement && dom.documentElement.nodeName) {
+                    result.ok = true;
+                    result.via = progIds[i];
+                    return result;
+                }
+            } catch (e3) {
+                result.error = _compactError(e3);
+            }
+        }
+        if (!result.error) result.error = { message: "MSXML loadXML failed" };
+        return result;
+    }
+
+    // -----------------------------
+    // 报告上传
+    // -----------------------------
+    function _uploadReport(report) {
+        if (!CONFIG.enableUploadReport) {
+            _logWarn("Report upload skipped by config", null, "_uploadReport");
+            return { ok: false, skipped: true };
+        }
+
+        if (typeof HTTPClientModule === "undefined" || !HTTPClientModule || !HTTPClientModule.request) {
+            _logWarn("HTTPClientModule not available for report upload", null, "_uploadReport");
+            return { ok: false, error: { code: "NO_HTTP_CLIENT", message: "HTTPClientModule unavailable" } };
+        }
+
+        var url = CONFIG.httpBaseUrl + CONFIG.uploadPath;
+        var body = _safeStringify(report);
+        var r = HTTPClientModule.request("POST", url, body, { "Content-Type": "application/json" });
+
+        if (r && r.ok) {
+            _logInfo("Report upload ok", { status: r.status, url: url }, "_uploadReport");
+            return { ok: true, status: r.status, text: r.text || "" };
+        }
+
+        _logWarn("Report upload failed", { status: r ? r.status : 0, text: r ? r.text : "" }, "_uploadReport");
+        return {
+            ok: false,
+            status: r ? r.status : 0,
+            error: { message: r ? r.text : "upload failed" }
+        };
+    }
+
+    // -----------------------------
+    // 主入口：运行全部探测
+    // -----------------------------
+    function runAll(customConfig) {
+        if (customConfig) {
+            var k;
+            for (k in customConfig) {
+                if (customConfig.hasOwnProperty(k)) {
+                    CONFIG[k] = customConfig[k];
+                }
+            }
+        }
+
+        var report = {
+            schema: "environment-probe/v2",
+            generatedAt: (function () { try { return new Date().toISOString(); } catch (e) { return String(new Date()); } })(),
+            config: {
+                safeMode: CONFIG.safeMode,
+                allowRiskyProbes: CONFIG.allowRiskyProbes,
+                includeMaybeProbes: CONFIG.includeMaybeProbes,
+                cleanupRisky: CONFIG.cleanupRisky,
+                progIdCandidatesPath: CONFIG.progIdCandidatesPath,
+                httpBaseUrl: CONFIG.httpBaseUrl,
+                uploadPath: CONFIG.uploadPath,
+                enableUploadReport: CONFIG.enableUploadReport
+            },
+            language: {},
+            globals: [],
+            capabilityChecks: {},
+            progIdResults: {},
+            uploadReport: null
+        };
+
+        _logInfo("=== 开始环境可用组件/能力探测 ===", report.config, "runAll");
+
+        _probeLanguage(report);
+        _probeGlobals(report);
+        _probeCapabilities(report);
+
+        var candidates = _getProgIdCandidates();
+        _probeProgIdGroups("safe", candidates.safe || {}, report);
+        if (CONFIG.includeMaybeProbes) {
+            _probeProgIdGroups("maybe", candidates.maybe || {}, report);
+        } else {
+            report.progIdResults.maybe = {
+                groups: {},
+                totals: { ok: 0, fail: 0, skipped: 0, total: 0 }
+            };
+            _logInfo("ProgID maybe group skipped by config", null, "runAll");
+        }
+        _probeProgIdGroups("risky", candidates.risky || {}, report);
+
+        report.uploadReport = _uploadReport(report);
+
+        _logInfo("=== 环境探测完成 ===", {
+            uploaded: report.uploadReport && report.uploadReport.ok
+        }, "runAll");
+
+        return report;
+    }
+
+    // -----------------------------
+    // 对外导出
+    // -----------------------------
+    return {
+        /** 运行全部探测（返回报告对象） */
+        runAll: runAll,
+
+        /** 读取当前配置（便于 UI 调试） */
+        getConfig: function () { return CONFIG; },
+
+        /** 设置配置（例如启用 allowRiskyProbes） */
+        setConfig: function (cfg) { runAll(cfg); }
+    };
+})();
+
+// -----------------------------
+// 模块导出：兼容你们“模块即接口”习惯
+// -----------------------------
+try {
+    if (typeof exportModule !== "undefined" && exportModule) {
+        exportModule("EnvironmentProbeModule", EnvironmentProbeModule);
+    } else if (typeof window !== "undefined") {
+        window.EnvironmentProbeModule = EnvironmentProbeModule;
+    }
+} catch (e1) {}
+
+try {
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = EnvironmentProbeModule;
+    }
+} catch (e2) {}
+
+
+// File: ui/core/UIEventManager.js
+/**
+ * UI Event Manager - 事件管理器模块
+ * 纯大IIFE模块，符合AD环境规范
+ */
+
+var UIEventManager = (function(){
+    // 私有变量
+    var _eventsBound = false;
+    var _config = {};
+    
+    // 私有事件处理函数
+    function _handleObjectTypeChange(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("对象类型选择变化事件", {
+                    newType: cmbObjectType ? cmbObjectType.Text : "unknown"
+                }, "UIEventManager.js", "_handleObjectTypeChange");
+            }
+            
+            // 使用ObjectCreatorUI处理
+            if (typeof ObjectCreatorUI !== "undefined") {
+                var newType = cmbObjectType ? cmbObjectType.Text : "Track";
+                ObjectCreatorUI.handleObjectTypeChange(newType);
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("对象类型选择变化事件处理失败", {
+                    error: error.message,
+                    newType: cmbObjectType ? cmbObjectType.Text : "unknown"
+                }, "UIEventManager.js", "_handleObjectTypeChange");
+            }
+        }
+    }
+    
+    function _handleSetOriginClick(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("设为原点按钮点击事件", null, "UIEventManager.js", "_handleSetOriginClick");
+            }
+            
+            // 获取当前位置
+            var x = parseInt(edtX.Text) || 0;
+            var y = parseInt(edtY.Text) || 0;
+            
+            // 使用ObjectCreatorUI处理
+            if (typeof ObjectCreatorUI !== "undefined") {
+                ObjectCreatorUI.handleSetOrigin(x, y);
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("设为原点按钮点击事件处理失败", {
+                    error: error.message,
+                    x: edtX ? edtX.Text : "unknown",
+                    y: edtY ? edtY.Text : "unknown"
+                }, "UIEventManager.js", "_handleSetOriginClick");
+            }
+        }
+    }
+    
+    function _handleValidateClick(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("验证参数按钮点击事件", null, "UIEventManager.js", "_handleValidateClick");
+            }
+            
+            // 验证位置
+            var x = parseInt(edtX.Text) || 0;
+            var y = parseInt(edtY.Text) || 0;
+            
+            var positionValid = true;
+            var positionErrors = [];
+            
+            if (isNaN(x) || isNaN(y)) {
+                positionValid = false;
+                positionErrors.push("坐标必须是有效数字");
+            }
+            
+            // 使用ObjectCreatorUI验证参数
+            var paramValidation = {valid: true, errors: []};
+            if (typeof ObjectCreatorUI !== "undefined") {
+                var controller = ObjectCreatorUI.controller();
+                if (controller && controller.validateParameters) {
+                    paramValidation = controller.validateParameters();
+                }
+            }
+            
+            var allValid = positionValid && paramValidation.valid;
+            var allErrors = positionErrors.concat(paramValidation.errors);
+            
+            if (allValid) {
+                if (typeof ObjectCreatorUI !== "undefined") {
+                    var controller = ObjectCreatorUI.controller();
+                    if (controller && controller.updateStatus) {
+                        controller.updateStatus("参数验证通过", false);
+                    }
+                }
+                if (typeof uiInfo === "function") {
+                    uiInfo("参数验证通过", {
+                        position: {x: x, y: y},
+                        parameters: paramValidation
+                    }, "UIEventManager.js", "_handleValidateClick");
+                }
+            } else {
+                var errorMsg = "验证失败: " + allErrors.join("; ");
+                if (typeof ObjectCreatorUI !== "undefined") {
+                    var controller = ObjectCreatorUI.controller();
+                    if (controller && controller.updateStatus) {
+                        controller.updateStatus(errorMsg, true);
+                    }
+                }
+                if (typeof uiWarn === "function") {
+                    uiWarn("参数验证失败", {
+                        errors: allErrors
+                    }, "UIEventManager.js", "_handleValidateClick");
+                }
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("参数验证按钮点击事件处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleValidateClick");
+            }
+        }
+    }
+    
+    function _handleCreateClick(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("创建对象按钮点击事件", null, "UIEventManager.js", "_handleCreateClick");
+            }
+            
+            // 获取位置
+            var x = parseInt(edtX.Text) || 0;
+            var y = parseInt(edtY.Text) || 0;
+            
+            // 使用ObjectCreatorUI处理
+            if (typeof ObjectCreatorUI !== "undefined") {
+                ObjectCreatorUI.handleCreateObject(x, y, false);
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("创建对象按钮点击事件处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleCreateClick");
+            }
+        }
+    }
+    
+    function _handleCreateAtOriginClick(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("在原点创建按钮点击事件", null, "UIEventManager.js", "_handleCreateAtOriginClick");
+            }
+            
+            // 使用ObjectCreatorUI处理
+            if (typeof ObjectCreatorUI !== "undefined") {
+                ObjectCreatorUI.handleCreateObject(0, 0, true);
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("在原点创建按钮点击事件处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleCreateAtOriginClick");
+            }
+        }
+    }
+    
+    function _handleResetClick(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("重置按钮点击事件", null, "UIEventManager.js", "_handleResetClick");
+            }
+            
+            // 使用ObjectCreatorUI处理
+            if (typeof ObjectCreatorUI !== "undefined") {
+                ObjectCreatorUI.handleReset();
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("重置按钮点击事件处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleResetClick");
+            }
+        }
+    }
+    
+    function _handleCancelClick(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("取消按钮点击事件", null, "UIEventManager.js", "_handleCancelClick");
+            }
+            
+            // 关闭窗口
+            if (ObjectCreatorForm) {
+                ObjectCreatorForm.Close();
+            }
+            
+            if (typeof uiInfo === "function") {
+                uiInfo("对象创建窗口已关闭", null, "UIEventManager.js", "_handleCancelClick");
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("取消按钮点击事件处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleCancelClick");
+            }
+        }
+    }
+    
+    function _handleGridSnapClick(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("网格对齐复选框变化事件", {
+                    enabled: chkGridSnap ? chkGridSnap.Checked : false
+                }, "UIEventManager.js", "_handleGridSnapClick");
+            }
+            
+            // 使用ObjectCreatorUI更新状态
+            if (typeof ObjectCreatorUI !== "undefined") {
+                var controller = ObjectCreatorUI.controller();
+                if (controller) {
+                    controller.isGridSnapEnabled = chkGridSnap ? chkGridSnap.Checked : false;
+                }
+            }
+            
+            // 更新位置管理器
+            if (typeof PositionManager_GLOBAL !== "undefined") {
+                PositionManager_GLOBAL.configureCoordinateSystem({
+                    enableGridSnap: chkGridSnap ? chkGridSnap.Checked : false,
+                    gridSize: parseInt(edtGridSize.Text) || 5
+                });
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("网格对齐复选框变化事件处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleGridSnapClick");
+            }
+        }
+    }
+    
+    function _handleGridSizeChange(Sender) {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("网格大小编辑框变化事件", {
+                    gridSize: edtGridSize ? edtGridSize.Text : "5"
+                }, "UIEventManager.js", "_handleGridSizeChange");
+            }
+            
+            var gridSize = parseInt(edtGridSize.Text) || 5;
+            
+            // 使用ObjectCreatorUI更新状态
+            if (typeof ObjectCreatorUI !== "undefined") {
+                var controller = ObjectCreatorUI.controller();
+                if (controller) {
+                    controller.gridSize = gridSize;
+                }
+            }
+            
+            // 更新位置管理器
+            if (typeof PositionManager_GLOBAL !== "undefined") {
+                PositionManager_GLOBAL.configureCoordinateSystem({
+                    gridSize: gridSize,
+                    enableGridSnap: chkGridSnap ? chkGridSnap.Checked : false
+                });
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("网格大小编辑框变化事件处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleGridSizeChange");
+            }
+        }
+    }
+    
+    function _handleHttpSmokeTestClick(Sender) {
+        try {
+            if (typeof uiInfo === "function") {
+                uiInfo("=== 开始最小通信测试(HTTP) ===", {
+                    sender: Sender ? "有效" : "无效"
+                }, "UIEventManager.js", "_handleHttpSmokeTestClick");
+            }
+
+            if (typeof 测试_AD_Spec_0_1_一键验证 === "function") {
+                测试_AD_Spec_0_1_一键验证();
+                if (typeof uiInfo === "function") {
+                    uiInfo("=== Spec0.1 一键验证已触发 ===", null, "UIEventManager.js", "_handleHttpSmokeTestClick");
+                }
+                return;
+            }
+
+            if (typeof 测试_AD_XMLHTTP_最小验证 === "function") {
+                测试_AD_XMLHTTP_最小验证();
+                
+                if (typeof uiInfo === "function") {
+                    uiInfo("=== 最小通信测试(HTTP) 已触发 ===", null, "UIEventManager.js", "_handleHttpSmokeTestClick");
+                }
+            } else if (typeof 测试_最小通信流程 === "function") {
+                测试_最小通信流程();
+                
+                if (typeof uiInfo === "function") {
+                    uiInfo("=== 最小通信测试(HTTP) 已触发 ===", null, "UIEventManager.js", "_handleHttpSmokeTestClick");
+                }
+            } else {
+                if (typeof uiWarn === "function") {
+                    uiWarn("测试入口不可用，已跳过", {
+                        testFn: typeof 测试_AD_XMLHTTP_最小验证,
+                        testFnLegacy: typeof 测试_最小通信流程
+                    }, "UIEventManager.js", "_handleHttpSmokeTestClick");
+                }
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("最小通信测试(HTTP) 处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleHttpSmokeTestClick");
+            }
+        }
+    }
+
+    function _handleEnvironmentProbeClick(Sender) {
+        try {
+            if (typeof uiInfo === "function") {
+                uiInfo("=== 开始环境可用组件/能力探测 ===", {
+                    sender: Sender ? "有效" : "无效"
+                }, "UIEventManager.js", "_handleEnvironmentProbeClick");
+            }
+
+            if (typeof 测试_运行环境探测 === "function") {
+                测试_运行环境探测();
+
+                if (typeof uiInfo === "function") {
+                    uiInfo("=== 环境探测已触发 ===", null, "UIEventManager.js", "_handleEnvironmentProbeClick");
+                }
+            } else if (typeof EnvironmentProbeModule !== "undefined" && EnvironmentProbeModule && EnvironmentProbeModule.runAll) {
+                EnvironmentProbeModule.runAll({
+                    safeMode: true,
+                    allowRiskyProbes: false,
+                    tryWriteReport: true,
+                    reportPath: "reports\\environment-probe-report.json"
+                });
+
+                if (typeof uiInfo === "function") {
+                    uiInfo("=== 环境探测已触发（直接调用模块） ===", null, "UIEventManager.js", "_handleEnvironmentProbeClick");
+                }
+            } else {
+                if (typeof uiWarn === "function") {
+                    uiWarn("环境探测入口不可用，已跳过", {
+                        testFn: typeof 测试_运行环境探测,
+                        moduleFn: typeof EnvironmentProbeModule
+                    }, "UIEventManager.js", "_handleEnvironmentProbeClick");
+                }
+            }
+
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("环境探测处理失败", {
+                    error: error.message
+                }, "UIEventManager.js", "_handleEnvironmentProbeClick");
+            }
+        }
+    }
+    
+    // 公共接口函数
+    function create(options) {
+        _config = options || {};
+        return {
+            config: _config,
+            eventsBound: _eventsBound
+        };
+    }
+    
+    function bindEvents() {
+        try {
+            if (typeof uiInfo === "function") {
+                uiInfo("=== 绑定UI事件 ===", null, "UIEventManager.js", "bindEvents");
+            }
+            
+            // 注意：这里不直接绑定事件，因为DFM事件是通过全局函数处理的
+            // 我们只是标记事件已准备就绪
+            _eventsBound = true;
+            
+            if (typeof uiInfo === "function") {
+                uiInfo("UI事件绑定完成", null, "UIEventManager.js", "bindEvents");
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("绑定UI事件失败", {
+                    error: error.message
+                }, "UIEventManager.js", "bindEvents");
+            }
+        }
+    }
+    
+    function unbindEvents() {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("解绑UI事件", null, "UIEventManager.js", "unbindEvents");
+            }
+            
+            _eventsBound = false;
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("解绑UI事件失败", {
+                    error: error.message
+                }, "UIEventManager.js", "unbindEvents");
+            }
+        }
+    }
+    
+    function isEventsBound() {
+        return _eventsBound;
+    }
+    
+    // 返回模块接口对象
+    return {
+        create: create,
+        bindEvents: bindEvents,
+        unbindEvents: unbindEvents,
+        isEventsBound: isEventsBound,
+        
+        // 暴露事件处理函数供全局DFM函数调用
+        handleObjectTypeChange: _handleObjectTypeChange,
+        handleSetOriginClick: _handleSetOriginClick,
+        handleValidateClick: _handleValidateClick,
+        handleCreateClick: _handleCreateClick,
+        handleCreateAtOriginClick: _handleCreateAtOriginClick,
+        handleResetClick: _handleResetClick,
+        handleHttpSmokeTestClick: _handleHttpSmokeTestClick,
+        handleEnvironmentProbeClick: _handleEnvironmentProbeClick,
+        handleCancelClick: _handleCancelClick,
+        handleGridSnapClick: _handleGridSnapClick,
+        handleGridSizeChange: _handleGridSizeChange
+    };
+})();
+
+
+
+// File: src/modules/object-module/core/ObjectFactory.js
+/**
+ * ObjectFactory - 对象工厂核心模块
+ * 
+ * 提供统一的PCB对象创建接口，支持Mock模式和批量创建
+ * 严格遵循ES3语法规范，兼容AD环境
+ * 
+ * @author AD21 Object Module
+ * @version 1.0.0
+ */
+
+var ObjectFactory = (function(){
+    "use strict";
+    
+    // -------------------------------------------------------------
+    // 私有变量
+    // -------------------------------------------------------------
+    
+    var _supportedTypes = {
+        "Arc": true,
+        "Pad": true,
+        "Track": true,
+        "Via": true,
+        "Board": true,
+        "Region": true,
+        "Fill": true,
+        "Text": true,
+        "Dimension": true,
+        "Coordinate": true
+    };
+    
+    var _wrapperConstructors = {};
+    var _statistics = {
+        totalCreated: 0,
+        byType: {},
+        mockCreated: 0,
+        batchOperations: 0
+    };
+    
+    // -------------------------------------------------------------
+    // 私有函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 验证对象类型是否支持
+     * @param {string} objectType 对象类型
+     * @returns {boolean} 是否支持
+     */
+    function _isTypeSupported(objectType) {
+        return _supportedTypes.hasOwnProperty(objectType);
+    }
+    
+    /**
+     * 生成唯一对象ID
+     * @param {string} objectType 对象类型
+     * @returns {string} 唯一ID
+     */
+    function _generateObjectId(objectType) {
+        var timestamp = new Date().getTime();
+        var random = Math.floor(Math.random() * 10000);
+        return objectType + "_" + timestamp + "_" + random;
+    }
+    
+    /**
+     * 更新统计信息
+     * @param {string} objectType 对象类型
+     * @param {boolean} isMock 是否为Mock对象
+     */
+    function _updateStatistics(objectType, isMock) {
+        _statistics.totalCreated++;
+        
+        if (!_statistics.byType[objectType]) {
+            _statistics.byType[objectType] = 0;
+        }
+        _statistics.byType[objectType]++;
+        
+        if (isMock) {
+            _statistics.mockCreated++;
+        }
+    }
+    
+    /**
+     * 创建基础对象数据
+     * @param {string} objectType 对象类型
+     * @param {Object} nativeObject 原生对象
+     * @param {Object} options 选项
+     * @returns {Object} 基础对象数据
+     */
+    function _createBaseObjectData(objectType, nativeObject, options) {
+        var objectId = _generateObjectId(objectType);
+        
+        return {
+            objectId: objectId,
+            objectType: objectType,
+            nativeObject: nativeObject,
+            isMock: options.isMock || false,
+            mockData: options.mockData || null,
+            createdAt: new Date().getTime(),
+            properties: {},
+            methods: {}
+        };
+    }
+    
+    // -------------------------------------------------------------
+    // 公共接口
+    // -------------------------------------------------------------
+    
+    /**
+     * 注册封装器构造函数
+     * @param {string} objectType 对象类型
+     * @param {Function} constructor 构造函数
+     */
+    function registerWrapperConstructor(objectType, constructor) {
+        if (typeof objectType !== "string" || !objectType) {
+            throw new Error("ObjectFactory.registerWrapperConstructor: objectType must be a non-empty string");
+        }
+        
+        if (typeof constructor !== "function") {
+            throw new Error("ObjectFactory.registerWrapperConstructor: constructor must be a function");
+        }
+        
+        _wrapperConstructors[objectType] = constructor;
+        _supportedTypes[objectType] = true;
+    }
+    
+    /**
+     * 创建单个对象
+     * @param {Object} nativeObject 原生对象
+     * @param {Object} options 选项
+     * @returns {Object} 创建的对象
+     */
+    function createObject(nativeObject, options) {
+        options = options || {};
+        
+        var objectType = options.objectType;
+        if (!objectType) {
+            throw new Error("ObjectFactory.createObject: objectType is required in options");
+        }
+        
+        if (!_isTypeSupported(objectType)) {
+            throw new Error("ObjectFactory.createObject: Unsupported object type: " + objectType);
+        }
+        
+        try {
+            // 创建基础对象数据
+            var objectData = _createBaseObjectData(objectType, nativeObject, options);
+            
+            // 获取封装器构造函数
+            var WrapperConstructor = _wrapperConstructors[objectType];
+            if (!WrapperConstructor) {
+                // 使用默认封装器
+                WrapperConstructor = _wrapperConstructors["Default"];
+            }
+            
+            var wrapper;
+            if (WrapperConstructor) {
+                wrapper = new WrapperConstructor(objectData);
+            } else {
+                // 创建简单的封装器
+                wrapper = {
+                    getObjectData: function() { return objectData; },
+                    getObjectId: function() { return objectData.objectId; },
+                    getObjectType: function() { return objectData.objectType; },
+                    isMock: function() { return objectData.isMock; },
+                    getNativeObject: function() { return objectData.nativeObject; }
+                };
+            }
+            
+            // 更新统计信息
+            _updateStatistics(objectType, objectData.isMock);
+            
+            return wrapper;
+            
+        } catch (error) {
+            throw new Error("ObjectFactory.createObject: Failed to create object - " + error.message);
+        }
+    }
+    
+    /**
+     * 创建Mock对象
+     * @param {string} objectType 对象类型
+     * @param {Object} mockData Mock数据
+     * @returns {Object} 创建的Mock对象
+     */
+    function createMock(objectType, mockData) {
+        if (!objectType) {
+            throw new Error("ObjectFactory.createMock: objectType is required");
+        }
+        
+        if (!_isTypeSupported(objectType)) {
+            throw new Error("ObjectFactory.createMock: Unsupported object type: " + objectType);
+        }
+        
+        var options = {
+            objectType: objectType,
+            isMock: true,
+            mockData: mockData || {}
+        };
+        
+        return createObject(null, options);
+    }
+    
+    /**
+     * 从迭代器批量创建对象
+     * @param {Object} iterator 迭代器对象
+     * @param {string} objectType 对象类型
+     * @param {Object} options 选项
+     * @returns {Array} 创建的对象数组
+     */
+    function createFromIterator(iterator, objectType, options) {
+        options = options || {};
+        
+        if (!iterator) {
+            throw new Error("ObjectFactory.createFromIterator: iterator is required");
+        }
+        
+        if (!objectType) {
+            throw new Error("ObjectFactory.createFromIterator: objectType is required");
+        }
+        
+        var results = [];
+        var count = 0;
+        var maxCount = options.maxCount || 1000; // 防止无限循环
+        
+        try {
+            // 重置迭代器
+            if (iterator && typeof iterator.Reset === "function") {
+                iterator.Reset();
+            }
+            
+            // 遍历迭代器
+            while (count < maxCount) {
+                var nativeObject;
+                
+                // 尝试不同的迭代器接口
+                if (typeof iterator.NextPCBObject === "function") {
+                    nativeObject = iterator.NextPCBObject();
+                } else if (typeof iterator.Next === "function") {
+                    nativeObject = iterator.Next();
+                } else {
+                    break; // 无法继续迭代
+                }
+                
+                if (!nativeObject) {
+                    break; // 迭代结束
+                }
+                
+                try {
+                    var wrapper = createObject(nativeObject, {
+                        objectType: objectType,
+                        batchMode: true
+                    });
+                    results.push(wrapper);
+                    count++;
+                } catch (error) {
+                    // 记录错误但继续处理其他对象
+                    if (options.skipErrors !== false) {
+                        continue;
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+            
+            // 更新统计信息
+            _statistics.batchOperations++;
+            
+            return results;
+            
+        } catch (error) {
+            throw new Error("ObjectFactory.createFromIterator: Failed to create objects from iterator - " + error.message);
+        }
+    }
+    
+    /**
+     * 批量创建对象
+     * @param {Array} objectList 对象列表
+     * @returns {Object} 批量创建结果
+     */
+    function createBatch(objectList) {
+        if (!objectList || !Array.isArray(objectList)) {
+            throw new Error("ObjectFactory.createBatch: objectList must be an array");
+        }
+        
+        var result = {
+            success: [],
+            failed: [],
+            totalCount: objectList.length,
+            successCount: 0,
+            failedCount: 0
+        };
+        
+        for (var i = 0; i < objectList.length; i++) {
+            var item = objectList[i];
+            
+            try {
+                var wrapper;
+                
+                if (item.nativeObject) {
+                    wrapper = createObject(item.nativeObject, item.options || {});
+                } else if (item.mockData) {
+                    wrapper = createMock(item.objectType, item.mockData);
+                } else {
+                    throw new Error("Invalid item: neither nativeObject nor mockData provided");
+                }
+                
+                result.success.push(wrapper);
+                result.successCount++;
+                
+            } catch (error) {
+                result.failed.push({
+                    index: i,
+                    item: item,
+                    error: error.message
+                });
+                result.failedCount++;
+            }
+        }
+        
+        // 更新统计信息
+        _statistics.batchOperations++;
+        
+        return result;
+    }
+    
+    /**
+     * 获取支持的对象类型
+     * @returns {Array} 支持的类型数组
+     */
+    function getSupportedObjectTypes() {
+        var types = [];
+        for (var type in _supportedTypes) {
+            if (_supportedTypes.hasOwnProperty(type)) {
+                types.push(type);
+            }
+        }
+        return types;
+    }
+    
+    /**
+     * 检查对象类型是否支持
+     * @param {string} objectType 对象类型
+     * @returns {boolean} 是否支持
+     */
+    function isObjectTypeSupported(objectType) {
+        return _isTypeSupported(objectType);
+    }
+    
+    /**
+     * 获取工厂统计信息
+     * @returns {Object} 统计信息
+     */
+    function getFactoryStatistics() {
+        return {
+            totalCreated: _statistics.totalCreated,
+            byType: _statistics.byType,
+            mockCreated: _statistics.mockCreated,
+            batchOperations: _statistics.batchOperations,
+            supportedTypes: getSupportedObjectTypes(),
+            registeredWrappers: Object.keys(_wrapperConstructors)
+        };
+    }
+    
+    /**
+     * 重置工厂统计信息
+     */
+    function resetFactoryStatistics() {
+        _statistics = {
+            totalCreated: 0,
+            byType: {},
+            mockCreated: 0,
+            batchOperations: 0
+        };
+    }
+    
+    /**
+     * 清理工厂资源
+     */
+    function cleanup() {
+        _wrapperConstructors = {};
+        resetFactoryStatistics();
+    }
+    
+    // -------------------------------------------------------------
+    // 导出接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 对象创建方法
+        createObject: createObject,
+        createMock: createMock,
+        createFromIterator: createFromIterator,
+        createBatch: createBatch,
+        
+        // 封装器管理
+        registerWrapperConstructor: registerWrapperConstructor,
+        
+        // 查询方法
+        getSupportedObjectTypes: getSupportedObjectTypes,
+        isObjectTypeSupported: isObjectTypeSupported,
+        
+        // 统计和管理
+        getFactoryStatistics: getFactoryStatistics,
+        resetFactoryStatistics: resetFactoryStatistics,
+        cleanup: cleanup
+    };
+    
+})();
+
+
+// File: src/modules/object-module/core/ObjectManager.js
+/**
+ * ObjectManager - 对象管理器核心模块
+ * 
+ * 提供对象生命周期管理、位置管理和资源清理功能
+ * 严格遵循ES3语法规范，兼容AD环境
+ * 
+ * @author AD21 Object Module
+ * @version 1.0.0
+ */
+
+var ObjectManager = (function(){
+    "use strict";
+    
+    // -------------------------------------------------------------
+    // 私有变量
+    // -------------------------------------------------------------
+    
+    var _objects = {};              // 存储所有对象
+    var _positions = {};            // 位置索引
+    var _types = {};                // 类型索引
+    var _config = {
+        enablePositionIndex: true,
+        enableTypeIndex: true,
+        autoCleanup: true,
+        maxObjects: 10000,
+        conflictThreshold: 10       // 位置冲突阈值（mil）
+    };
+    
+    var _statistics = {
+        totalObjects: 0,
+        byType: {},
+        positionConflicts: 0,
+        cleanupOperations: 0,
+        memoryUsage: 0
+    };
+    
+    // -------------------------------------------------------------
+    // 私有函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 生成位置键
+     * @param {Object} position 位置对象 {x, y, layer}
+     * @returns {string} 位置键
+     */
+    function _generatePositionKey(position) {
+        if (!position) {
+            return null;
+        }
+        
+        var x = Math.round(position.x || 0);
+        var y = Math.round(position.y || 0);
+        var layer = position.layer || "default";
+        
+        return layer + "_" + x + "_" + y;
+    }
+    
+    /**
+     * 检查位置冲突
+     * @param {Object} position 位置对象
+     * @param {string} excludeObjectId 排除的对象ID
+     * @returns {Object} 冲突检测结果
+     */
+    function _checkPositionConflict(position, excludeObjectId) {
+        if (!_config.enablePositionIndex || !position) {
+            return {hasConflict: false, conflicts: []};
+        }
+        
+        var positionKey = _generatePositionKey(position);
+        var conflicts = [];
+        
+        // 检查精确位置冲突
+        if (_positions[positionKey]) {
+            var objectsAtPosition = _positions[positionKey];
+            for (var i = 0; i < objectsAtPosition.length; i++) {
+                var objId = objectsAtPosition[i];
+                if (objId !== excludeObjectId && _objects[objId]) {
+                    conflicts.push({
+                        objectId: objId,
+                        objectType: _objects[objId].objectType,
+                        position: _objects[objId].position
+                    });
+                }
+            }
+        }
+        
+        // 检查邻近位置冲突
+        if (conflicts.length === 0 && _config.conflictThreshold > 0) {
+            var nearbyConflicts = _findNearbyObjects(position, excludeObjectId);
+            conflicts = conflicts.concat(nearbyConflicts);
+        }
+        
+        return {
+            hasConflict: conflicts.length > 0,
+            conflicts: conflicts
+        };
+    }
+    
+    /**
+     * 查找邻近对象
+     * @param {Object} position 位置对象
+     * @param {string} excludeObjectId 排除的对象ID
+     * @returns {Array} 邻近对象列表
+     */
+    function _findNearbyObjects(position, excludeObjectId) {
+        var nearby = [];
+        var threshold = _config.conflictThreshold;
+        
+        for (var objId in _objects) {
+            if (_objects.hasOwnProperty(objId) && objId !== excludeObjectId) {
+                var obj = _objects[objId];
+                if (obj.position) {
+                    var distance = _calculateDistance(position, obj.position);
+                    if (distance <= threshold) {
+                        nearby.push({
+                            objectId: objId,
+                            objectType: obj.objectType,
+                            position: obj.position,
+                            distance: distance
+                        });
+                    }
+                }
+            }
+        }
+        
+        return nearby;
+    }
+    
+    /**
+     * 计算两点间距离
+     * @param {Object} pos1 位置1
+     * @param {Object} pos2 位置2
+     * @returns {number} 距离
+     */
+    function _calculateDistance(pos1, pos2) {
+        var dx = (pos1.x || 0) - (pos2.x || 0);
+        var dy = (pos1.y || 0) - (pos2.y || 0);
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    
+    /**
+     * 更新索引
+     * @param {string} objectId 对象ID
+     * @param {Object} objectData 对象数据
+     */
+    function _updateIndexes(objectId, objectData) {
+        // 更新类型索引
+        if (_config.enableTypeIndex && objectData.objectType) {
+            if (!_types[objectData.objectType]) {
+                _types[objectData.objectType] = [];
+            }
+            _types[objectData.objectType].push(objectId);
+        }
+        
+        // 更新位置索引
+        if (_config.enablePositionIndex && objectData.position) {
+            var positionKey = _generatePositionKey(objectData.position);
+            if (positionKey) {
+                if (!_positions[positionKey]) {
+                    _positions[positionKey] = [];
+                }
+                _positions[positionKey].push(objectId);
+            }
+        }
+    }
+    
+    /**
+     * 从索引中移除对象
+     * @param {string} objectId 对象ID
+     * @param {Object} objectData 对象数据
+     */
+    function _removeFromIndexes(objectId, objectData) {
+        // 从类型索引移除
+        if (_config.enableTypeIndex && objectData.objectType && _types[objectData.objectType]) {
+            var typeArray = _types[objectData.objectType];
+            for (var i = 0; i < typeArray.length; i++) {
+                if (typeArray[i] === objectId) {
+                    typeArray.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        
+        // 从位置索引移除
+        if (_config.enablePositionIndex && objectData.position) {
+            var positionKey = _generatePositionKey(objectData.position);
+            if (positionKey && _positions[positionKey]) {
+                var positionArray = _positions[positionKey];
+                for (var i = 0; i < positionArray.length; i++) {
+                    if (positionArray[i] === objectId) {
+                        positionArray.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * 更新统计信息
+     * @param {string} operation 操作类型
+     * @param {Object} data 相关数据
+     */
+    function _updateStatistics(operation, data) {
+        switch (operation) {
+            case "add":
+                _statistics.totalObjects++;
+                if (!_statistics.byType[data.objectType]) {
+                    _statistics.byType[data.objectType] = 0;
+                }
+                _statistics.byType[data.objectType]++;
+                break;
+                
+            case "remove":
+                _statistics.totalObjects--;
+                if (_statistics.byType[data.objectType]) {
+                    _statistics.byType[data.objectType]--;
+                }
+                break;
+                
+            case "conflict":
+                _statistics.positionConflicts++;
+                break;
+                
+            case "cleanup":
+                _statistics.cleanupOperations++;
+                break;
+        }
+    }
+    
+    /**
+     * 自动清理
+     */
+    function _autoCleanup() {
+        if (!_config.autoCleanup) {
+            return;
+        }
+        
+        var now = new Date().getTime();
+        var maxAge = 30 * 60 * 1000; // 30分钟
+        var toRemove = [];
+        
+        for (var objectId in _objects) {
+            if (_objects.hasOwnProperty(objectId)) {
+                var obj = _objects[objectId];
+                if (obj.createdAt && (now - obj.createdAt) > maxAge) {
+                    toRemove.push(objectId);
+                }
+            }
+        }
+        
+        for (var i = 0; i < toRemove.length; i++) {
+            removeObject(toRemove[i]);
+        }
+        
+        if (toRemove.length > 0) {
+            _updateStatistics("cleanup", {removedCount: toRemove.length});
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 公共接口
+    // -------------------------------------------------------------
+    
+    /**
+     * 注册对象
+     * @param {string} objectId 对象ID
+     * @param {Object} objectData 对象数据
+     * @returns {boolean} 是否成功
+     */
+    function registerObject(objectId, objectData) {
+        if (!objectId || !objectData) {
+            return false;
+        }
+        
+        // 检查对象数量限制
+        if (_statistics.totalObjects >= _config.maxObjects) {
+            _autoCleanup();
+        }
+        
+        if (_statistics.totalObjects >= _config.maxObjects) {
+            throw new Error("ObjectManager.registerObject: Maximum object limit reached");
+        }
+        
+        // 检查位置冲突
+        if (objectData.position) {
+            var conflictResult = _checkPositionConflict(objectData.position, objectId);
+            if (conflictResult.hasConflict) {
+                _updateStatistics("conflict", {conflicts: conflictResult.conflicts});
+                // 可以选择抛出错误或记录警告
+                // 这里我们记录但继续注册
+            }
+        }
+        
+        // 注册对象
+        _objects[objectId] = {
+            objectId: objectId,
+            objectType: objectData.objectType,
+            wrapper: objectData.wrapper,
+            position: objectData.position,
+            properties: objectData.properties || {},
+            createdAt: objectData.createdAt || new Date().getTime(),
+            lastAccessed: new Date().getTime()
+        };
+        
+        // 更新索引
+        _updateIndexes(objectId, _objects[objectId]);
+        
+        // 更新统计
+        _updateStatistics("add", _objects[objectId]);
+        
+        return true;
+    }
+    
+    /**
+     * 获取对象
+     * @param {string} objectId 对象ID
+     * @returns {Object} 对象数据
+     */
+    function getObject(objectId) {
+        if (!objectId || !_objects[objectId]) {
+            return null;
+        }
+        
+        // 更新访问时间
+        _objects[objectId].lastAccessed = new Date().getTime();
+        
+        return _objects[objectId];
+    }
+    
+    /**
+     * 移除对象
+     * @param {string} objectId 对象ID
+     * @returns {boolean} 是否成功
+     */
+    function removeObject(objectId) {
+        if (!objectId || !_objects[objectId]) {
+            return false;
+        }
+        
+        var objectData = _objects[objectId];
+        
+        // 从索引移除
+        _removeFromIndexes(objectId, objectData);
+        
+        // 删除对象
+        delete _objects[objectId];
+        
+        // 更新统计
+        _updateStatistics("remove", objectData);
+        
+        return true;
+    }
+    
+    /**
+     * 更新对象位置
+     * @param {string} objectId 对象ID
+     * @param {Object} newPosition 新位置
+     * @returns {boolean} 是否成功
+     */
+    function updateObjectPosition(objectId, newPosition) {
+        if (!objectId || !_objects[objectId]) {
+            return false;
+        }
+        
+        var objectData = _objects[objectId];
+        var oldPosition = objectData.position;
+        
+        // 从旧位置索引移除
+        if (oldPosition) {
+            _removeFromIndexes(objectId, objectData);
+        }
+        
+        // 更新位置
+        objectData.position = newPosition;
+        objectData.lastAccessed = new Date().getTime();
+        
+        // 添加到新位置索引
+        _updateIndexes(objectId, objectData);
+        
+        return true;
+    }
+    
+    /**
+     * 按类型获取对象
+     * @param {string} objectType 对象类型
+     * @returns {Array} 对象列表
+     */
+    function getObjectsByType(objectType) {
+        if (!objectType || !_types[objectType]) {
+            return [];
+        }
+        
+        var result = [];
+        var objectIds = _types[objectType];
+        
+        for (var i = 0; i < objectIds.length; i++) {
+            var objectId = objectIds[i];
+            if (_objects[objectId]) {
+                result.push(_objects[objectId]);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 按位置获取对象
+     * @param {Object} position 位置对象
+     * @param {number} radius 搜索半径
+     * @returns {Array} 对象列表
+     */
+    function getObjectsByPosition(position, radius) {
+        if (!position) {
+            return [];
+        }
+        
+        var result = [];
+        radius = radius || 0;
+        
+        if (radius === 0) {
+            // 精确匹配
+            var positionKey = _generatePositionKey(position);
+            if (_positions[positionKey]) {
+                var objectIds = _positions[positionKey];
+                for (var i = 0; i < objectIds.length; i++) {
+                    var objectId = objectIds[i];
+                    if (_objects[objectId]) {
+                        result.push(_objects[objectId]);
+                    }
+                }
+            }
+        } else {
+            // 范围搜索
+            for (var objectId in _objects) {
+                if (_objects.hasOwnProperty(objectId)) {
+                    var obj = _objects[objectId];
+                    if (obj.position) {
+                        var distance = _calculateDistance(position, obj.position);
+                        if (distance <= radius) {
+                            result.push(obj);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 检查位置冲突
+     * @param {Object} position 位置对象
+     * @param {string} excludeObjectId 排除的对象ID
+     * @returns {Object} 冲突检测结果
+     */
+    function checkPositionConflict(position, excludeObjectId) {
+        return _checkPositionConflict(position, excludeObjectId);
+    }
+    
+    /**
+     * 获取所有对象
+     * @returns {Array} 所有对象列表
+     */
+    function getAllObjects() {
+        var result = [];
+        for (var objectId in _objects) {
+            if (_objects.hasOwnProperty(objectId)) {
+                result.push(_objects[objectId]);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 获取对象数量
+     * @returns {number} 对象数量
+     */
+    function getObjectCount() {
+        return _statistics.totalObjects;
+    }
+    
+    /**
+     * 配置管理器
+     * @param {Object} config 配置选项
+     */
+    function configure(config) {
+        if (!config) {
+            return;
+        }
+        
+        for (var key in config) {
+            if (config.hasOwnProperty(key) && _config.hasOwnProperty(key)) {
+                _config[key] = config[key];
+            }
+        }
+    }
+    
+    /**
+     * 获取配置
+     * @returns {Object} 当前配置
+     */
+    function getConfiguration() {
+        var result = {};
+        for (var key in _config) {
+            if (_config.hasOwnProperty(key)) {
+                result[key] = _config[key];
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 获取统计信息
+     * @returns {Object} 统计信息
+     */
+    function getStatistics() {
+        return {
+            totalObjects: _statistics.totalObjects,
+            byType: _statistics.byType,
+            positionConflicts: _statistics.positionConflicts,
+            cleanupOperations: _statistics.cleanupOperations,
+            memoryUsage: _statistics.memoryUsage,
+            configuration: getConfiguration()
+        };
+    }
+    
+    /**
+     * 清理所有对象
+     */
+    function clearAllObjects() {
+        _objects = {};
+        _positions = {};
+        _types = {};
+        
+        _statistics = {
+            totalObjects: 0,
+            byType: {},
+            positionConflicts: 0,
+            cleanupOperations: 0,
+            memoryUsage: 0
+        };
+    }
+    
+    /**
+     * 执行自动清理
+     */
+    function performAutoCleanup() {
+        _autoCleanup();
+    }
+    
+    /**
+     * 清理管理器资源
+     */
+    function cleanup() {
+        clearAllObjects();
+    }
+    
+    // -------------------------------------------------------------
+    // 导出接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 对象管理
+        registerObject: registerObject,
+        getObject: getObject,
+        removeObject: removeObject,
+        updateObjectPosition: updateObjectPosition,
+        
+        // 查询方法
+        getObjectsByType: getObjectsByType,
+        getObjectsByPosition: getObjectsByPosition,
+        getAllObjects: getAllObjects,
+        getObjectCount: getObjectCount,
+        
+        // 位置管理
+        checkPositionConflict: checkPositionConflict,
+        
+        // 配置和统计
+        configure: configure,
+        getConfiguration: getConfiguration,
+        getStatistics: getStatistics,
+        
+        // 维护操作
+        clearAllObjects: clearAllObjects,
+        performAutoCleanup: performAutoCleanup,
+        cleanup: cleanup
+    };
+    
+})();
+
+
+// File: src/modules/object-module/core/MockSystem.js
+/**
+ * MockSystem - Mock对象系统核心模块
+ * 
+ * 提供Mock对象创建和管理功能，支持离线开发和测试
+ * 严格遵循ES3语法规范，兼容AD环境
+ * 
+ * @author AD21 Object Module
+ * @version 1.0.0
+ */
+
+var MockSystem = (function(){
+    "use strict";
+    
+    // -------------------------------------------------------------
+    // 私有变量
+    // -------------------------------------------------------------
+    
+    var _mockTemplates = {};       // Mock模板
+    var _mockObjects = {};         // 存储Mock对象
+    var _config = {
+        enableAutoId: true,
+        enableTimestamp: true,
+        defaultLayer: "TopLayer",
+        defaultUnit: "mil"
+    };
+    
+    var _statistics = {
+        totalCreated: 0,
+        byType: {},
+        templatesUsed: {}
+    };
+    
+    // -------------------------------------------------------------
+    // 私有函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 生成Mock ID
+     * @param {string} objectType 对象类型
+     * @returns {string} Mock ID
+     */
+    function _generateMockId(objectType) {
+        if (!_config.enableAutoId) {
+            return "";
+        }
+        
+        var timestamp = _config.enableTimestamp ? new Date().getTime() : "";
+        var random = Math.floor(Math.random() * 10000);
+        return "Mock_" + objectType + "_" + timestamp + "_" + random;
+    }
+    
+    /**
+     * 获取默认Mock数据
+     * @param {string} objectType 对象类型
+     * @returns {Object} 默认Mock数据
+     */
+    function _getDefaultMockData(objectType) {
+        var defaults = {
+            "Arc": {
+                X1: 1000,
+                Y1: 1000,
+                X2: 2000,
+                Y2: 1000,
+                Radius: 500,
+                StartAngle: 0,
+                EndAngle: 180,
+                Layer: _config.defaultLayer,
+                Width: 10
+            },
+            "Pad": {
+                X: 1000,
+                Y: 1000,
+                TopX: 50,
+                TopY: 100,
+                MidX: 50,
+                MidY: 100,
+                BottomX: 50,
+                BottomY: 100,
+                HoleSize: 25,
+                Layer: _config.defaultLayer,
+                PadShape: 0, // Rectangular
+                Designator: "1"
+            },
+            "Track": {
+                X1: 1000,
+                Y1: 1000,
+                X2: 2000,
+                Y2: 2000,
+                Layer: _config.defaultLayer,
+                Width: 10
+            },
+            "Via": {
+                X: 1000,
+                Y: 1000,
+                HoleSize: 25,
+                Diameter: 50,
+                StartLayer: "TopLayer",
+                EndLayer: "BottomLayer"
+            },
+            "Board": {
+                BoardWidth: 10000,
+                BoardHeight: 8000,
+                LayerCount: 4,
+                Unit: _config.defaultUnit
+            },
+            "Text": {
+                X: 1000,
+                Y: 1000,
+                Text: "Mock Text",
+                Layer: _config.defaultLayer,
+                FontSize: 60,
+                FontName: "Default"
+            },
+            "Coordinate": {
+                X: 1000,
+                Y: 1000,
+                Layer: _config.defaultLayer,
+                Text: "Origin"
+            }
+        };
+        
+        return defaults[objectType] || {};
+    }
+    
+    /**
+     * 合并Mock数据
+     * @param {Object} defaultData 默认数据
+     * @param {Object} userData 用户数据
+     * @returns {Object} 合并后的数据
+     */
+    function _mergeMockData(defaultData, userData) {
+        var result = {};
+        
+        // 复制默认数据
+        for (var key in defaultData) {
+            if (defaultData.hasOwnProperty(key)) {
+                result[key] = defaultData[key];
+            }
+        }
+        
+        // 覆盖用户数据
+        if (userData) {
+            for (var key in userData) {
+                if (userData.hasOwnProperty(key)) {
+                    result[key] = userData[key];
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 更新统计信息
+     * @param {string} objectType 对象类型
+     * @param {string} templateName 模板名称
+     */
+    function _updateStatistics(objectType, templateName) {
+        _statistics.totalCreated++;
+        
+        if (!_statistics.byType[objectType]) {
+            _statistics.byType[objectType] = 0;
+        }
+        _statistics.byType[objectType]++;
+        
+        if (templateName) {
+            if (!_statistics.templatesUsed[templateName]) {
+                _statistics.templatesUsed[templateName] = 0;
+            }
+            _statistics.templatesUsed[templateName]++;
+        }
+    }
+    
+    /**
+     * 验证Mock数据
+     * @param {string} objectType 对象类型
+     * @param {Object} mockData Mock数据
+     * @returns {Object} 验证结果
+     */
+    function _validateMockData(objectType, mockData) {
+        var result = {
+            valid: true,
+            errors: []
+        };
+        
+        if (!objectType) {
+            result.valid = false;
+            result.errors.push("Object type is required");
+            return result;
+        }
+        
+        if (!mockData || typeof mockData !== "object") {
+            result.valid = false;
+            result.errors.push("Mock data must be an object");
+            return result;
+        }
+        
+        // 类型特定验证
+        switch (objectType) {
+            case "Arc":
+                if (typeof mockData.Radius !== "number" || mockData.Radius <= 0) {
+                    result.valid = false;
+                    result.errors.push("Arc: Radius must be a positive number");
+                }
+                break;
+                
+            case "Pad":
+                if (typeof mockData.X !== "number" || typeof mockData.Y !== "number") {
+                    result.valid = false;
+                    result.errors.push("Pad: X and Y coordinates are required");
+                }
+                break;
+                
+            case "Track":
+                if (typeof mockData.X1 !== "number" || typeof mockData.Y1 !== "number" ||
+                    typeof mockData.X2 !== "number" || typeof mockData.Y2 !== "number") {
+                    result.valid = false;
+                    result.errors.push("Track: X1, Y1, X2, Y2 coordinates are required");
+                }
+                break;
+                
+            case "Via":
+                if (typeof mockData.X !== "number" || typeof mockData.Y !== "number") {
+                    result.valid = false;
+                    result.errors.push("Via: X and Y coordinates are required");
+                }
+                break;
+        }
+        
+        return result;
+    }
+    
+    // -------------------------------------------------------------
+    // 公共接口
+    // -------------------------------------------------------------
+    
+    /**
+     * 注册Mock模板
+     * @param {string} templateName 模板名称
+     * @param {string} objectType 对象类型
+     * @param {Object} templateData 模板数据
+     */
+    function registerMockTemplate(templateName, objectType, templateData) {
+        if (!templateName || !objectType || !templateData) {
+            throw new Error("MockSystem.registerMockTemplate: templateName, objectType and templateData are required");
+        }
+        
+        _mockTemplates[templateName] = {
+            objectType: objectType,
+            data: templateData,
+            createdAt: new Date().getTime()
+        };
+    }
+    
+    /**
+     * 创建Mock对象
+     * @param {string} objectType 对象类型
+     * @param {Object} mockData Mock数据
+     * @returns {Object} Mock对象
+     */
+    function createMockObject(objectType, mockData) {
+        if (!objectType) {
+            throw new Error("MockSystem.createMockObject: objectType is required");
+        }
+        
+        // 获取默认数据
+        var defaultData = _getDefaultMockData(objectType);
+        
+        // 合并数据
+        var finalData = _mergeMockData(defaultData, mockData);
+        
+        // 验证数据
+        var validation = _validateMockData(objectType, finalData);
+        if (!validation.valid) {
+            throw new Error("MockSystem.createMockObject: Validation failed - " + validation.errors.join(", "));
+        }
+        
+        // 生成Mock ID
+        var mockId = _generateMockId(objectType);
+        
+        // 创建Mock对象
+        var mockObject = {
+            mockId: mockId,
+            objectType: objectType,
+            data: finalData,
+            isMock: true,
+            createdAt: new Date().getTime()
+        };
+        
+        // 添加Mock方法
+        mockObject.GetState_String = function() {
+            return "Mock_" + objectType;
+        };
+        
+        mockObject.GetObjectId = function() {
+            return mockId;
+        };
+        
+        // 存储Mock对象
+        _mockObjects[mockId] = mockObject;
+        
+        // 更新统计
+        _updateStatistics(objectType, null);
+        
+        return mockObject;
+    }
+    
+    /**
+     * 从模板创建Mock对象
+     * @param {string} templateName 模板名称
+     * @param {Object} overrides 覆盖数据
+     * @returns {Object} Mock对象
+     */
+    function createMockFromTemplate(templateName, overrides) {
+        if (!templateName || !_mockTemplates[templateName]) {
+            throw new Error("MockSystem.createMockFromTemplate: Template not found - " + templateName);
+        }
+        
+        var template = _mockTemplates[templateName];
+        var mockData = _mergeMockData(template.data, overrides);
+        
+        var mockObject = createMockObject(template.objectType, mockData);
+        
+        // 更新统计
+        _updateStatistics(template.objectType, templateName);
+        
+        return mockObject;
+    }
+    
+    /**
+     * 批量创建Mock对象
+     * @param {Array} mockList Mock对象列表
+     * @returns {Object} 批量创建结果
+     */
+    function createBatchMockObjects(mockList) {
+        if (!mockList || !Array.isArray(mockList)) {
+            throw new Error("MockSystem.createBatchMockObjects: mockList must be an array");
+        }
+        
+        var result = {
+            success: [],
+            failed: [],
+            totalCount: mockList.length,
+            successCount: 0,
+            failedCount: 0
+        };
+        
+        for (var i = 0; i < mockList.length; i++) {
+            var item = mockList[i];
+            
+            try {
+                var mockObject;
+                
+                if (item.templateName) {
+                    mockObject = createMockFromTemplate(item.templateName, item.overrides);
+                } else if (item.objectType) {
+                    mockObject = createMockObject(item.objectType, item.mockData);
+                } else {
+                    throw new Error("Invalid item: neither templateName nor objectType provided");
+                }
+                
+                result.success.push(mockObject);
+                result.successCount++;
+                
+            } catch (error) {
+                result.failed.push({
+                    index: i,
+                    item: item,
+                    error: error.message
+                });
+                result.failedCount++;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 获取Mock对象
+     * @param {string} mockId Mock ID
+     * @returns {Object} Mock对象
+     */
+    function getMockObject(mockId) {
+        return _mockObjects[mockId] || null;
+    }
+    
+    /**
+     * 删除Mock对象
+     * @param {string} mockId Mock ID
+     * @returns {boolean} 是否成功
+     */
+    function removeMockObject(mockId) {
+        if (_mockObjects[mockId]) {
+            delete _mockObjects[mockId];
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 获取所有Mock对象
+     * @returns {Array} Mock对象列表
+     */
+    function getAllMockObjects() {
+        var result = [];
+        for (var mockId in _mockObjects) {
+            if (_mockObjects.hasOwnProperty(mockId)) {
+                result.push(_mockObjects[mockId]);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 按类型获取Mock对象
+     * @param {string} objectType 对象类型
+     * @returns {Array} Mock对象列表
+     */
+    function getMockObjectsByType(objectType) {
+        var result = [];
+        for (var mockId in _mockObjects) {
+            if (_mockObjects.hasOwnProperty(mockId)) {
+                var mockObj = _mockObjects[mockId];
+                if (mockObj.objectType === objectType) {
+                    result.push(mockObj);
+                }
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 获取Mock模板列表
+     * @returns {Array} 模板列表
+     */
+    function getMockTemplates() {
+        var result = [];
+        for (var templateName in _mockTemplates) {
+            if (_mockTemplates.hasOwnProperty(templateName)) {
+                var template = _mockTemplates[templateName];
+                result.push({
+                    name: templateName,
+                    objectType: template.objectType,
+                    createdAt: template.createdAt
+                });
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 获取支持的对象类型
+     * @returns {Array} 支持的类型列表
+     */
+    function getSupportedObjectTypes() {
+        return [
+            "Arc", "Pad", "Track", "Via", "Board", 
+            "Text", "Coordinate", "Region", "Fill", "Dimension"
+        ];
+    }
+    
+    /**
+     * 配置Mock系统
+     * @param {Object} config 配置选项
+     */
+    function configure(config) {
+        if (!config) {
+            return;
+        }
+        
+        for (var key in config) {
+            if (config.hasOwnProperty(key) && _config.hasOwnProperty(key)) {
+                _config[key] = config[key];
+            }
+        }
+    }
+    
+    /**
+     * 获取配置
+     * @returns {Object} 当前配置
+     */
+    function getConfiguration() {
+        var result = {};
+        for (var key in _config) {
+            if (_config.hasOwnProperty(key)) {
+                result[key] = _config[key];
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 获取统计信息
+     * @returns {Object} 统计信息
+     */
+    function getMockStatistics() {
+        return {
+            totalCreated: _statistics.totalCreated,
+            byType: _statistics.byType,
+            templatesUsed: _statistics.templatesUsed,
+            templateCount: Object.keys(_mockTemplates).length,
+            activeMockObjects: Object.keys(_mockObjects).length,
+            supportedTypes: getSupportedObjectTypes(),
+            configuration: getConfiguration()
+        };
+    }
+    
+    /**
+     * 清理所有Mock对象
+     */
+    function clearAllMockObjects() {
+        _mockObjects = {};
+    }
+    
+    /**
+     * 清理Mock模板
+     */
+    function clearMockTemplates() {
+        _mockTemplates = {};
+    }
+    
+    /**
+     * 重置统计信息
+     */
+    function resetMockStatistics() {
+        _statistics = {
+            totalCreated: 0,
+            byType: {},
+            templatesUsed: {}
+        };
+    }
+    
+    /**
+     * 清理Mock系统
+     */
+    function cleanup() {
+        clearAllMockObjects();
+        clearMockTemplates();
+        resetMockStatistics();
+    }
+    
+    // -------------------------------------------------------------
+    // 初始化默认模板
+    // -------------------------------------------------------------
+    
+    /**
+     * 初始化默认Mock模板
+     */
+    function initializeDefaultTemplates() {
+        // 标准焊盘模板
+        registerMockTemplate("StandardPad", "Pad", {
+            X: 0,
+            Y: 0,
+            TopX: 60,
+            TopY: 100,
+            MidX: 60,
+            MidY: 100,
+            BottomX: 60,
+            BottomY: 100,
+            HoleSize: 30,
+            Layer: "MultiLayer",
+            PadShape: 0,
+            Designator: "1"
+        });
+        
+        // 标准过孔模板
+        registerMockTemplate("StandardVia", "Via", {
+            X: 0,
+            Y: 0,
+            HoleSize: 20,
+            Diameter: 40,
+            StartLayer: "TopLayer",
+            EndLayer: "BottomLayer"
+        });
+        
+        // 标准走线模板
+        registerMockTemplate("StandardTrack", "Track", {
+            X1: 0,
+            Y1: 0,
+            X2: 1000,
+            Y2: 0,
+            Layer: "TopLayer",
+            Width: 10
+        });
+        
+        // 标准圆弧模板
+        registerMockTemplate("StandardArc", "Arc", {
+            X1: 0,
+            Y1: 0,
+            X2: 1000,
+            Y2: 0,
+            Radius: 500,
+            StartAngle: 0,
+            EndAngle: 180,
+            Layer: "TopLayer",
+            Width: 10
+        });
+    }
+    
+    // 自动初始化默认模板
+    initializeDefaultTemplates();
+    
+    // -------------------------------------------------------------
+    // 导出接口
+    // -------------------------------------------------------------
+    
+    return {
+        // Mock对象创建
+        createMockObject: createMockObject,
+        createMockFromTemplate: createMockFromTemplate,
+        createBatchMockObjects: createBatchMockObjects,
+        
+        // Mock对象管理
+        getMockObject: getMockObject,
+        removeMockObject: removeMockObject,
+        getAllMockObjects: getAllMockObjects,
+        getMockObjectsByType: getMockObjectsByType,
+        
+        // Mock模板管理
+        registerMockTemplate: registerMockTemplate,
+        getMockTemplates: getMockTemplates,
+        
+        // 查询方法
+        getSupportedObjectTypes: getSupportedObjectTypes,
+        
+        // 配置和统计
+        configure: configure,
+        getConfiguration: getConfiguration,
+        getMockStatistics: getMockStatistics,
+        
+        // 维护操作
+        clearAllMockObjects: clearAllMockObjects,
+        clearMockTemplates: clearMockTemplates,
+        resetMockStatistics: resetMockStatistics,
+        cleanup: cleanup
+    };
+    
+})();
+
+
+// File: src/modules/object-module/wrappers/PCBObjectWrapper.js
+/**
+ * PCBObjectWrapper - 通用PCB对象封装器
+ * 
+ * 提供统一的PCB对象封装接口，支持属性缓存和方法调用
+ * 严格遵循ES3语法规范，兼容AD环境
+ * 
+ * @author AD21 Object Module
+ * @version 1.0.0
+ */
+
+var PCBObjectWrapper = (function(){
+    "use strict";
+    
+    // -------------------------------------------------------------
+    // 私有变量
+    // -------------------------------------------------------------
+    
+    var _wrapperConfig = {
+        enablePropertyCache: true,
+        enableMethodCache: false,
+        enableAutoRefresh: false,
+        cacheTimeout: 30000, // 30秒
+        enableLogging: true
+    };
+    
+    // -------------------------------------------------------------
+    // 私有函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 简化的日志系统
+     */
+    var _logger = {
+        debug: function(msg) {
+            if (_wrapperConfig.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[DEBUG] " + msg);
+            }
+        },
+        info: function(msg) {
+            if (_wrapperConfig.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[INFO] " + msg);
+            }
+        },
+        warn: function(msg) {
+            if (_wrapperConfig.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[WARN] " + msg);
+            }
+        },
+        error: function(msg) {
+            if (_wrapperConfig.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[ERROR] " + msg);
+            }
+        }
+    };
+    
+    /**
+     * 提取对象属性
+     * @param {Object} nativeObject 原生对象
+     * @returns {Object} 属性对象
+     */
+    function _extractProperties(nativeObject) {
+        var properties = {};
+        
+        if (!nativeObject) {
+            return properties;
+        }
+        
+        try {
+            // 基础属性
+            if (typeof nativeObject.GetObjectId === "function") {
+                properties.ObjectId = nativeObject.GetObjectId();
+            }
+            
+            if (typeof nativeObject.GetState_String === "function") {
+                properties.State = nativeObject.GetState_String();
+            }
+            
+            // 通用属性提取
+            var commonProperties = [
+                "X", "Y", "X1", "Y1", "X2", "Y2", "Radius", "Width", "Layer",
+                "TopX", "TopY", "MidX", "MidY", "BottomX", "BottomY",
+                "HoleSize", "Diameter", "StartAngle", "EndAngle",
+                "Text", "FontSize", "FontName", "Designator", "PadShape"
+            ];
+            
+            for (var i = 0; i < commonProperties.length; i++) {
+                var propName = commonProperties[i];
+                if (typeof nativeObject[propName] !== "undefined") {
+                    properties[propName] = nativeObject[propName];
+                }
+            }
+            
+        } catch (error) {
+            _logger.error("PCBObjectWrapper._extractProperties: " + error.message);
+        }
+        
+        return properties;
+    }
+    
+    /**
+     * 检查缓存是否过期
+     * @param {Object} cache 缓存对象
+     * @returns {boolean} 是否过期
+     */
+    function _isCacheExpired(cache) {
+        if (!cache || !cache.timestamp) {
+            return true;
+        }
+        
+        var now = new Date().getTime();
+        return (now - cache.timestamp) > _wrapperConfig.cacheTimeout;
+    }
+    
+    /**
+     * 刷新属性缓存
+     * @param {Object} wrapper 封装器实例
+     */
+    function _refreshPropertyCache(wrapper) {
+        if (!wrapper._objectData || !wrapper._objectData.nativeObject) {
+            return;
+        }
+        
+        try {
+            var newProperties = _extractProperties(wrapper._objectData.nativeObject);
+            wrapper._objectData.properties = newProperties;
+            wrapper._propertyCache.timestamp = new Date().getTime();
+            
+            _logger.debug("PCBObjectWrapper._refreshPropertyCache: Properties refreshed for " + wrapper._objectData.objectType);
+            
+        } catch (error) {
+            _logger.error("PCBObjectWrapper._refreshPropertyCache: " + error.message);
+        }
+    }
+    
+    /**
+     * 创建方法代理
+     * @param {Object} nativeObject 原生对象
+     * @param {string} methodName 方法名
+     * @returns {Function} 代理函数
+     */
+    function _createMethodProxy(nativeObject, methodName) {
+        return function() {
+            if (!nativeObject || typeof nativeObject[methodName] !== "function") {
+                throw new Error("Method '" + methodName + "' not found on native object");
+            }
+            
+            try {
+                var args = Array.prototype.slice.call(arguments);
+                return nativeObject[methodName].apply(nativeObject, args);
+            } catch (error) {
+                _logger.error("PCBObjectWrapper._createMethodProxy: Error calling " + methodName + " - " + error.message);
+                throw error;
+            }
+        };
+    }
+    
+    // -------------------------------------------------------------
+    // PCBObjectWrapper构造函数
+    // -------------------------------------------------------------
+    
+    /**
+     * PCBObjectWrapper构造函数
+     * @param {Object} objectData 对象数据
+     */
+    function PCBObjectWrapper(objectData) {
+        if (!objectData) {
+            throw new Error("PCBObjectWrapper: objectData is required");
+        }
+        
+        // 初始化对象数据
+        this._objectData = {
+            objectId: objectData.objectId || "",
+            objectType: objectData.objectType || "Unknown",
+            nativeObject: objectData.nativeObject || null,
+            isMock: objectData.isMock || false,
+            mockData: objectData.mockData || null,
+            createdAt: objectData.createdAt || new Date().getTime(),
+            properties: {},
+            methods: {}
+        };
+        
+        // 初始化缓存
+        this._propertyCache = {
+            timestamp: 0,
+            data: {}
+        };
+        
+        this._methodCache = {};
+        
+        // 提取初始属性
+        if (this._objectData.nativeObject) {
+            this._objectData.properties = _extractProperties(this._objectData.nativeObject);
+            this._propertyCache.timestamp = new Date().getTime();
+        } else if (this._objectData.mockData) {
+            this._objectData.properties = this._objectData.mockData;
+            this._propertyCache.timestamp = new Date().getTime();
+        }
+        
+        _logger.debug("PCBObjectWrapper.constructor: Created wrapper for " + this._objectData.objectType);
+    }
+    
+    // -------------------------------------------------------------
+    // PCBObjectWrapper原型方法
+    // -------------------------------------------------------------
+    
+    /**
+     * 获取对象ID
+     * @returns {string} 对象ID
+     */
+    PCBObjectWrapper.prototype.getObjectId = function() {
+        return this._objectData.objectId;
+    };
+    
+    /**
+     * 获取对象类型
+     * @returns {string} 对象类型
+     */
+    PCBObjectWrapper.prototype.getObjectType = function() {
+        return this._objectData.objectType;
+    };
+    
+    /**
+     * 检查是否为Mock对象
+     * @returns {boolean} 是否为Mock对象
+     */
+    PCBObjectWrapper.prototype.isMock = function() {
+        return this._objectData.isMock;
+    };
+    
+    /**
+     * 获取原生对象
+     * @returns {Object} 原生对象
+     */
+    PCBObjectWrapper.prototype.getNativeObject = function() {
+        return this._objectData.nativeObject;
+    };
+    
+    /**
+     * 获取对象数据
+     * @returns {Object} 对象数据
+     */
+    PCBObjectWrapper.prototype.getObjectData = function() {
+        return this._objectData;
+    };
+    
+    /**
+     * 获取属性值
+     * @param {string} propertyName 属性名
+     * @returns {*} 属性值
+     */
+    PCBObjectWrapper.prototype.getProperty = function(propertyName) {
+        if (!propertyName) {
+            return null;
+        }
+        
+        // 检查缓存是否需要刷新
+        if (_wrapperConfig.enablePropertyCache && 
+            (_wrapperConfig.enableAutoRefresh || _isCacheExpired(this._propertyCache))) {
+            _refreshPropertyCache(this);
+        }
+        
+        return this._objectData.properties[propertyName] || null;
+    };
+    
+    /**
+     * 设置属性值
+     * @param {string} propertyName 属性名
+     * @param {*} value 属性值
+     * @returns {boolean} 是否成功
+     */
+    PCBObjectWrapper.prototype.setProperty = function(propertyName, value) {
+        if (!propertyName) {
+            return false;
+        }
+        
+        try {
+            // 设置到原生对象
+            if (this._objectData.nativeObject && 
+                typeof this._objectData.nativeObject[propertyName] !== "undefined") {
+                this._objectData.nativeObject[propertyName] = value;
+            }
+            
+            // 更新缓存
+            this._objectData.properties[propertyName] = value;
+            this._propertyCache.timestamp = new Date().getTime();
+            
+            _logger.debug("PCBObjectWrapper.setProperty: Set " + propertyName + " = " + value);
+            return true;
+            
+        } catch (error) {
+            _logger.error("PCBObjectWrapper.setProperty: " + error.message);
+            return false;
+        }
+    };
+    
+    /**
+     * 获取所有属性
+     * @returns {Object} 属性对象
+     */
+    PCBObjectWrapper.prototype.getAllProperties = function() {
+        // 检查缓存是否需要刷新
+        if (_wrapperConfig.enablePropertyCache && 
+            (_wrapperConfig.enableAutoRefresh || _isCacheExpired(this._propertyCache))) {
+            _refreshPropertyCache(this);
+        }
+        
+        var result = {};
+        for (var key in this._objectData.properties) {
+            if (this._objectData.properties.hasOwnProperty(key)) {
+                result[key] = this._objectData.properties[key];
+            }
+        }
+        return result;
+    };
+    
+    /**
+     * 调用原生对象方法
+     * @param {string} methodName 方法名
+     * @param {...*} args 参数
+     * @returns {*} 方法返回值
+     */
+    PCBObjectWrapper.prototype.callMethod = function(methodName) {
+        if (!methodName) {
+            throw new Error("PCBObjectWrapper.callMethod: methodName is required");
+        }
+        
+        var nativeObject = this._objectData.nativeObject;
+        if (!nativeObject) {
+            throw new Error("PCBObjectWrapper.callMethod: No native object available");
+        }
+        
+        if (typeof nativeObject[methodName] !== "function") {
+            throw new Error("PCBObjectWrapper.callMethod: Method '" + methodName + "' not found");
+        }
+        
+        try {
+            var args = Array.prototype.slice.call(arguments, 1);
+            var result = nativeObject[methodName].apply(nativeObject, args);
+            
+            _logger.debug("PCBObjectWrapper.callMethod: Called " + methodName + " with " + args.length + " arguments");
+            return result;
+            
+        } catch (error) {
+            _logger.error("PCBObjectWrapper.callMethod: Error calling " + methodName + " - " + error.message);
+            throw error;
+        }
+    };
+    
+    /**
+     * 获取方法代理
+     * @param {string} methodName 方法名
+     * @returns {Function} 方法代理
+     */
+    PCBObjectWrapper.prototype.getMethod = function(methodName) {
+        if (!methodName) {
+            return null;
+        }
+        
+        // 检查方法缓存
+        if (_wrapperConfig.enableMethodCache && this._methodCache[methodName]) {
+            return this._methodCache[methodName];
+        }
+        
+        var nativeObject = this._objectData.nativeObject;
+        if (!nativeObject || typeof nativeObject[methodName] !== "function") {
+            return null;
+        }
+        
+        // 创建方法代理
+        var proxy = _createMethodProxy(nativeObject, methodName);
+        
+        // 缓存方法代理
+        if (_wrapperConfig.enableMethodCache) {
+            this._methodCache[methodName] = proxy;
+        }
+        
+        return proxy;
+    };
+    
+    /**
+     * 刷新缓存
+     */
+    PCBObjectWrapper.prototype.refreshCache = function() {
+        _refreshPropertyCache(this);
+        
+        // 清理方法缓存
+        if (_wrapperConfig.enableMethodCache) {
+            this._methodCache = {};
+        }
+        
+        _logger.debug("PCBObjectWrapper.refreshCache: Cache refreshed");
+    };
+    
+    /**
+     * 获取位置信息
+     * @returns {Object} 位置对象 {x, y, layer}
+     */
+    PCBObjectWrapper.prototype.getPosition = function() {
+        var x = 0, y = 0, layer = "";
+        
+        if (this._objectData.objectType === "Track") {
+            x = (this.getProperty("X1") + this.getProperty("X2")) / 2;
+            y = (this.getProperty("Y1") + this.getProperty("Y2")) / 2;
+        } else if (this._objectData.objectType === "Arc") {
+            x = this.getProperty("X1");
+            y = this.getProperty("Y1");
+        } else {
+            x = this.getProperty("X") || 0;
+            y = this.getProperty("Y") || 0;
+        }
+        
+        layer = this.getProperty("Layer") || "";
+        
+        return {
+            x: x,
+            y: y,
+            layer: layer
+        };
+    };
+    
+    /**
+     * 设置位置信息
+     * @param {Object} position 位置对象 {x, y, layer}
+     * @returns {boolean} 是否成功
+     */
+    PCBObjectWrapper.prototype.setPosition = function(position) {
+        if (!position) {
+            return false;
+        }
+        
+        var success = true;
+        
+        try {
+            if (this._objectData.objectType === "Track") {
+                var dx = position.x - ((this.getProperty("X1") + this.getProperty("X2")) / 2);
+                var dy = position.y - ((this.getProperty("Y1") + this.getProperty("Y2")) / 2);
+                
+                success = this.setProperty("X1", this.getProperty("X1") + dx) && success;
+                success = this.setProperty("Y1", this.getProperty("Y1") + dy) && success;
+                success = this.setProperty("X2", this.getProperty("X2") + dx) && success;
+                success = this.setProperty("Y2", this.getProperty("Y2") + dy) && success;
+            } else {
+                success = this.setProperty("X", position.x) && success;
+                success = this.setProperty("Y", position.y) && success;
+            }
+            
+            if (position.layer) {
+                success = this.setProperty("Layer", position.layer) && success;
+            }
+            
+        } catch (error) {
+            _logger.error("PCBObjectWrapper.setPosition: " + error.message);
+            success = false;
+        }
+        
+        return success;
+    };
+    
+    /**
+     * 获取对象边界框
+     * @returns {Object} 边界框 {left, top, right, bottom}
+     */
+    PCBObjectWrapper.prototype.getBoundingBox = function() {
+        var left = 0, top = 0, right = 0, bottom = 0;
+        
+        switch (this._objectData.objectType) {
+            case "Track":
+                left = Math.min(this.getProperty("X1"), this.getProperty("X2"));
+                top = Math.min(this.getProperty("Y1"), this.getProperty("Y2"));
+                right = Math.max(this.getProperty("X1"), this.getProperty("X2"));
+                bottom = Math.max(this.getProperty("Y1"), this.getProperty("Y2"));
+                break;
+                
+            case "Arc":
+                var centerX = this.getProperty("X1");
+                var centerY = this.getProperty("Y1");
+                var radius = this.getProperty("Radius");
+                left = centerX - radius;
+                top = centerY - radius;
+                right = centerX + radius;
+                bottom = centerY + radius;
+                break;
+                
+            case "Pad":
+            case "Via":
+                var x = this.getProperty("X");
+                var y = this.getProperty("Y");
+                var size = Math.max(
+                    this.getProperty("TopX") || this.getProperty("Diameter") || 0,
+                    this.getProperty("TopY") || this.getProperty("Diameter") || 0
+                );
+                left = x - size / 2;
+                top = y - size / 2;
+                right = x + size / 2;
+                bottom = y + size / 2;
+                break;
+                
+            default:
+                var x = this.getProperty("X") || 0;
+                var y = this.getProperty("Y") || 0;
+                left = right = x;
+                top = bottom = y;
+                break;
+        }
+        
+        return {
+            left: left,
+            top: top,
+            right: right,
+            bottom: bottom
+        };
+    };
+    
+    /**
+     * 获取封装器统计信息
+     * @returns {Object} 统计信息
+     */
+    PCBObjectWrapper.prototype.getStatistics = function() {
+        return {
+            objectId: this._objectData.objectId,
+            objectType: this._objectData.objectType,
+            isMock: this._objectData.isMock,
+            createdAt: this._objectData.createdAt,
+            propertyCount: Object.keys(this._objectData.properties).length,
+            methodCacheSize: _wrapperConfig.enableMethodCache ? Object.keys(this._methodCache).length : 0,
+            cacheTimestamp: this._propertyCache.timestamp,
+            cacheExpired: _isCacheExpired(this._propertyCache)
+        };
+    };
+    
+    // -------------------------------------------------------------
+    // 静态方法
+    // -------------------------------------------------------------
+    
+    /**
+     * 配置封装器
+     * @param {Object} config 配置选项
+     */
+    PCBObjectWrapper.configure = function(config) {
+        if (!config) {
+            return;
+        }
+        
+        for (var key in config) {
+            if (config.hasOwnProperty(key) && _wrapperConfig.hasOwnProperty(key)) {
+                _wrapperConfig[key] = config[key];
+            }
+        }
+    };
+    
+    /**
+     * 获取配置
+     * @returns {Object} 当前配置
+     */
+    PCBObjectWrapper.getConfiguration = function() {
+        var result = {};
+        for (var key in _wrapperConfig) {
+            if (_wrapperConfig.hasOwnProperty(key)) {
+                result[key] = _wrapperConfig[key];
+            }
+        }
+        return result;
+    };
+    
+    // -------------------------------------------------------------
+    // 导出
+    // -------------------------------------------------------------
+    
+    return PCBObjectWrapper;
+    
+})();
+
+
+// File: src/modules/object-module/wrappers/GeometryWrapper.js
+/**
+ * GeometryWrapper - 几何计算封装器
+ * 
+ * 提供PCB对象的几何计算功能，包括距离、角度、面积等计算
+ * 严格遵循ES3语法规范，兼容AD环境
+ * 
+ * @author AD21 Object Module
+ * @version 1.0.0
+ */
+
+var GeometryWrapper = (function(){
+    "use strict";
+    
+    // -------------------------------------------------------------
+    // 私有变量
+    // -------------------------------------------------------------
+    
+    var _config = {
+        precision: 6,              // 计算精度
+        unit: "mil",              // 默认单位
+        enableCache: true,        // 启用结果缓存
+        cacheTimeout: 10000       // 缓存超时（毫秒）
+    };
+    
+    var _cache = {};
+    var _statistics = {
+        calculationsPerformed: 0,
+        cacheHits: 0,
+        cacheMisses: 0,
+        byType: {}
+    };
+    
+    // -------------------------------------------------------------
+    // 私有函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 简化的日志系统
+     */
+    var _logger = {
+        debug: function(msg) {
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[DEBUG] " + msg);
+            }
+        },
+        info: function(msg) {
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[INFO] " + msg);
+            }
+        },
+        warn: function(msg) {
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[WARN] " + msg);
+            }
+        },
+        error: function(msg) {
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[ERROR] " + msg);
+            }
+        }
+    };
+    
+    /**
+     * 生成缓存键
+     * @param {string} method 方法名
+     * @param {Array} args 参数数组
+     * @returns {string} 缓存键
+     */
+    function _generateCacheKey(method, args) {
+        var key = method + "_";
+        for (var i = 0; i < args.length; i++) {
+            var arg = args[i];
+            if (typeof arg === "object") {
+                key += JSON.stringify(arg);
+            } else {
+                key += String(arg);
+            }
+            key += "_";
+        }
+        return key;
+    }
+    
+    /**
+     * 检查缓存
+     * @param {string} cacheKey 缓存键
+     * @returns {*} 缓存值或null
+     */
+    function _checkCache(cacheKey) {
+        if (!_config.enableCache || !_cache[cacheKey]) {
+            _statistics.cacheMisses++;
+            return null;
+        }
+        
+        var cached = _cache[cacheKey];
+        var now = new Date().getTime();
+        
+        if ((now - cached.timestamp) > _config.cacheTimeout) {
+            delete _cache[cacheKey];
+            _statistics.cacheMisses++;
+            return null;
+        }
+        
+        _statistics.cacheHits++;
+        return cached.value;
+    }
+    
+    /**
+     * 设置缓存
+     * @param {string} cacheKey 缓存键
+     * @param {*} value 缓存值
+     */
+    function _setCache(cacheKey, value) {
+        if (!_config.enableCache) {
+            return;
+        }
+        
+        _cache[cacheKey] = {
+            value: value,
+            timestamp: new Date().getTime()
+        };
+    }
+    
+    /**
+     * 更新统计信息
+     * @param {string} calculationType 计算类型
+     */
+    function _updateStatistics(calculationType) {
+        _statistics.calculationsPerformed++;
+        
+        if (!_statistics.byType[calculationType]) {
+            _statistics.byType[calculationType] = 0;
+        }
+        _statistics.byType[calculationType]++;
+    }
+    
+    /**
+     * 数值精度处理
+     * @param {number} value 数值
+     * @returns {number} 处理后的数值
+     */
+    function _round(value) {
+        if (typeof value !== "number") {
+            return value;
+        }
+        
+        var factor = Math.pow(10, _config.precision);
+        return Math.round(value * factor) / factor;
+    }
+    
+    /**
+     * 验证点对象
+     * @param {Object} point 点对象
+     * @returns {boolean} 是否有效
+     */
+    function _isValidPoint(point) {
+        return point && 
+               typeof point.x === "number" && 
+               typeof point.y === "number" &&
+               !isNaN(point.x) && 
+               !isNaN(point.y);
+    }
+    
+    /**
+     * 验证PCB对象封装器
+     * @param {Object} wrapper PCB对象封装器
+     * @returns {boolean} 是否有效
+     */
+    function _isValidWrapper(wrapper) {
+        return wrapper && 
+               typeof wrapper.getObjectType === "function" &&
+               typeof wrapper.getPosition === "function" &&
+               typeof wrapper.getBoundingBox === "function";
+    }
+    
+    // -------------------------------------------------------------
+    // 几何计算核心函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 计算两点间距离
+     * @param {Object} point1 点1 {x, y}
+     * @param {Object} point2 点2 {x, y}
+     * @returns {number} 距离
+     */
+    function _calculateDistance(point1, point2) {
+        if (!_isValidPoint(point1) || !_isValidPoint(point2)) {
+            throw new Error("GeometryWrapper._calculateDistance: Invalid points");
+        }
+        
+        var dx = point2.x - point1.x;
+        var dy = point2.y - point1.y;
+        return _round(Math.sqrt(dx * dx + dy * dy));
+    }
+    
+    /**
+     * 计算点到直线的距离
+     * @param {Object} point 点 {x, y}
+     * @param {Object} lineStart 直线起点 {x, y}
+     * @param {Object} lineEnd 直线终点 {x, y}
+     * @returns {number} 距离
+     */
+    function _calculatePointToLineDistance(point, lineStart, lineEnd) {
+        if (!_isValidPoint(point) || !_isValidPoint(lineStart) || !_isValidPoint(lineEnd)) {
+            throw new Error("GeometryWrapper._calculatePointToLineDistance: Invalid points");
+        }
+        
+        var A = point.x - lineStart.x;
+        var B = point.y - lineStart.y;
+        var C = lineEnd.x - lineStart.x;
+        var D = lineEnd.y - lineStart.y;
+        
+        var dot = A * C + B * D;
+        var lenSq = C * C + D * D;
+        
+        if (lenSq === 0) {
+            return _calculateDistance(point, lineStart);
+        }
+        
+        var param = dot / lenSq;
+        
+        var xx, yy;
+        
+        if (param < 0) {
+            xx = lineStart.x;
+            yy = lineStart.y;
+        } else if (param > 1) {
+            xx = lineEnd.x;
+            yy = lineEnd.y;
+        } else {
+            xx = lineStart.x + param * C;
+            yy = lineStart.y + param * D;
+        }
+        
+        var closestPoint = {x: xx, y: yy};
+        return _calculateDistance(point, closestPoint);
+    }
+    
+    /**
+     * 计算两直线交点
+     * @param {Object} line1 直线1 {start, end}
+     * @param {Object} line2 直线2 {start, end}
+     * @returns {Object|null} 交点或null
+     */
+    function _calculateLineIntersection(line1, line2) {
+        if (!line1 || !line2 || 
+            !_isValidPoint(line1.start) || !_isValidPoint(line1.end) ||
+            !_isValidPoint(line2.start) || !_isValidPoint(line2.end)) {
+            throw new Error("GeometryWrapper._calculateLineIntersection: Invalid lines");
+        }
+        
+        var x1 = line1.start.x, y1 = line1.start.y;
+        var x2 = line1.end.x, y2 = line1.end.y;
+        var x3 = line2.start.x, y3 = line2.start.y;
+        var x4 = line2.end.x, y4 = line2.end.y;
+        
+        var denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        
+        if (Math.abs(denom) < 0.0001) {
+            return null; // 平行或重合
+        }
+        
+        var t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+        var u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+        
+        if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+            return {
+                x: _round(x1 + t * (x2 - x1)),
+                y: _round(y1 + t * (y2 - y1))
+            };
+        }
+        
+        return null; // 不在线段范围内
+    }
+    
+    /**
+     * 计算圆弧长度
+     * @param {Object} arc 圆弧对象
+     * @returns {number} 圆弧长度
+     */
+    function _calculateArcLength(arc) {
+        if (!arc || typeof arc.Radius !== "number" || arc.Radius <= 0) {
+            throw new Error("GeometryWrapper._calculateArcLength: Invalid arc");
+        }
+        
+        var startAngle = arc.StartAngle || 0;
+        var endAngle = arc.EndAngle || 0;
+        var radius = arc.Radius;
+        
+        // 标准化角度
+        while (startAngle < 0) startAngle += 360;
+        while (startAngle >= 360) startAngle -= 360;
+        while (endAngle < 0) endAngle += 360;
+        while (endAngle >= 360) endAngle -= 360;
+        
+        var angleDiff = endAngle - startAngle;
+        if (angleDiff < 0) angleDiff += 360;
+        
+        var angleRad = angleDiff * Math.PI / 180;
+        return _round(radius * angleRad);
+    }
+    
+    /**
+     * 计算多边形面积
+     * @param {Array} points 点数组
+     * @returns {number} 面积
+     */
+    function _calculatePolygonArea(points) {
+        if (!points || points.length < 3) {
+            return 0;
+        }
+        
+        var area = 0;
+        for (var i = 0; i < points.length; i++) {
+            var j = (i + 1) % points.length;
+            var p1 = points[i];
+            var p2 = points[j];
+            
+            if (_isValidPoint(p1) && _isValidPoint(p2)) {
+                area += p1.x * p2.y;
+                area -= p2.x * p1.y;
+            }
+        }
+        
+        return _round(Math.abs(area / 2));
+    }
+    
+    /**
+     * 检查点是否在多边形内
+     * @param {Object} point 点 {x, y}
+     * @param {Array} polygon 多边形点数组
+     * @returns {boolean} 是否在内部
+     */
+    function _isPointInPolygon(point, polygon) {
+        if (!_isValidPoint(point) || !polygon || polygon.length < 3) {
+            return false;
+        }
+        
+        var inside = false;
+        for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            var xi = polygon[i].x, yi = polygon[i].y;
+            var xj = polygon[j].x, yj = polygon[j].y;
+            
+            if (_isValidPoint(polygon[i]) && _isValidPoint(polygon[j])) {
+                var intersect = ((yi > point.y) !== (yj > point.y))
+                    && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+        }
+        
+        return inside;
+    }
+    
+    // -------------------------------------------------------------
+    // GeometryWrapper构造函数
+    // -------------------------------------------------------------
+    
+    /**
+     * GeometryWrapper构造函数
+     * @param {Object} wrapper PCB对象封装器
+     */
+    function GeometryWrapper(wrapper) {
+        if (!_isValidWrapper(wrapper)) {
+            throw new Error("GeometryWrapper: Invalid PCB object wrapper");
+        }
+        
+        this._wrapper = wrapper;
+        this._objectType = wrapper.getObjectType();
+        this._cache = {};
+        
+        _logger.debug("GeometryWrapper.constructor: Created geometry wrapper for " + this._objectType);
+    }
+    
+    // -------------------------------------------------------------
+    // GeometryWrapper原型方法
+    // -------------------------------------------------------------
+    
+    /**
+     * 获取对象中心点
+     * @returns {Object} 中心点 {x, y}
+     */
+    GeometryWrapper.prototype.getCenter = function() {
+        var cacheKey = "getCenter";
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var center;
+        var bbox = this._wrapper.getBoundingBox();
+        
+        center = {
+            x: _round((bbox.left + bbox.right) / 2),
+            y: _round((bbox.top + bbox.bottom) / 2)
+        };
+        
+        _setCache(cacheKey, center);
+        _updateStatistics("getCenter");
+        return center;
+    };
+    
+    /**
+     * 计算到另一个对象的距离
+     * @param {Object} otherWrapper 另一个对象封装器
+     * @returns {number} 距离
+     */
+    GeometryWrapper.prototype.getDistanceTo = function(otherWrapper) {
+        if (!_isValidWrapper(otherWrapper)) {
+            throw new Error("GeometryWrapper.getDistanceTo: Invalid wrapper");
+        }
+        
+        var cacheKey = "getDistanceTo_" + otherWrapper.getObjectId();
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var center1 = this.getCenter();
+        var center2 = new GeometryWrapper(otherWrapper).getCenter();
+        
+        var distance = _calculateDistance(center1, center2);
+        
+        _setCache(cacheKey, distance);
+        _updateStatistics("getDistanceTo");
+        return distance;
+    };
+    
+    /**
+     * 计算对象的长度（适用于Track、Arc等）
+     * @returns {number} 长度
+     */
+    GeometryWrapper.prototype.getLength = function() {
+        var cacheKey = "getLength";
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var length = 0;
+        var properties = this._wrapper.getAllProperties();
+        
+        switch (this._objectType) {
+            case "Track":
+                var x1 = properties.X1 || 0;
+                var y1 = properties.Y1 || 0;
+                var x2 = properties.X2 || 0;
+                var y2 = properties.Y2 || 0;
+                length = _calculateDistance({x: x1, y: y1}, {x: x2, y: y2});
+                break;
+                
+            case "Arc":
+                length = _calculateArcLength(properties);
+                break;
+                
+            default:
+                // 对于其他对象，返回边界框的对角线长度
+                var bbox = this._wrapper.getBoundingBox();
+                length = _calculateDistance(
+                    {x: bbox.left, y: bbox.top},
+                    {x: bbox.right, y: bbox.bottom}
+                );
+                break;
+        }
+        
+        _setCache(cacheKey, length);
+        _updateStatistics("getLength");
+        return length;
+    };
+    
+    /**
+     * 计算对象的面积（适用于Pad、Region等）
+     * @returns {number} 面积
+     */
+    GeometryWrapper.prototype.getArea = function() {
+        var cacheKey = "getArea";
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var area = 0;
+        var properties = this._wrapper.getAllProperties();
+        
+        switch (this._objectType) {
+            case "Pad":
+            case "Via":
+                var diameter = properties.Diameter || properties.TopX || 0;
+                area = _round(Math.PI * diameter * diameter / 4);
+                break;
+                
+            case "Arc":
+                var radius = properties.Radius || 0;
+                var startAngle = properties.StartAngle || 0;
+                var endAngle = properties.EndAngle || 0;
+                var angleDiff = endAngle - startAngle;
+                if (angleDiff < 0) angleDiff += 360;
+                area = _round(Math.PI * radius * radius * angleDiff / 360);
+                break;
+                
+            default:
+                // 对于其他对象，返回边界框面积
+                var bbox = this._wrapper.getBoundingBox();
+                area = _round((bbox.right - bbox.left) * (bbox.bottom - bbox.top));
+                break;
+        }
+        
+        _setCache(cacheKey, area);
+        _updateStatistics("getArea");
+        return area;
+    };
+    
+    /**
+     * 检查是否与另一个对象相交
+     * @param {Object} otherWrapper 另一个对象封装器
+     * @returns {boolean} 是否相交
+     */
+    GeometryWrapper.prototype.intersects = function(otherWrapper) {
+        if (!_isValidWrapper(otherWrapper)) {
+            throw new Error("GeometryWrapper.intersects: Invalid wrapper");
+        }
+        
+        var cacheKey = "intersects_" + otherWrapper.getObjectId();
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var bbox1 = this._wrapper.getBoundingBox();
+        var bbox2 = otherWrapper.getBoundingBox();
+        
+        var intersects = !(bbox1.right < bbox2.left || 
+                           bbox1.left > bbox2.right || 
+                           bbox1.bottom < bbox2.top || 
+                           bbox1.top > bbox2.bottom);
+        
+        _setCache(cacheKey, intersects);
+        _updateStatistics("intersects");
+        return intersects;
+    };
+    
+    /**
+     * 检查点是否在对象内部
+     * @param {Object} point 点 {x, y}
+     * @returns {boolean} 是否在内部
+     */
+    GeometryWrapper.prototype.containsPoint = function(point) {
+        if (!_isValidPoint(point)) {
+            throw new Error("GeometryWrapper.containsPoint: Invalid point");
+        }
+        
+        var cacheKey = "containsPoint_" + point.x + "_" + point.y;
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var bbox = this._wrapper.getBoundingBox();
+        var contains = point.x >= bbox.left && 
+                      point.x <= bbox.right && 
+                      point.y >= bbox.top && 
+                      point.y <= bbox.bottom;
+        
+        _setCache(cacheKey, contains);
+        _updateStatistics("containsPoint");
+        return contains;
+    };
+    
+    /**
+     * 获取几何统计信息
+     * @returns {Object} 统计信息
+     */
+    GeometryWrapper.prototype.getGeometryStatistics = function() {
+        return {
+            objectType: this._objectType,
+            center: this.getCenter(),
+            length: this.getLength(),
+            area: this.getArea(),
+            boundingBox: this._wrapper.getBoundingBox(),
+            position: this._wrapper.getPosition()
+        };
+    };
+    
+    // -------------------------------------------------------------
+    // 静态方法
+    // -------------------------------------------------------------
+    
+    /**
+     * 计算两点间距离
+     * @param {Object} point1 点1 {x, y}
+     * @param {Object} point2 点2 {x, y}
+     * @returns {number} 距离
+     */
+    GeometryWrapper.calculateDistance = function(point1, point2) {
+        var cacheKey = "static_calculateDistance_" + _generateCacheKey("", [point1, point2]);
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var result = _calculateDistance(point1, point2);
+        _setCache(cacheKey, result);
+        _updateStatistics("calculateDistance");
+        return result;
+    };
+    
+    /**
+     * 计算点到直线距离
+     * @param {Object} point 点 {x, y}
+     * @param {Object} lineStart 直线起点 {x, y}
+     * @param {Object} lineEnd 直线终点 {x, y}
+     * @returns {number} 距离
+     */
+    GeometryWrapper.calculatePointToLineDistance = function(point, lineStart, lineEnd) {
+        var cacheKey = "static_pointToLine_" + _generateCacheKey("", [point, lineStart, lineEnd]);
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var result = _calculatePointToLineDistance(point, lineStart, lineEnd);
+        _setCache(cacheKey, result);
+        _updateStatistics("calculatePointToLineDistance");
+        return result;
+    };
+    
+    /**
+     * 计算两直线交点
+     * @param {Object} line1 直线1 {start, end}
+     * @param {Object} line2 直线2 {start, end}
+     * @returns {Object|null} 交点或null
+     */
+    GeometryWrapper.calculateLineIntersection = function(line1, line2) {
+        var cacheKey = "static_lineIntersection_" + _generateCacheKey("", [line1, line2]);
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var result = _calculateLineIntersection(line1, line2);
+        _setCache(cacheKey, result);
+        _updateStatistics("calculateLineIntersection");
+        return result;
+    };
+    
+    /**
+     * 计算多边形面积
+     * @param {Array} points 点数组
+     * @returns {number} 面积
+     */
+    GeometryWrapper.calculatePolygonArea = function(points) {
+        var cacheKey = "static_polygonArea_" + _generateCacheKey("", [points]);
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var result = _calculatePolygonArea(points);
+        _setCache(cacheKey, result);
+        _updateStatistics("calculatePolygonArea");
+        return result;
+    };
+    
+    /**
+     * 检查点是否在多边形内
+     * @param {Object} point 点 {x, y}
+     * @param {Array} polygon 多边形点数组
+     * @returns {boolean} 是否在内部
+     */
+    GeometryWrapper.isPointInPolygon = function(point, polygon) {
+        var cacheKey = "static_pointInPolygon_" + _generateCacheKey("", [point, polygon]);
+        var cached = _checkCache(cacheKey);
+        if (cached !== null) {
+            return cached;
+        }
+        
+        var result = _isPointInPolygon(point, polygon);
+        _setCache(cacheKey, result);
+        _updateStatistics("isPointInPolygon");
+        return result;
+    };
+    
+    /**
+     * 配置几何计算器
+     * @param {Object} config 配置选项
+     */
+    GeometryWrapper.configure = function(config) {
+        if (!config) {
+            return;
+        }
+        
+        for (var key in config) {
+            if (config.hasOwnProperty(key) && _config.hasOwnProperty(key)) {
+                _config[key] = config[key];
+            }
+        }
+    };
+    
+    /**
+     * 获取配置
+     * @returns {Object} 当前配置
+     */
+    GeometryWrapper.getConfiguration = function() {
+        var result = {};
+        for (var key in _config) {
+            if (_config.hasOwnProperty(key)) {
+                result[key] = _config[key];
+            }
+        }
+        return result;
+    };
+    
+    /**
+     * 获取统计信息
+     * @returns {Object} 统计信息
+     */
+    GeometryWrapper.getStatistics = function() {
+        return {
+            calculationsPerformed: _statistics.calculationsPerformed,
+            cacheHits: _statistics.cacheHits,
+            cacheMisses: _statistics.cacheMisses,
+            cacheHitRate: _statistics.cacheHits / (_statistics.cacheHits + _statistics.cacheMisses) || 0,
+            byType: _statistics.byType,
+            cacheSize: Object.keys(_cache).length,
+            configuration: GeometryWrapper.getConfiguration()
+        };
+    };
+    
+    /**
+     * 清理缓存
+     */
+    GeometryWrapper.clearCache = function() {
+        _cache = {};
+    };
+    
+    /**
+     * 重置统计信息
+     */
+    GeometryWrapper.resetStatistics = function() {
+        _statistics = {
+            calculationsPerformed: 0,
+            cacheHits: 0,
+            cacheMisses: 0,
+            byType: {}
+        };
+    };
+    
+    // -------------------------------------------------------------
+    // 导出
+    // -------------------------------------------------------------
+    
+    return GeometryWrapper;
+    
+})();
+
+
+// File: src/modules/object-module/index.js
+/**
+ * ObjectModule - 对象模块主入口文件
+ * 
+ * 提供统一的PCB对象创建、管理和几何计算接口
+ * 严格遵循ES3语法规范，兼容AD环境
+ * 
+ * IIFE模块架构说明
+ * 
+ * 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();
+ * 2. 构建后所有模块变量在同一作用域，可直接引用
+ * 3. 不处理模块间依赖，需构建到一个文件中使用
+ * 4. 通过window导出，确保AD环境可访问
+ * 5. 依赖的模块必须在当前模块之前加载（通过merge-order.json控制）
+ * 
+ * @author AD21 Object Module
+ * @version 1.0.0
+ */
+
+var ObjectModule = (function(){
+    
+    // 依赖引用（使用模块访问器）
+    // 注意：在ES3环境中，这些依赖通过ModuleAccessor统一访问
+    
+    // 私有变量
+    var _isInitialized = false;
+    var _config = {
+        enableLogging: true,
+        enableAutoRegistration: true,
+        enablePositionManagement: true,
+        enableGeometryCalculation: true,
+        defaultLayer: "TopLayer",
+        conflictThreshold: 10
+    };
+    
+    var _statistics = {
+        objectsCreated: 0,
+        objectsManaged: 0,
+        mockObjectsCreated: 0,
+        geometryCalculations: 0,
+        errors: 0
+    };
+    
+    // 私有函数
+    
+    /**
+     * 简化的日志系统
+     */
+    var _logger = {
+        debug: function(msg) { 
+            if (_config.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[DEBUG] " + msg); 
+            }
+        },
+        info: function(msg) { 
+            if (_config.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[INFO] " + msg); 
+            }
+        },
+        warn: function(msg) { 
+            if (_config.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[WARN] " + msg); 
+            }
+        },
+        error: function(msg) { 
+            if (_config.enableLogging && typeof console !== "undefined" && console.log) {
+                console.log("[ERROR] " + msg); 
+            }
+        }
+    };
+    
+    /**
+     * 获取依赖模块
+     * @param {string} moduleName 模块名称
+     * @returns {Object} 模块引用
+     */
+    function _getDependency(moduleName) {
+        try {
+            // 优先使用ModuleAccessor
+            if (typeof ModuleAccessor !== "undefined" && ModuleAccessor.getModule) {
+                var module = ModuleAccessor.getModule(moduleName);
+                if (module) {
+                    return module;
+                }
+            }
+            
+            //// 备用：直接访问（构建后自动可用）
+            
+            throw new Error("Module not found: " + moduleName);
+        } catch (e) {
+            if (_logger && _logger.error) {
+                _logger.error("Failed to get dependency " + moduleName + ": " + e.message);
+            }
+            return null;
+        }
+    }
+    
+    /**
+     * 更新统计信息
+     * @param {string} operation 操作类型
+     * @param {Object} data 相关数据
+     */
+    function _updateStatistics(operation, data) {
+        switch (operation) {
+            case "create":
+                _statistics.objectsCreated++;
+                if (data && data.isMock) {
+                    _statistics.mockObjectsCreated++;
+                }
+                break;
+                
+            case "manage":
+                _statistics.objectsManaged++;
+                break;
+                
+            case "geometry":
+                _statistics.geometryCalculations++;
+                break;
+                
+            case "error":
+                _statistics.errors++;
+                break;
+        }
+    }
+    
+    /**
+     * 注册默认封装器
+     */
+    function _registerDefaultWrappers() {
+        try {
+            // 获取依赖模块
+            var ObjectFactory = _getDependency("ObjectFactory");
+            var PCBObjectWrapper = _getDependency("PCBObjectWrapper");
+            
+            if (!ObjectFactory || !PCBObjectWrapper) {
+                throw new Error("Required dependencies not available");
+            }
+            
+            // 注册PCBObjectWrapper作为默认封装器
+            ObjectFactory.registerWrapperConstructor("Default", PCBObjectWrapper);
+            
+            // 注册特定类型的封装器
+            ObjectFactory.registerWrapperConstructor("Arc", PCBObjectWrapper);
+            ObjectFactory.registerWrapperConstructor("Pad", PCBObjectWrapper);
+            ObjectFactory.registerWrapperConstructor("Track", PCBObjectWrapper);
+            ObjectFactory.registerWrapperConstructor("Via", PCBObjectWrapper);
+            ObjectFactory.registerWrapperConstructor("Board", PCBObjectWrapper);
+            ObjectFactory.registerWrapperConstructor("Text", PCBObjectWrapper);
+            ObjectFactory.registerWrapperConstructor("Coordinate", PCBObjectWrapper);
+            
+            _logger.debug("ObjectModule._registerDefaultWrappers: Default wrappers registered");
+            
+        } catch (error) {
+            _logger.error("ObjectModule._registerDefaultWrappers: " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 配置子模块
+     */
+    function _configureSubModules() {
+        try {
+            // 获取依赖模块
+            var ObjectManager = _getDependency("ObjectManager");
+            var MockSystem = _getDependency("MockSystem");
+            var PCBObjectWrapper = _getDependency("PCBObjectWrapper");
+            var GeometryWrapper = _getDependency("GeometryWrapper");
+            
+            if (!ObjectManager || !MockSystem || !PCBObjectWrapper || !GeometryWrapper) {
+                throw new Error("Required dependencies not available");
+            }
+            
+            // 配置ObjectManager
+            ObjectManager.configure({
+                enablePositionIndex: _config.enablePositionManagement,
+                enableTypeIndex: true,
+                autoCleanup: true,
+                maxObjects: 10000,
+                conflictThreshold: _config.conflictThreshold
+            });
+            
+            // 配置MockSystem
+            MockSystem.configure({
+                enableAutoId: true,
+                enableTimestamp: true,
+                defaultLayer: _config.defaultLayer,
+                defaultUnit: "mil"
+            });
+            
+            // 配置PCBObjectWrapper
+            PCBObjectWrapper.configure({
+                enablePropertyCache: true,
+                enableMethodCache: false,
+                enableAutoRefresh: false,
+                cacheTimeout: 30000,
+                enableLogging: _config.enableLogging
+            });
+            
+            // 配置GeometryWrapper
+            GeometryWrapper.configure({
+                precision: 6,
+                unit: "mil",
+                enableCache: true,
+                cacheTimeout: 10000
+            });
+            
+            _logger.debug("ObjectModule._configureSubModules: Sub-modules configured");
+            
+        } catch (error) {
+            _logger.error("ObjectModule._configureSubModules: " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 验证创建选项
+     * @param {Object} options 创建选项
+     * @returns {Object} 验证结果
+     */
+    function _validateCreateOptions(options) {
+        var result = {
+            valid: true,
+            errors: []
+        };
+        
+        if (!options || typeof options !== "object") {
+            result.valid = false;
+            result.errors.push("Options must be an object");
+            return result;
+        }
+        
+        if (!options.objectType || typeof options.objectType !== "string") {
+            result.valid = false;
+            result.errors.push("objectType is required and must be a string");
+        }
+        
+        // 获取ObjectFactory模块
+        var ObjectFactory = _getDependency("ObjectFactory");
+        if (!ObjectFactory || !ObjectFactory.isObjectTypeSupported(options.objectType)) {
+            result.valid = false;
+            result.errors.push("Unsupported object type: " + options.objectType);
+        }
+        
+        return result;
+    }
+    
+    // 公共接口 - 模块生命周期
+    
+    /**
+     * 初始化对象模块
+     * @param {Object} config 配置选项
+     * @returns {boolean} 是否成功
+     */
+    function initialize(config) {
+        _logger.debug("[ObjectModule][initialize] START - params: " + JSON.stringify(config));
+        
+        try {
+            // 合并配置
+            if (config) {
+                for (var key in config) {
+                    if (config.hasOwnProperty(key) && _config.hasOwnProperty(key)) {
+                        _config[key] = config[key];
+                    }
+                }
+            }
+            
+            // 配置子模块
+            _configureSubModules();
+            
+            // 注册默认封装器
+            if (_config.enableAutoRegistration) {
+                _registerDefaultWrappers();
+            }
+            
+            _isInitialized = true;
+            
+            _logger.info("[ObjectModule][initialize] SUCCESS - Object Module initialized");
+            return true;
+            
+        } catch (error) {
+            _logger.error("[ObjectModule][initialize] ERROR - " + error.message);
+            _updateStatistics("error");
+            throw error;
+        }
+    }
+    
+    /**
+     * 检查模块是否已初始化
+     * @returns {boolean} 是否已初始化
+     */
+    function isInitialized() {
+        return _isInitialized;
+    }
+    
+    /**
+     * 获取模块配置
+     * @returns {Object} 当前配置
+     */
+    function getConfiguration() {
+        var result = {};
+        for (var key in _config) {
+            if (_config.hasOwnProperty(key)) {
+                result[key] = _config[key];
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 配置模块
+     * @param {Object} config 配置选项
+     */
+    function configure(config) {
+        if (!config) {
+            return;
+        }
+        
+        for (var key in config) {
+            if (config.hasOwnProperty(key) && _config.hasOwnProperty(key)) {
+                _config[key] = config[key];
+            }
+        }
+        
+        // 重新配置子模块
+        if (_isInitialized) {
+            _configureSubModules();
+        }
+    }
+    
+    // 公共接口 - 对象创建
+    
+    /**
+     * 创建PCB对象
+     * @param {Object} nativeObject 原生对象
+     * @param {Object} options 选项
+     * @returns {Object} 创建的对象封装器
+     */
+    function createObject(nativeObject, options) {
+        _logger.debug("[ObjectModule][createObject] START - params: " + JSON.stringify({
+            hasNativeObject: !!nativeObject,
+            options: options
+        }));
+        
+        try {
+            if (!_isInitialized) {
+                throw new Error("ObjectModule not initialized. Call initialize() first.");
+            }
+            
+            options = options || {};
+            
+            // 验证选项
+            var validation = _validateCreateOptions(options);
+            if (!validation.valid) {
+                throw new Error("Validation failed: " + validation.errors.join(", "));
+            }
+            
+            // 获取依赖模块
+            var ObjectFactory = _getDependency("ObjectFactory");
+            var ObjectManager = _getDependency("ObjectManager");
+            
+            if (!ObjectFactory || !ObjectManager) {
+                throw new Error("Required dependencies not available");
+            }
+            
+            // 创建对象
+            var wrapper = ObjectFactory.createObject(nativeObject, options);
+            
+            // 自动注册到管理器
+            if (_config.enableAutoRegistration) {
+                var objectData = wrapper.getObjectData();
+                ObjectManager.registerObject(wrapper.getObjectId(), {
+                    objectType: objectData.objectType,
+                    wrapper: wrapper,
+                    position: wrapper.getPosition(),
+                    properties: objectData.properties
+                });
+            }
+            
+            _updateStatistics("create", {isMock: wrapper.isMock()});
+            
+            _logger.debug("[ObjectModule][createObject] SUCCESS - object created: " + options.objectType);
+            return wrapper;
+            
+        } catch (error) {
+            _logger.error("[ObjectModule][createObject] ERROR - " + error.message);
+            _updateStatistics("error");
+            throw error;
+        }
+    }
+    
+    /**
+     * 创建Mock对象
+     * @param {string} objectType 对象类型
+     * @param {Object} mockData Mock数据
+     * @returns {Object} 创建的Mock对象封装器
+     */
+    function createMock(objectType, mockData) {
+        _logger.debug("[ObjectModule][createMock] START - params: " + JSON.stringify({
+            objectType: objectType,
+            mockData: mockData
+        }));
+        
+        try {
+            if (!_isInitialized) {
+                throw new Error("ObjectModule not initialized. Call initialize() first.");
+            }
+            
+            // 获取MockSystem模块
+            var MockSystem = _getDependency("MockSystem");
+            if (!MockSystem) {
+                throw new Error("MockSystem dependency not available");
+            }
+            
+            // 创建Mock原生对象
+            var mockNativeObject = MockSystem.createMockObject(objectType, mockData);
+            
+            // 创建封装器
+            var wrapper = createObject(mockNativeObject, {
+                objectType: objectType,
+                isMock: true,
+                mockData: mockData
+            });
+            
+            _updateStatistics("create", {isMock: true});
+            
+            _logger.debug("[ObjectModule][createMock] SUCCESS - mock created: " + objectType);
+            return wrapper;
+            
+        } catch (error) {
+            _logger.error("[ObjectModule][createMock] ERROR - " + error.message);
+            _updateStatistics("error");
+            throw error;
+        }
+    }
+    
+    /**
+     * 从迭代器批量创建对象
+     * @param {Object} iterator 迭代器对象
+     * @param {string} objectType 对象类型
+     * @param {Object} options 选项
+     * @returns {Array} 创建的对象数组
+     */
+    function createFromIterator(iterator, objectType, options) {
+        _logger.debug("[ObjectModule][createFromIterator] START - params: " + JSON.stringify({
+            objectType: objectType,
+            options: options
+        }));
+        
+        try {
+            if (!_isInitialized) {
+                throw new Error("ObjectModule not initialized. Call initialize() first.");
+            }
+            
+            // 获取依赖模块
+            var ObjectFactory = _getDependency("ObjectFactory");
+            var ObjectManager = _getDependency("ObjectManager");
+            
+            if (!ObjectFactory || !ObjectManager) {
+                throw new Error("Required dependencies not available");
+            }
+            
+            options = options || {};
+            
+            // 批量创建对象
+            var wrappers = ObjectFactory.createFromIterator(iterator, objectType, options);
+            
+            // 批量注册到管理器
+            if (_config.enableAutoRegistration) {
+                for (var i = 0; i < wrappers.length; i++) {
+                    var wrapper = wrappers[i];
+                    var objectData = wrapper.getObjectData();
+                    ObjectManager.registerObject(wrapper.getObjectId(), {
+                        objectType: objectData.objectType,
+                        wrapper: wrapper,
+                        position: wrapper.getPosition(),
+                        properties: objectData.properties
+                    });
+                }
+            }
+            
+            _updateStatistics("create", {isMock: false, count: wrappers.length});
+            
+            _logger.debug("[ObjectModule][createFromIterator] SUCCESS - created " + wrappers.length + " objects");
+            return wrappers;
+            
+        } catch (error) {
+            _logger.error("[ObjectModule][createFromIterator] ERROR - " + error.message);
+            _updateStatistics("error");
+            throw error;
+        }
+    }
+    
+    /**
+     * 批量创建对象
+     * @param {Array} objectList 对象列表
+     * @returns {Object} 批量创建结果
+     */
+    function createBatch(objectList) {
+        _logger.debug("[ObjectModule][createBatch] START - params: " + JSON.stringify({
+            objectCount: objectList ? objectList.length : 0
+        }));
+        
+        try {
+            if (!_isInitialized) {
+                throw new Error("ObjectModule not initialized. Call initialize() first.");
+            }
+            
+            // 获取依赖模块
+            var ObjectFactory = _getDependency("ObjectFactory");
+            var ObjectManager = _getDependency("ObjectManager");
+            
+            if (!ObjectFactory || !ObjectManager) {
+                throw new Error("Required dependencies not available");
+            }
+            
+            // 批量创建
+            var result = ObjectFactory.createBatch(objectList);
+            
+            // 批量注册成功的对象
+            if (_config.enableAutoRegistration) {
+                for (var i = 0; i < result.success.length; i++) {
+                    var wrapper = result.success[i];
+                    var objectData = wrapper.getObjectData();
+                    ObjectManager.registerObject(wrapper.getObjectId(), {
+                        objectType: objectData.objectType,
+                        wrapper: wrapper,
+                        position: wrapper.getPosition(),
+                        properties: objectData.properties
+                    });
+                }
+            }
+            
+            _updateStatistics("create", {isMock: false, count: result.successCount});
+            
+            _logger.debug("[ObjectModule][createBatch] SUCCESS - " + result.successCount + " created, " + result.failedCount + " failed");
+            return result;
+            
+        } catch (error) {
+            _logger.error("[ObjectModule][createBatch] ERROR - " + error.message);
+            _updateStatistics("error");
+            throw error;
+        }
+    }
+    
+    // 公共接口 - 对象管理
+    
+    /**
+     * 获取对象
+     * @param {string} objectId 对象ID
+     * @returns {Object} 对象封装器
+     */
+    function getObject(objectId) {
+        if (!_isInitialized) {
+            throw new Error("ObjectModule not initialized. Call initialize() first.");
+        }
+        
+        var ObjectManager = _getDependency("ObjectManager");
+        var objectData = ObjectManager.getObject(objectId);
+        return objectData ? objectData.wrapper : null;
+    }
+    
+    /**
+     * 移除对象
+     * @param {string} objectId 对象ID
+     * @returns {boolean} 是否成功
+     */
+    function removeObject(objectId) {
+        if (!_isInitialized) {
+            throw new Error("ObjectModule not initialized. Call initialize() first.");
+        }
+        
+        var ObjectManager = _getDependency("ObjectManager");
+        return ObjectManager.removeObject(objectId);
+    }
+    
+    /**
+     * 按类型获取对象
+     * @param {string} objectType 对象类型
+     * @returns {Array} 对象封装器数组
+     */
+    function getObjectsByType(objectType) {
+        if (!_isInitialized) {
+            throw new Error("ObjectModule not initialized. Call initialize() first.");
+        }
+        
+        var ObjectManager = _getDependency("ObjectManager");
+        var objectDataList = ObjectManager.getObjectsByType(objectType);
+        var wrappers = [];
+        
+        for (var i = 0; i < objectDataList.length; i++) {
+            wrappers.push(objectDataList[i].wrapper);
+        }
+        
+        return wrappers;
+    }
+    
+    /**
+     * 按位置获取对象
+     * @param {Object} position 位置对象
+     * @param {number} radius 搜索半径
+     * @returns {Array} 对象封装器数组
+     */
+    function getObjectsByPosition(position, radius) {
+        if (!_isInitialized) {
+            throw new Error("ObjectModule not initialized. Call initialize() first.");
+        }
+        
+        var ObjectManager = _getDependency("ObjectManager");
+        var objectDataList = ObjectManager.getObjectsByPosition(position, radius);
+        var wrappers = [];
+        
+        for (var i = 0; i < objectDataList.length; i++) {
+            wrappers.push(objectDataList[i].wrapper);
+        }
+        
+        return wrappers;
+    }
+    
+    /**
+     * 获取所有对象
+     * @returns {Array} 所有对象封装器
+     */
+    function getAllObjects() {
+        if (!_isInitialized) {
+            throw new Error("ObjectModule not initialized. Call initialize() first.");
+        }
+        
+        var ObjectManager = _getDependency("ObjectManager");
+        var objectDataList = ObjectManager.getAllObjects();
+        var wrappers = [];
+        
+        for (var i = 0; i < objectDataList.length; i++) {
+            wrappers.push(objectDataList[i].wrapper);
+        }
+        
+        return wrappers;
+    }
+    
+    /**
+     * 获取对象数量
+     * @returns {number} 对象数量
+     */
+    function getObjectCount() {
+        if (!_isInitialized) {
+            throw new Error("ObjectModule not initialized. Call initialize() first.");
+        }
+        
+        var ObjectManager = _getDependency("ObjectManager");
+        return ObjectManager.getObjectCount();
+    }
+    
+    // 公共接口 - 几何计算
+    
+    /**
+     * 创建几何计算器
+     * @param {Object} wrapper 对象封装器
+     * @returns {Object} 几何计算器实例
+     */
+    function createGeometryCalculator(wrapper) {
+        if (!_isInitialized) {
+            throw new Error("ObjectModule not initialized. Call initialize() first.");
+        }
+        
+        if (!_config.enableGeometryCalculation) {
+            throw new Error("Geometry calculation is disabled");
+        }
+        
+        var GeometryWrapper = _getDependency("GeometryWrapper");
+        _updateStatistics("geometry");
+        return new GeometryWrapper(wrapper);
+    }
+    
+    /**
+     * 计算两点间距离
+     * @param {Object} point1 点1 {x, y}
+     * @param {Object} point2 点2 {x, y}
+     * @returns {number} 距离
+     */
+    function calculateDistance(point1, point2) {
+        if (!_isInitialized) {
+            throw new Error("ObjectModule not initialized. Call initialize() first.");
+        }
+        
+        if (!_config.enableGeometryCalculation) {
+            throw new Error("Geometry calculation is disabled");
+        }
+        
+        var GeometryWrapper = _getDependency("GeometryWrapper");
+        _updateStatistics("geometry");
+        return GeometryWrapper.calculateDistance(point1, point2);
+    }
+    
+    // 公共接口 - 查询和统计
+    
+    /**
+     * 获取支持的对象类型
+     * @returns {Array} 支持的类型数组
+     */
+    function getSupportedTypes() {
+        var ObjectFactory = _getDependency("ObjectFactory");
+        return ObjectFactory.getSupportedObjectTypes();
+    }
+    
+    /**
+     * 检查对象类型是否支持
+     * @param {string} objectType 对象类型
+     * @returns {boolean} 是否支持
+     */
+    function isTypeSupported(objectType) {
+        var ObjectFactory = _getDependency("ObjectFactory");
+        return ObjectFactory.isObjectTypeSupported(objectType);
+    }
+    
+    /**
+     * 获取模块统计信息
+     * @returns {Object} 统计信息
+     */
+    function getStatistics() {
+        var ObjectFactory = _getDependency("ObjectFactory");
+        var ObjectManager = _getDependency("ObjectManager");
+        var MockSystem = _getDependency("MockSystem");
+        var GeometryWrapper = _getDependency("GeometryWrapper");
+        
+        return {
+            module: {
+                initialized: _isInitialized,
+                configuration: getConfiguration(),
+                statistics: _statistics
+            },
+            factory: ObjectFactory.getFactoryStatistics(),
+            manager: ObjectManager.getStatistics(),
+            mockSystem: MockSystem.getMockStatistics(),
+            geometry: GeometryWrapper.getStatistics()
+        };
+    }
+    
+    /**
+     * 清理模块资源
+     */
+    function cleanup() {
+        _logger.debug("[ObjectModule][cleanup] START");
+        
+        try {
+            // 获取依赖模块
+            var ObjectManager = _getDependency("ObjectManager");
+            var ObjectFactory = _getDependency("ObjectFactory");
+            var MockSystem = _getDependency("MockSystem");
+            var GeometryWrapper = _getDependency("GeometryWrapper");
+            
+            // 清理子模块
+            ObjectManager.cleanup();
+            ObjectFactory.cleanup();
+            MockSystem.cleanup();
+            GeometryWrapper.clearCache();
+            
+            // 重置状态
+            _isInitialized = false;
+            _statistics = {
+                objectsCreated: 0,
+                objectsManaged: 0,
+                mockObjectsCreated: 0,
+                geometryCalculations: 0,
+                errors: 0
+            };
+            
+            _logger.info("[ObjectModule][cleanup] SUCCESS - Object Module cleaned up");
+            
+        } catch (error) {
+            _logger.error("[ObjectModule][cleanup] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    // 导出接口
+    
+    return {
+        // 生命周期方法
+        initialize: initialize,
+        isInitialized: isInitialized,
+        configure: configure,
+        getConfiguration: getConfiguration,
+        
+        // 对象创建方法
+        createObject: createObject,
+        createMock: createMock,
+        createFromIterator: createFromIterator,
+        createBatch: createBatch,
+        
+        // 对象管理方法
+        getObject: getObject,
+        removeObject: removeObject,
+        getObjectsByType: getObjectsByType,
+        getObjectsByPosition: getObjectsByPosition,
+        getAllObjects: getAllObjects,
+        getObjectCount: getObjectCount,
+        
+        // 几何计算方法
+        createGeometryCalculator: createGeometryCalculator,
+        calculateDistance: calculateDistance,
+        
+        // 查询方法
+        getSupportedTypes: getSupportedTypes,
+        isTypeSupported: isTypeSupported,
+        
+        // 统计和维护
+        getStatistics: getStatistics,
+        cleanup: cleanup,
+        
+        // 直接访问核心组件（高级用法）
+        ObjectFactory: function() { return _getDependency("ObjectFactory"); },
+        ObjectManager: function() { return _getDependency("ObjectManager"); },
+        MockSystem: function() { return _getDependency("MockSystem"); },
+        PCBObjectWrapper: function() { return _getDependency("PCBObjectWrapper"); },
+        GeometryWrapper: function() { return _getDependency("GeometryWrapper"); }
+    };
+    
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.ObjectModule = ObjectModule;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = ObjectModule;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.ObjectModule = ObjectModule;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/core/BasePCBWrapper.js
+/**
+ * BasePCBWrapper - PCB对象封装基类（双向绑定架构）
+ * 提供属性缓存、Mock支持、生命周期管理、双向绑定
+ * 100% 兼容 JScript 5.8 (ES3)
+ */
+
+var BasePCBWrapper = (function(){
+    
+    // 私有变量
+    var _moduleVersion = "2.0.0";
+    var _defaultOptions = {
+        moduleName: "BasePCBWrapper",
+        autoInit: false,
+        autoTime: true,
+        debugMode: false,
+        enableCache: true,
+        enableMock: false,
+        enableDirectAccess: true,  // 启用直接访问原生对象
+        syncMode: "auto"            // 同步模式: "auto", "manual", "realtime"
+    };
+    
+    // 私有工具函数
+    function _mergeOptions(userOptions, defaults) {
+        var result = {};
+        var key;
+        
+        // 复制默认值
+        for (key in defaults) {
+            if (defaults.hasOwnProperty(key)) {
+                result[key] = defaults[key];
+            }
+        }
+        
+        // 覆盖用户值
+        for (key in userOptions) {
+            if (userOptions.hasOwnProperty(key)) {
+                result[key] = userOptions[key];
+            }
+        }
+        
+        return result;
+    }
+    
+    function _createHooks() {
+        return {
+            onBeforeInit: null,
+            onAfterInit: null,
+            onBeforeRun: null,
+            onAfterRun: null,
+            onBeforeDestroy: null,
+            onAfterDestroy: null,
+            onBeforePropertyAccess: null,
+            onAfterPropertyAccess: null,
+            onBeforeSync: null,
+            onAfterSync: null,
+            onBeforeNativeAccess: null,
+            onAfterNativeAccess: null
+        };
+    }
+    
+    function _createState() {
+        return {
+            initialized: false,
+            running: false,
+            destroyed: false,
+            errorCount: 0,
+            lastError: null,
+            cacheHits: 0,
+            cacheMisses: 0,
+            syncCount: 0,
+            nativeAccessCount: 0
+        };
+    }
+    
+    function _createContext() {
+        return {
+            startTime: null,
+            endTime: null,
+            executionTime: 0,
+            lastSyncTime: null,
+            creationTime: new Date()
+        };
+    }
+    
+    function _executeHook(hook, instance, data) {
+        if (hook && typeof hook === "function") {
+            try {
+                return hook(instance, data);
+            } catch (error) {
+                // 记录Hook执行错误
+                if (instance.logger && instance.logger.error) {
+                    instance.logger.error("[BasePCBWrapper][index.js][_executeHook] Hook execution failed: " + error.message);
+                }
+                return null;
+            }
+        }
+        return null;
+    }
+    
+    // 可重写的核心方法（子模块重写这些）
+    function _performInitialization(inst) {
+        // 子模块重写此方法实现具体初始化
+        return true;
+    }
+    
+    function _executeMainLogic(inst) {
+        // 子模块重写此方法实现主要逻辑
+        return {
+            success: true,
+            message: "BasePCBWrapper executed successfully",
+            data: null,
+            time: inst.context.executionTime
+        };
+    }
+    
+    function _performDestroy(inst) {
+        // 子模块重写此方法实现资源清理
+        return true;
+    }
+    
+    function _extractSpecificProperties(inst) {
+        // 子模块重写此方法提取特定属性
+        // 默认实现：提取基础属性
+        if (inst.nativeObject) {
+            inst.cachedProperties.ObjectId = inst.nativeObject.ObjectId;
+            inst.cachedProperties.I_ObjectAddress = inst.nativeObject.I_ObjectAddress;
+            inst.cachedProperties.V6_LayerID = inst.nativeObject.V6_LayerID;
+            inst.cachedProperties.V7_LayerID = inst.nativeObject.V7_LayerID;
+            inst.cachedProperties.LayerStack = inst.nativeObject.LayerStack;
+        }
+    }
+    
+    function _syncPropertiesToNative(inst) {
+        // 子模块重写此方法同步属性到原生对象
+        // 默认实现：同步基础属性
+        if (inst.nativeObject && inst.isDirty) {
+            // 这里可以添加基础属性同步逻辑
+            inst.isDirty = false;
+            return true;
+        }
+        return true;
+    }
+    
+    // 公有API函数
+    function create(userOptions) {
+        var options = _mergeOptions(userOptions || {}, _defaultOptions);
+        
+        var instance = {
+            // 配置选项
+            options: options,
+            
+            // 运行状态
+            state: _createState(),
+            
+            // 执行上下文
+            context: _createContext(),
+            
+            // Hook系统
+            hooks: _createHooks(),
+            
+            // PCB对象特有属性
+            nativeObject: options.nativeObject || null,  // AD原生对象引用
+            cachedProperties: {},                        // 属性缓存
+            isDirty: false,                             // 是否需要同步
+            objectType: options.objectType || "unknown", // 对象类型标识
+            
+            // Mock支持
+            isMock: options.isMock || false,
+            mockData: options.mockData || {},
+            
+            // 生命周期方法
+            init: function() { return init(instance); },
+            run: function() { return run(instance); },
+            destroy: function() { return destroy(instance); },
+            
+            // 内部方法引用（子模块可重写）
+            _performInitialization: function() { return _performInitialization(instance); },
+            _executeMainLogic: function() { return _executeMainLogic(instance); },
+            _performDestroy: function() { return _performDestroy(instance); },
+            _extractSpecificProperties: function() { return _extractSpecificProperties(instance); },
+            _syncPropertiesToNative: function() { return _syncPropertiesToNative(instance); },
+            
+            // 属性访问方法（双向绑定）
+            getProperty: function(propertyName) { return getProperty(instance, propertyName); },
+            setProperty: function(propertyName, value) { return setProperty(instance, propertyName, value); },
+            hasProperty: function(propertyName) { return hasProperty(instance, propertyName); },
+            getAllProperties: function() { return getAllProperties(instance); },
+            
+            // 直接访问原生对象方法
+            getNativeProperty: function(propertyName) { return getNativeProperty(instance, propertyName); },
+            setNativeProperty: function(propertyName, value) { return setNativeProperty(instance, propertyName, value); },
+            callNativeMethod: function(methodName) { 
+                var args = Array.prototype.slice.call(arguments, 1);
+                return callNativeMethod.apply(null, [instance, methodName].concat(args)); 
+            },
+            
+            // 缓存管理方法
+            clearCache: function() { return clearCache(instance); },
+            getCacheStats: function() { return getCacheStats(instance); },
+            
+            // 同步方法
+            syncToNative: function() { return syncToNative(instance); },
+            syncFromNative: function() { return syncFromNative(instance); },
+            isSyncNeeded: function() { return isSyncNeeded(instance); },
+            
+            // 对象标识方法
+            getObjectId: function() { return getObjectId(instance); },
+            getObjectType: function() { return getObjectType(instance); },
+            isMockObject: function() { return isMockObject(instance); },
+            getNativeObject: function() { return getNativeObject(instance); },
+            
+            // Mock数据访问方法
+            getMockData: function() { return getMockData(instance); },
+            isMockMode: function() { return isMockMode(instance); },
+            
+            // 调试方法
+            getDebugInfo: function() { return getDebugInfo(instance); },
+            validateState: function() { return validateState(instance); }
+        };
+        
+        // 创建日志记录器（延迟初始化，避免循环依赖）
+        instance.logger = null;
+        
+        // 自动初始化
+        if (options.autoInit) {
+            init(instance);
+        }
+        
+        return instance;
+    }
+    
+    function init(instance) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][init] Instance is required");
+        }
+        
+        if (instance.state.initialized) {
+            if (instance.logger && instance.logger.warn) {
+                instance.logger.warn("[BasePCBWrapper][index.js][init] Module already initialized");
+            }
+            return true;
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeInit, instance);
+            
+            // 设置开始时间
+            if (instance.options.autoTime) {
+                instance.context.startTime = new Date();
+            }
+            
+            // 验证前置条件
+            if (!instance.isMock && !instance.nativeObject) {
+                throw new Error("[BasePCBWrapper][index.js][init] Native PCB object is required for non-mock objects");
+            }
+            
+            // 执行具体初始化
+            var initResult = instance._performInitialization();
+            
+            if (initResult) {
+                // 一次性提取并缓存所有属性
+                if (instance.options.enableCache) {
+                    instance._extractSpecificProperties();
+                }
+                
+                instance.state.initialized = true;
+                
+                // 执行After Hook
+                _executeHook(instance.hooks.onAfterInit, instance);
+                
+                if (instance.logger && instance.logger.info) {
+                    instance.logger.info("[BasePCBWrapper][index.js][init] Module initialized successfully: " + instance.options.moduleName + 
+                                        ", Type: " + instance.objectType + 
+                                        ", Mock: " + instance.isMock +
+                                        ", DirectAccess: " + instance.options.enableDirectAccess);
+                }
+                
+                return true;
+            } else {
+                throw new Error("[BasePCBWrapper][index.js][init] Initialization failed");
+            }
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][init] Initialization error: " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    function run(instance) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][run] Instance is required");
+        }
+        
+        if (!instance.state.initialized) {
+            throw new Error("[BasePCBWrapper][index.js][run] Module not initialized");
+        }
+        
+        if (instance.state.running) {
+            if (instance.logger && instance.logger.warn) {
+                instance.logger.warn("[BasePCBWrapper][index.js][run] Module already running");
+            }
+            return null;
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeRun, instance);
+            
+            // 设置运行状态
+            instance.state.running = true;
+            
+            // 设置开始时间
+            if (instance.options.autoTime) {
+                instance.context.startTime = new Date();
+            }
+            
+            // 执行主要逻辑
+            var result = instance._executeMainLogic();
+            
+            // 设置结束时间和执行时间
+            if (instance.options.autoTime && instance.context.startTime) {
+                instance.context.endTime = new Date();
+                instance.context.executionTime = instance.context.endTime.getTime() - instance.context.startTime.getTime();
+                
+                if (result) {
+                    result.time = instance.context.executionTime;
+                }
+            }
+            
+            // 执行After Hook
+            _executeHook(instance.hooks.onAfterRun, instance, result);
+            
+            if (instance.logger && instance.logger.info) {
+                instance.logger.info("[BasePCBWrapper][index.js][run] Module executed successfully: " + instance.options.moduleName + " (" + instance.context.executionTime + "ms)");
+            }
+            
+            return result;
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][run] Execution error: " + error.message);
+            }
+            
+            throw error;
+        } finally {
+            instance.state.running = false;
+        }
+    }
+    
+    function destroy(instance) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][destroy] Instance is required");
+        }
+        
+        if (instance.state.destroyed) {
+            if (instance.logger && instance.logger.warn) {
+                instance.logger.warn("[BasePCBWrapper][index.js][destroy] Module already destroyed");
+            }
+            return true;
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeDestroy, instance);
+            
+            // 同步到原生对象（如果需要）
+            if (instance.isSyncNeeded()) {
+                instance.syncToNative();
+            }
+            
+            // 执行具体销毁逻辑
+            var destroyResult = instance._performDestroy();
+            
+            if (destroyResult) {
+                // 清理状态
+                instance.state.destroyed = true;
+                instance.state.initialized = false;
+                instance.state.running = false;
+                
+                // 清理上下文
+                instance.context.startTime = null;
+                instance.context.endTime = null;
+                instance.context.executionTime = 0;
+                instance.context.lastSyncTime = null;
+                
+                // 清理缓存
+                instance.cachedProperties = {};
+                
+                // 清理Hook
+                instance.hooks.onBeforeInit = null;
+                instance.hooks.onAfterInit = null;
+                instance.hooks.onBeforeRun = null;
+                instance.hooks.onAfterRun = null;
+                instance.hooks.onBeforeDestroy = null;
+                instance.hooks.onAfterDestroy = null;
+                instance.hooks.onBeforePropertyAccess = null;
+                instance.hooks.onAfterPropertyAccess = null;
+                instance.hooks.onBeforeSync = null;
+                instance.hooks.onAfterSync = null;
+                instance.hooks.onBeforeNativeAccess = null;
+                instance.hooks.onAfterNativeAccess = null;
+                
+                // 清理原生对象引用
+                instance.nativeObject = null;
+                
+                // 执行After Hook
+                _executeHook(instance.hooks.onAfterDestroy, instance);
+                
+                if (instance.logger && instance.logger.info) {
+                    instance.logger.info("[BasePCBWrapper][index.js][destroy] Module destroyed successfully: " + instance.options.moduleName);
+                }
+                
+                return true;
+            } else {
+                throw new Error("[BasePCBWrapper][index.js][destroy] Destruction failed");
+            }
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][destroy] Destruction error: " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    // 属性访问方法（双向绑定）
+    function getProperty(instance, propertyName) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][getProperty] Instance is required");
+        }
+        
+        if (!instance.state.initialized) {
+            throw new Error("[BasePCBWrapper][index.js][getProperty] Module not initialized");
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforePropertyAccess, instance, { propertyName: propertyName, operation: "get" });
+            
+            var value;
+            
+            if (instance.options.enableCache && instance.cachedProperties.hasOwnProperty(propertyName)) {
+                // 从缓存获取
+                value = instance.cachedProperties[propertyName];
+                instance.state.cacheHits++;
+                
+                if (instance.logger && instance.logger.debug) {
+                    instance.logger.debug("[BasePCBWrapper][index.js][getProperty] Cache hit for property: " + propertyName);
+                }
+            } else {
+                // 从原生对象获取（如果不是Mock）
+                if (!instance.isMock && instance.nativeObject && instance.nativeObject[propertyName] !== undefined) {
+                    value = instance.nativeObject[propertyName];
+                    
+                    // 缓存属性值
+                    if (instance.options.enableCache) {
+                        instance.cachedProperties[propertyName] = value;
+                    }
+                    
+                    instance.state.cacheMisses++;
+                    
+                    if (instance.logger && instance.logger.debug) {
+                        instance.logger.debug("[BasePCBWrapper][index.js][getProperty] Cache miss, fetched from native object: " + propertyName);
+                    }
+                } else if (instance.isMock && instance.mockData && instance.mockData[propertyName] !== undefined) {
+                    // 从Mock数据获取
+                    value = instance.mockData[propertyName];
+                    
+                    // 缓存属性值
+                    if (instance.options.enableCache) {
+                        instance.cachedProperties[propertyName] = value;
+                    }
+                    
+                    instance.state.cacheMisses++;
+                    
+                    if (instance.logger && instance.logger.debug) {
+                        instance.logger.debug("[BasePCBWrapper][index.js][getProperty] Mock data for property: " + propertyName);
+                    }
+                } else {
+                    // 属性不存在
+                    value = undefined;
+                }
+            }
+            
+            // 执行After Hook
+            _executeHook(instance.hooks.onAfterPropertyAccess, instance, { propertyName: propertyName, operation: "get", value: value });
+            
+            return value;
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][getProperty] Error getting property '" + propertyName + "': " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    function setProperty(instance, propertyName, value) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][setProperty] Instance is required");
+        }
+        
+        if (!instance.state.initialized) {
+            throw new Error("[BasePCBWrapper][index.js][setProperty] Module not initialized");
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforePropertyAccess, instance, { propertyName: propertyName, operation: "set", value: value });
+            
+            // 设置缓存值
+            if (instance.options.enableCache) {
+                instance.cachedProperties[propertyName] = value;
+            }
+            
+            // 根据同步模式处理
+            if (instance.options.syncMode === "realtime" && !instance.isMock && instance.nativeObject) {
+                // 实时同步：直接设置到原生对象
+                instance.nativeObject[propertyName] = value;
+            } else {
+                // 标记为需要同步
+                instance.isDirty = true;
+            }
+            
+            // 如果是Mock对象，同时更新Mock数据
+            if (instance.isMock) {
+                if (!instance.mockData) {
+                    instance.mockData = {};
+                }
+                instance.mockData[propertyName] = value;
+            }
+            
+            // 执行After Hook
+            _executeHook(instance.hooks.onAfterPropertyAccess, instance, { propertyName: propertyName, operation: "set", value: value });
+            
+            if (instance.logger && instance.logger.debug) {
+                instance.logger.debug("[BasePCBWrapper][index.js][setProperty] Property set: " + propertyName + " = " + JSON.stringify(value) + 
+                                    ", SyncMode: " + instance.options.syncMode);
+            }
+            
+            return true;
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][setProperty] Error setting property '" + propertyName + "': " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    // 直接访问原生对象方法
+    function getNativeProperty(instance, propertyName) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][getNativeProperty] Instance is required");
+        }
+        
+        if (!instance.options.enableDirectAccess) {
+            throw new Error("[BasePCBWrapper][index.js][getNativeProperty] Direct access is disabled");
+        }
+        
+        if (instance.isMock || !instance.nativeObject) {
+            throw new Error("[BasePCBWrapper][index.js][getNativeProperty] Native object not available");
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeNativeAccess, instance, { propertyName: propertyName, operation: "get" });
+            
+            var value = instance.nativeObject[propertyName];
+            instance.state.nativeAccessCount++;
+            
+            // 执行After Hook
+            _executeHook(instance.hooks.onAfterNativeAccess, instance, { propertyName: propertyName, operation: "get", value: value });
+            
+            if (instance.logger && instance.logger.debug) {
+                instance.logger.debug("[BasePCBWrapper][index.js][getNativeProperty] Direct native access: " + propertyName);
+            }
+            
+            return value;
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][getNativeProperty] Error accessing native property '" + propertyName + "': " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    function setNativeProperty(instance, propertyName, value) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][setNativeProperty] Instance is required");
+        }
+        
+        if (!instance.options.enableDirectAccess) {
+            throw new Error("[BasePCBWrapper][index.js][setNativeProperty] Direct access is disabled");
+        }
+        
+        if (instance.isMock || !instance.nativeObject) {
+            throw new Error("[BasePCBWrapper][index.js][setNativeProperty] Native object not available");
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeNativeAccess, instance, { propertyName: propertyName, operation: "set", value: value });
+            
+            instance.nativeObject[propertyName] = value;
+            instance.state.nativeAccessCount++;
+            
+            // 更新缓存
+            if (instance.options.enableCache) {
+                instance.cachedProperties[propertyName] = value;
+            }
+            
+            // 执行After Hook
+            _executeHook(instance.hooks.onAfterNativeAccess, instance, { propertyName: propertyName, operation: "set", value: value });
+            
+            if (instance.logger && instance.logger.debug) {
+                instance.logger.debug("[BasePCBWrapper][index.js][setNativeProperty] Direct native modification: " + propertyName + " = " + JSON.stringify(value));
+            }
+            
+            return true;
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][setNativeProperty] Error setting native property '" + propertyName + "': " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    function callNativeMethod(instance, methodName) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][callNativeMethod] Instance is required");
+        }
+        
+        if (!instance.options.enableDirectAccess) {
+            throw new Error("[BasePCBWrapper][index.js][callNativeMethod] Direct access is disabled");
+        }
+        
+        if (instance.isMock || !instance.nativeObject) {
+            throw new Error("[BasePCBWrapper][index.js][callNativeMethod] Native object not available");
+        }
+        
+        if (!instance.nativeObject[methodName] || typeof instance.nativeObject[methodName] !== "function") {
+            throw new Error("[BasePCBWrapper][index.js][callNativeMethod] Method '" + methodName + "' not found or not a function");
+        }
+        
+        try {
+            // 执行Before Hook
+            var args = Array.prototype.slice.call(arguments, 2);
+            _executeHook(instance.hooks.onBeforeNativeAccess, instance, { methodName: methodName, operation: "call", args: args });
+            
+            var result = instance.nativeObject[methodName].apply(instance.nativeObject, args);
+            instance.state.nativeAccessCount++;
+            
+            // 执行After Hook
+            _executeHook(instance.hooks.onAfterNativeAccess, instance, { methodName: methodName, operation: "call", result: result });
+            
+            if (instance.logger && instance.logger.debug) {
+                instance.logger.debug("[BasePCBWrapper][index.js][callNativeMethod] Direct native method call: " + methodName + "(" + JSON.stringify(args) + ")");
+            }
+            
+            return result;
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][callNativeMethod] Error calling native method '" + methodName + "': " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    function hasProperty(instance, propertyName) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][hasProperty] Instance is required");
+        }
+        
+        if (!instance.state.initialized) {
+            throw new Error("[BasePCBWrapper][index.js][hasProperty] Module not initialized");
+        }
+        
+        // 检查缓存
+        if (instance.options.enableCache && instance.cachedProperties.hasOwnProperty(propertyName)) {
+            return true;
+        }
+        
+        // 检查原生对象
+        if (!instance.isMock && instance.nativeObject && instance.nativeObject[propertyName] !== undefined) {
+            return true;
+        }
+        
+        // 检查Mock数据
+        if (instance.isMock && instance.mockData && instance.mockData[propertyName] !== undefined) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    function getAllProperties(instance) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][getAllProperties] Instance is required");
+        }
+        
+        if (!instance.state.initialized) {
+            throw new Error("[BasePCBWrapper][index.js][getAllProperties] Module not initialized");
+        }
+        
+        return instance.cachedProperties;
+    }
+    
+    // 缓存管理方法
+    function clearCache(instance) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][clearCache] Instance is required");
+        }
+        
+        instance.cachedProperties = {};
+        instance.state.cacheHits = 0;
+        instance.state.cacheMisses = 0;
+        
+        if (instance.logger && instance.logger.info) {
+            instance.logger.info("[BasePCBWrapper][index.js][clearCache] Cache cleared");
+        }
+        
+        return true;
+    }
+    
+    function getCacheStats(instance) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][getCacheStats] Instance is required");
+        }
+        
+        var total = instance.state.cacheHits + instance.state.cacheMisses;
+        var hitRate = total > 0 ? (instance.state.cacheHits / total * 100).toFixed(2) : 0;
+        
+        return {
+            hits: instance.state.cacheHits,
+            misses: instance.state.cacheMisses,
+            total: total,
+            hitRate: parseFloat(hitRate),
+            cacheSize: Object.keys(instance.cachedProperties).length
+        };
+    }
+    
+    // 同步方法
+    function syncToNative(instance) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][syncToNative] Instance is required");
+        }
+        
+        if (!instance.state.initialized) {
+            throw new Error("[BasePCBWrapper][index.js][syncToNative] Module not initialized");
+        }
+        
+        if (instance.isMock || !instance.nativeObject || !instance.isDirty) {
+            return true;
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeSync, instance);
+            
+            // 执行具体同步逻辑
+            var syncResult = instance._syncPropertiesToNative();
+            
+            if (syncResult) {
+                instance.isDirty = false;
+                instance.state.syncCount++;
+                instance.context.lastSyncTime = new Date();
+                
+                // 执行After Hook
+                _executeHook(instance.hooks.onAfterSync, instance);
+                
+                if (instance.logger && instance.logger.debug) {
+                    instance.logger.debug("[BasePCBWrapper][index.js][syncToNative] Properties synchronized to native object");
+                }
+                
+                return true;
+            } else {
+                throw new Error("[BasePCBWrapper][index.js][syncToNative] Synchronization failed");
+            }
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][syncToNative] Synchronization error: " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    function syncFromNative(instance) {
+        if (!instance) {
+            throw new Error("[BasePCBWrapper][index.js][syncFromNative] Instance is required");
+        }
+        
+        if (!instance.state.initialized) {
+            throw new Error("[BasePCBWrapper][index.js][syncFromNative] Module not initialized");
+        }
+        
+        if (instance.isMock || !instance.nativeObject) {
+            return true;
+        }
+        
+        try {
+            // 执行Before Hook
+            _executeHook(instance.hooks.onBeforeSync, instance);
+            
+            // 重新提取属性
+            instance._extractSpecificProperties();
+            
+            // 执行After Hook
+            _executeHook(instance.hooks.onAfterSync, instance);
+            
+            if (instance.logger && instance.logger.debug) {
+                instance.logger.debug("[BasePCBWrapper][index.js][syncFromNative] Properties synchronized from native object");
+            }
+            
+            return true;
+            
+        } catch (error) {
+            instance.state.errorCount++;
+            instance.state.lastError = error;
+            
+            if (instance.logger && instance.logger.error) {
+                instance.logger.error("[BasePCBWrapper][index.js][syncFromNative] Synchronization error: " + error.message);
+            }
+            
+            throw error;
+        }
+    }
+    
+    function isSyncNeeded(instance) {
+        if (!instance) {
+            return false;
+        }
+        
+        return !instance.isMock && instance.nativeObject && instance.isDirty;
+    }
+    
+    // 对象标识方法
+    function getObjectId(instance) {
+        if (!instance) {
+            return null;
+        }
+        
+        return instance.getProperty("ObjectId");
+    }
+    
+    function getObjectType(instance) {
+        if (!instance) {
+            return null;
+        }
+        
+        return instance.objectType;
+    }
+    
+    function isMockObject(instance) {
+        if (!instance) {
+            return false;
+        }
+        
+        return instance.isMock;
+    }
+    
+    function getNativeObject(instance) {
+        if (!instance) {
+            return null;
+        }
+        
+        return instance.nativeObject;
+    }
+    
+    // Mock数据访问方法
+    function getMockData(instance) {
+        if (!instance) {
+            return null;
+        }
+        
+        return instance.mockData || {};
+    }
+    
+    function isMockMode(instance) {
+        if (!instance) {
+            return false;
+        }
+        
+        return instance.isMock;
+    }
+    
+    // 调试方法
+    function getDebugInfo(instance) {
+        if (!instance) {
+            return null;
+        }
+        
+        return {
+            moduleName: instance.options.moduleName,
+            objectType: instance.objectType,
+            isMock: instance.isMock,
+            isInitialized: instance.state.initialized,
+            isRunning: instance.state.running,
+            isDestroyed: instance.state.destroyed,
+            isDirty: instance.isDirty,
+            errorCount: instance.state.errorCount,
+            lastError: instance.state.lastError ? instance.state.lastError.message : null,
+            cacheStats: getCacheStats(instance),
+            syncCount: instance.state.syncCount,
+            nativeAccessCount: instance.state.nativeAccessCount,
+            creationTime: instance.context.creationTime,
+            lastSyncTime: instance.context.lastSyncTime,
+            executionTime: instance.context.executionTime,
+            syncMode: instance.options.syncMode,
+            enableDirectAccess: instance.options.enableDirectAccess
+        };
+    }
+    
+    function validateState(instance) {
+        if (!instance) {
+            return { valid: false, errors: ["Instance is null"] };
+        }
+        
+        var errors = [];
+        
+        if (!instance.state.initialized) {
+            errors.push("Module not initialized");
+        }
+        
+        if (instance.state.destroyed) {
+            errors.push("Module is destroyed");
+        }
+        
+        if (!instance.isMock && !instance.nativeObject) {
+            errors.push("Native object is required for non-mock objects");
+        }
+        
+        if (instance.state.errorCount > 10) {
+            errors.push("Too many errors: " + instance.state.errorCount);
+        }
+        
+        return {
+            valid: errors.length === 0,
+            errors: errors
+        };
+    }
+    
+    return {
+        create: create,
+        init: init,
+        run: run,
+        destroy: destroy,
+        
+        // 版本信息
+        version: _moduleVersion,
+        
+        // 默认选项（供参考）
+        defaultOptions: _defaultOptions
+    };
+})();
+
+// AD环境兼容性导出
+if (typeof window !== "undefined") {
+    window.BasePCBWrapper = BasePCBWrapper;
+}
+
+
+// File: src/modules/pcb-interfaces/core/PCBMockSystem.js
+/**
+ * PCBMockSystem - PCB对象Mock系统
+ * 提供完整的Mock对象创建和管理功能
+ * 100% 兼容 JScript 5.8 (ES3)
+ */
+
+var PCBMockSystem = (function(){
+    
+    // 私有变量
+    var _moduleVersion = "1.0.0";
+    var _mockObjects = {};
+    var _mockDataTemplates = {};
+    var _objectIdCounter = 1000;
+    
+    // 私有工具函数
+    function _generateMockId() {
+        _objectIdCounter++;
+        return "MOCK_" + _objectIdCounter;
+    }
+    
+    function _mergeMockData(templateData, userData) {
+        var result = {};
+        var key;
+        
+        // 复制模板数据
+        if (templateData) {
+            for (key in templateData) {
+                if (templateData.hasOwnProperty(key)) {
+                    result[key] = templateData[key];
+                }
+            }
+        }
+        
+        // 覆盖用户数据
+        if (userData) {
+            for (key in userData) {
+                if (userData.hasOwnProperty(key)) {
+                    result[key] = userData[key];
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    function _createMockLogger() {
+        return {
+            debug: function(message) {
+                // Mock环境下的简单日志输出
+                try {
+                    if (typeof console !== "undefined" && console.log) {
+                        console.log("[MOCK] " + message);
+                    }
+                } catch (e) {
+                    // 忽略日志错误
+                }
+            },
+            info: function(message) {
+                try {
+                    if (typeof console !== "undefined" && console.log) {
+                        console.log("[MOCK INFO] " + message);
+                    }
+                } catch (e) {
+                    // 忽略日志错误
+                }
+            },
+            warn: function(message) {
+                try {
+                    if (typeof console !== "undefined" && console.warn) {
+                        console.warn("[MOCK WARN] " + message);
+                    }
+                } catch (e) {
+                    // 忽略日志错误
+                }
+            },
+            error: function(message) {
+                try {
+                    if (typeof console !== "undefined" && console.error) {
+                        console.error("[MOCK ERROR] " + message);
+                    }
+                } catch (e) {
+                    // 忽略日志错误
+                }
+            }
+        };
+    }
+    
+    // 初始化Mock数据模板
+    function _initializeMockDataTemplates() {
+        // Arc对象模板
+        _mockDataTemplates.Arc = {
+            ObjectId: eArcObject,
+            I_ObjectAddress: "MOCK_ARC_ADDRESS",
+            V6_LayerID: eTopLayer,
+            V7_LayerID: eTopLayer,
+            LayerStack: null,
+            X1: 0,
+            Y1: 0,
+            X2: 1000,
+            Y2: 1000,
+            Radius: 500,
+            StartAngle: 0,
+            EndAngle: 90,
+            LineWidth: 100,
+            Color: 0xFF0000
+        };
+        
+        // Pad对象模板
+        _mockDataTemplates.Pad = {
+            ObjectId: ePadObject,
+            I_ObjectAddress: "MOCK_PAD_ADDRESS",
+            V6_LayerID: eTopLayer,
+            V7_LayerID: eTopLayer,
+            LayerStack: null,
+            X: 0,
+            Y: 0,
+            Size: { X: 1000, Y: 1000 },
+            HoleSize: { X: 500, Y: 500 },
+            TopShape: eRounded,
+            MidShape: eRounded,
+            BottomShape: eRounded,
+            DrillShape: eRounded,
+            TopX: 1000,
+            TopY: 1000,
+            MidX: 1000,
+            MidY: 1000,
+            BottomX: 1000,
+            BottomY: 1000,
+            HoleX: 500,
+            HoleY: 500,
+            Rotation: 0,
+            Plated: true,
+            Name: "MockPad",
+            Designator: "P1"
+        };
+        
+        // Track对象模板
+        _mockDataTemplates.Track = {
+            ObjectId: eTrackObject,
+            I_ObjectAddress: "MOCK_TRACK_ADDRESS",
+            V6_LayerID: eTopLayer,
+            V7_LayerID: eTopLayer,
+            LayerStack: null,
+            X1: 0,
+            Y1: 0,
+            X2: 5000,
+            Y2: 0,
+            Width: 100,
+            Net: null,
+            StartShape: eRound,
+            EndShape: eRound
+        };
+        
+        // Via对象模板
+        _mockDataTemplates.Via = {
+            ObjectId: eViaObject,
+            I_ObjectAddress: "MOCK_VIA_ADDRESS",
+            V6_LayerID: eTopLayer,
+            V7_LayerID: eTopLayer,
+            LayerStack: null,
+            X: 0,
+            Y: 0,
+            Size: 1000,
+            HoleSize: 500,
+            HighLayer: eBottomLayer,
+            LowLayer: eTopLayer,
+            Net: null,
+            Plated: true
+        };
+        
+        // BoardOutline对象模板
+        _mockDataTemplates.BoardOutline = {
+            ObjectId: eBoardOutlineObject,
+            I_ObjectAddress: "MOCK_BOARDOUTLINE_ADDRESS",
+            V6_LayerID: eMechanicalLayer1,
+            V7_LayerID: eMechanicalLayer1,
+            LayerStack: null,
+            Width: 1000,
+            Closed: true
+        };
+        
+        // SignalLayer对象模板
+        _mockDataTemplates.SignalLayer = {
+            ObjectId: eSignalLayerObject,
+            I_ObjectAddress: "MOCK_SIGNALLAYER_ADDRESS",
+            V6_LayerID: eTopLayer,
+            V7_LayerID: eTopLayer,
+            LayerStack: null,
+            Name: "Top Layer",
+            UsedByPrims: true,
+            CopperThickness: 1750,
+            ComponentPlacement: true
+        };
+        
+        // MechanicalLayer对象模板
+        _mockDataTemplates.MechanicalLayer = {
+            ObjectId: eMechanicalLayerObject,
+            I_ObjectAddress: "MOCK_MECHLAYER_ADDRESS",
+            V6_LayerID: eMechanicalLayer1,
+            V7_LayerID: eMechanicalLayer1,
+            LayerStack: null,
+            Name: "Mechanical Layer 1",
+            UsedByPrims: false,
+            MechanicalLayerEnabled: true,
+            DisplayInSingleLayerMode: true,
+            LinkToSheet: false
+        };
+        
+        // DielectricLayer对象模板
+        _mockDataTemplates.DielectricLayer = {
+            ObjectId: eDielectricLayerObject,
+            I_ObjectAddress: "MOCK_DIELECTRIC_ADDRESS",
+            V6_LayerID: eDielectricLayer1,
+            V7_LayerID: eDielectricLayer1,
+            LayerStack: null,
+            Name: "Dielectric Layer 1",
+            UsedByPrims: false,
+            DielectricMaterial: "FR-4",
+            DielectricType: eCore,
+            DielectricConstant: 4.5,
+            DielectricHeight: 1600
+        };
+        
+        // InternalPlane对象模板
+        _mockDataTemplates.InternalPlane = {
+            ObjectId: eInternalPlaneObject,
+            I_ObjectAddress: "MOCK_INTERNALPLANE_ADDRESS",
+            V6_LayerID: eInternalPlane1,
+            V7_LayerID: eInternalPlane1,
+            LayerStack: null,
+            Name: "Internal Plane 1",
+            UsedByPrims: true,
+            CopperThickness: 1750,
+            PullBackDistance: 2000,
+            NetName: "GND"
+        };
+    }
+    
+    // 公有API函数
+    function createMockObject(objectType, mockData) {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][createMockObject] START - Creating mock object of type: " + objectType + 
+                   ", mockData: " + JSON.stringify(mockData));
+        
+        try {
+            // 确保模板已初始化
+            if (Object.keys(_mockDataTemplates).length === 0) {
+                _initializeMockDataTemplates();
+            }
+            
+            // 获取模板数据
+            var templateData = _mockDataTemplates[objectType];
+            if (!templateData) {
+                throw new Error("[PCBMockSystem][index.js][createMockObject] Unknown object type: " + objectType);
+            }
+            
+            // 合并模板数据和用户数据
+            var mergedData = _mergeMockData(templateData, mockData);
+            
+            // 创建Mock对象
+            var mockObject = {
+                // 基础属性
+                _mockId: _generateMockId(),
+                _mockType: objectType,
+                _mockData: mergedData,
+                
+                // 动态属性访问
+                GetProperty: function(propertyName) {
+                    return this._mockData[propertyName];
+                },
+                
+                SetProperty: function(propertyName, value) {
+                    this._mockData[propertyName] = value;
+                },
+                
+                // 模拟AD对象接口
+                toString: function() {
+                    return "[Mock " + this._mockType + " Object]";
+                }
+            };
+            
+            // 动态添加所有属性
+            var key;
+            for (key in mergedData) {
+                if (mergedData.hasOwnProperty(key)) {
+                    (function(propName) {
+                        Object.defineProperty(mockObject, propName, {
+                            get: function() {
+                                return mockObject._mockData[propName];
+                            },
+                            set: function(value) {
+                                mockObject._mockData[propName] = value;
+                            },
+                            enumerable: true,
+                            configurable: true
+                        });
+                    })(key);
+                }
+            }
+            
+            // 存储Mock对象
+            _mockObjects[mockObject._mockId] = mockObject;
+            
+            logger.debug("[PCBMockSystem][index.js][createMockObject] SUCCESS - Mock object created with ID: " + mockObject._mockId);
+            
+            return mockObject;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][createMockObject] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function getMockObject(mockId) {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][getMockObject] START - Getting mock object with ID: " + mockId);
+        
+        try {
+            var mockObject = _mockObjects[mockId];
+            
+            if (!mockObject) {
+                logger.warn("[PCBMockSystem][index.js][getMockObject] Mock object not found: " + mockId);
+                return null;
+            }
+            
+            logger.debug("[PCBMockSystem][index.js][getMockObject] SUCCESS - Mock object found: " + mockObject._mockType);
+            
+            return mockObject;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][getMockObject] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function removeMockObject(mockId) {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][removeMockObject] START - Removing mock object with ID: " + mockId);
+        
+        try {
+            var mockObject = _mockObjects[mockId];
+            
+            if (!mockObject) {
+                logger.warn("[PCBMockSystem][index.js][removeMockObject] Mock object not found: " + mockId);
+                return false;
+            }
+            
+            delete _mockObjects[mockId];
+            
+            logger.debug("[PCBMockSystem][index.js][removeMockObject] SUCCESS - Mock object removed: " + mockObject._mockType);
+            
+            return true;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][removeMockObject] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function getAllMockObjects() {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][getAllMockObjects] START - Getting all mock objects");
+        
+        try {
+            var result = [];
+            var key;
+            
+            for (key in _mockObjects) {
+                if (_mockObjects.hasOwnProperty(key)) {
+                    result.push(_mockObjects[key]);
+                }
+            }
+            
+            logger.debug("[PCBMockSystem][index.js][getAllMockObjects] SUCCESS - Found " + result.length + " mock objects");
+            
+            return result;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][getAllMockObjects] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function clearAllMockObjects() {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][clearAllMockObjects] START - Clearing all mock objects");
+        
+        try {
+            var count = Object.keys(_mockObjects).length;
+            _mockObjects = {};
+            
+            logger.debug("[PCBMockSystem][index.js][clearAllMockObjects] SUCCESS - Cleared " + count + " mock objects");
+            
+            return count;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][clearAllMockObjects] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function getMockDataTemplate(objectType) {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][getMockDataTemplate] START - Getting template for object type: " + objectType);
+        
+        try {
+            // 确保模板已初始化
+            if (Object.keys(_mockDataTemplates).length === 0) {
+                _initializeMockDataTemplates();
+            }
+            
+            var template = _mockDataTemplates[objectType];
+            
+            if (!template) {
+                logger.warn("[PCBMockSystem][index.js][getMockDataTemplate] Template not found for object type: " + objectType);
+                return null;
+            }
+            
+            // 返回模板的副本
+            var result = {};
+            var key;
+            for (key in template) {
+                if (template.hasOwnProperty(key)) {
+                    result[key] = template[key];
+                }
+            }
+            
+            logger.debug("[PCBMockSystem][index.js][getMockDataTemplate] SUCCESS - Template retrieved for: " + objectType);
+            
+            return result;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][getMockDataTemplate] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function getAllMockDataTemplates() {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][getAllMockDataTemplates] START - Getting all mock data templates");
+        
+        try {
+            // 确保模板已初始化
+            if (Object.keys(_mockDataTemplates).length === 0) {
+                _initializeMockDataTemplates();
+            }
+            
+            var result = {};
+            var key;
+            
+            for (key in _mockDataTemplates) {
+                if (_mockDataTemplates.hasOwnProperty(key)) {
+                    result[key] = {};
+                    var subKey;
+                    for (subKey in _mockDataTemplates[key]) {
+                        if (_mockDataTemplates[key].hasOwnProperty(subKey)) {
+                            result[key][subKey] = _mockDataTemplates[key][subKey];
+                        }
+                    }
+                }
+            }
+            
+            logger.debug("[PCBMockSystem][index.js][getAllMockDataTemplates] SUCCESS - Retrieved " + Object.keys(result).length + " templates");
+            
+            return result;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][getAllMockDataTemplates] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function getMockObjectId(objectType) {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][getMockObjectId] START - Getting object ID for type: " + objectType);
+        
+        try {
+            var objectIds = {
+                "Arc": eArcObject,
+                "Pad": ePadObject,
+                "Track": eTrackObject,
+                "Via": eViaObject,
+                "BoardOutline": eBoardOutlineObject,
+                "SignalLayer": eSignalLayerObject,
+                "MechanicalLayer": eMechanicalLayerObject,
+                "DielectricLayer": eDielectricLayerObject,
+                "InternalPlane": eInternalPlaneObject
+            };
+            
+            var objectId = objectIds[objectType];
+            
+            if (objectId === undefined) {
+                logger.warn("[PCBMockSystem][index.js][getMockObjectId] Unknown object type: " + objectType);
+                return eNoObject;
+            }
+            
+            logger.debug("[PCBMockSystem][index.js][getMockObjectId] SUCCESS - Object ID: " + objectId);
+            
+            return objectId;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][getMockObjectId] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function getMockStatistics() {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][getMockStatistics] START - Getting mock system statistics");
+        
+        try {
+            var stats = {
+                totalMockObjects: Object.keys(_mockObjects).length,
+                totalTemplates: Object.keys(_mockDataTemplates).length,
+                objectIdCounter: _objectIdCounter,
+                mockObjectsByType: {}
+            };
+            
+            // 统计各类型的Mock对象数量
+            var key;
+            for (key in _mockObjects) {
+                if (_mockObjects.hasOwnProperty(key)) {
+                    var mockObject = _mockObjects[key];
+                    var type = mockObject._mockType;
+                    
+                    if (!stats.mockObjectsByType[type]) {
+                        stats.mockObjectsByType[type] = 0;
+                    }
+                    stats.mockObjectsByType[type]++;
+                }
+            }
+            
+            logger.debug("[PCBMockSystem][index.js][getMockStatistics] SUCCESS - Statistics: " + JSON.stringify(stats));
+            
+            return stats;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][getMockStatistics] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    // 初始化模块
+    function initialize() {
+        var logger = _createMockLogger();
+        
+        logger.debug("[PCBMockSystem][index.js][initialize] START - Initializing PCB Mock System");
+        
+        try {
+            _initializeMockDataTemplates();
+            
+            logger.debug("[PCBMockSystem][index.js][initialize] SUCCESS - PCB Mock System initialized with " + 
+                       Object.keys(_mockDataTemplates).length + " templates");
+            
+            return true;
+            
+        } catch (error) {
+            logger.error("[PCBMockSystem][index.js][initialize] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    return {
+        // Mock对象创建和管理
+        createMockObject: createMockObject,
+        getMockObject: getMockObject,
+        removeMockObject: removeMockObject,
+        getAllMockObjects: getAllMockObjects,
+        clearAllMockObjects: clearAllMockObjects,
+        
+        // Mock数据模板
+        getMockDataTemplate: getMockDataTemplate,
+        getAllMockDataTemplates: getAllMockDataTemplates,
+        getMockObjectId: getMockObjectId,
+        
+        // 统计和工具
+        getMockStatistics: getMockStatistics,
+        initialize: initialize,
+        
+        // 版本信息
+        version: _moduleVersion
+    };
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.PCBMockSystem = PCBMockSystem;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = PCBMockSystem;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.PCBMockSystem = PCBMockSystem;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/core/PCBObjectFactory.js
+/**
+ * PCBObjectFactory - PCB对象工厂
+ * 提供统一的对象创建和类型识别功能
+ * 100% 兼容 JScript 5.8 (ES3)
+ */
+
+var PCBObjectFactory = (function(){
+    
+    // 私有变量
+    var _moduleVersion = "1.0.0";
+    var _wrapperConstructors = {};
+    var _objectTypeMapping = {};
+    var _factoryStats = {
+        totalCreated: 0,
+        createdByType: {},
+        lastCreatedTime: null
+    };
+    
+    // 私有工具函数
+    function _createFactoryLogger() {
+        return {
+            debug: function(message) {
+                try {
+                    if (typeof logger !== "undefined" && logger && logger.debug) {
+                        logger.debug("[PCBObjectFactory][index.js] " + message);
+                    }
+                } catch (e) {
+                    // 忽略日志错误
+                }
+            },
+            info: function(message) {
+                try {
+                    if (typeof logger !== "undefined" && logger && logger.info) {
+                        logger.info("[PCBObjectFactory][index.js] " + message);
+                    }
+                } catch (e) {
+                    // 忽略日志错误
+                }
+            },
+            warn: function(message) {
+                try {
+                    if (typeof logger !== "undefined" && logger && logger.warn) {
+                        logger.warn("[PCBObjectFactory][index.js] " + message);
+                    }
+                } catch (e) {
+                    // 忽略日志错误
+                }
+            },
+            error: function(message) {
+                try {
+                    if (typeof logger !== "undefined" && logger && logger.error) {
+                        logger.error("[PCBObjectFactory][index.js] " + message);
+                    }
+                } catch (e) {
+                    // 忽略日志错误
+                }
+            }
+        };
+    }
+    
+    function _updateFactoryStats(objectType) {
+        _factoryStats.totalCreated++;
+        _factoryStats.lastCreatedTime = new Date();
+        
+        if (!_factoryStats.createdByType[objectType]) {
+            _factoryStats.createdByType[objectType] = 0;
+        }
+        _factoryStats.createdByType[objectType]++;
+    }
+    
+    function _getObjectTypeFromId(objectId) {
+        var typeMapping = {
+            eArcObject: "Arc",
+            ePadObject: "Pad",
+            eTrackObject: "Track",
+            eViaObject: "Via",
+            eBoardOutlineObject: "BoardOutline",
+            eSignalLayerObject: "SignalLayer",
+            eMechanicalLayerObject: "MechanicalLayer",
+            eDielectricLayerObject: "DielectricLayer",
+            eInternalPlaneObject: "InternalPlane"
+        };
+        
+        return typeMapping[objectId] || "Unknown";
+    }
+    
+    function _validateNativeObject(nativeObject) {
+        if (!nativeObject) {
+            return { valid: false, error: "Native object is null" };
+        }
+        
+        if (typeof nativeObject.ObjectId === "undefined") {
+            return { valid: false, error: "Native object missing ObjectId property" };
+        }
+        
+        return { valid: true, error: null };
+    }
+    
+    function _validateOptions(options) {
+        if (!options) {
+            options = {};
+        }
+        
+        // 确保基本选项存在
+        if (typeof options.isMock === "undefined") {
+            options.isMock = false;
+        }
+        
+        if (typeof options.mockType === "undefined") {
+            options.mockType = null;
+        }
+        
+        if (typeof options.mockData === "undefined") {
+            options.mockData = {};
+        }
+        
+        if (typeof options.enableCache === "undefined") {
+            options.enableCache = true;
+        }
+        
+        return options;
+    }
+    
+    // 初始化对象类型映射
+    function _initializeObjectTypeMapping() {
+        _objectTypeMapping = {
+            // 设计对象
+            "Arc": {
+                objectId: eArcObject,
+                wrapperConstructor: null, // 将在注册时设置
+                mockType: "Arc"
+            },
+            "Pad": {
+                objectId: ePadObject,
+                wrapperConstructor: null,
+                mockType: "Pad"
+            },
+            "Track": {
+                objectId: eTrackObject,
+                wrapperConstructor: null,
+                mockType: "Track"
+            },
+            "Via": {
+                objectId: eViaObject,
+                wrapperConstructor: null,
+                mockType: "Via"
+            },
+            "BoardOutline": {
+                objectId: eBoardOutlineObject,
+                wrapperConstructor: null,
+                mockType: "BoardOutline"
+            },
+            
+            // 层对象
+            "SignalLayer": {
+                objectId: eSignalLayerObject,
+                wrapperConstructor: null,
+                mockType: "SignalLayer"
+            },
+            "MechanicalLayer": {
+                objectId: eMechanicalLayerObject,
+                wrapperConstructor: null,
+                mockType: "MechanicalLayer"
+            },
+            "DielectricLayer": {
+                objectId: eDielectricLayerObject,
+                wrapperConstructor: null,
+                mockType: "DielectricLayer"
+            },
+            "InternalPlane": {
+                objectId: eInternalPlaneObject,
+                wrapperConstructor: null,
+                mockType: "InternalPlane"
+            }
+        };
+    }
+    
+    // 公有API函数
+    function registerWrapperConstructor(objectType, constructor) {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][registerWrapperConstructor] START - Registering wrapper for type: " + objectType);
+        
+        try {
+            if (!_objectTypeMapping[objectType]) {
+                throw new Error("[PCBObjectFactory][index.js][registerWrapperConstructor] Unknown object type: " + objectType);
+            }
+            
+            if (typeof constructor !== "function") {
+                throw new Error("[PCBObjectFactory][index.js][registerWrapperConstructor] Constructor must be a function");
+            }
+            
+            _objectTypeMapping[objectType].wrapperConstructor = constructor;
+            _wrapperConstructors[objectType] = constructor;
+            
+            logger.debug("[PCBObjectFactory][index.js][registerWrapperConstructor] SUCCESS - Wrapper registered for: " + objectType);
+            
+            return true;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][registerWrapperConstructor] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function createWrapper(nativeObject, options) {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][createWrapper] START - Creating wrapper, options: " + JSON.stringify(options));
+        
+        try {
+            // 验证和标准化选项
+            options = _validateOptions(options);
+            
+            var wrapper = null;
+            var objectType = null;
+            
+            if (options.isMock) {
+                // 创建Mock对象
+                logger.debug("[PCBObjectFactory][index.js][createWrapper] Creating mock wrapper for type: " + options.mockType);
+                
+                if (!options.mockType) {
+                    throw new Error("[PCBObjectFactory][index.js][createWrapper] Mock type is required for mock objects");
+                }
+                
+                objectType = options.mockType;
+                
+                // 创建Mock原生对象
+                if (!nativeObject) {
+                    if (typeof PCBMockSystem !== "undefined" && PCBMockSystem.createMockObject) {
+                        nativeObject = PCBMockSystem.createMockObject(options.mockType, options.mockData);
+                    } else {
+                        throw new Error("[PCBObjectFactory][index.js][createWrapper] PCBMockSystem not available");
+                    }
+                }
+                
+                // 创建Mock封装对象
+                if (_wrapperConstructors[objectType]) {
+                    wrapper = _wrapperConstructors[objectType]({
+                        nativeObject: nativeObject,
+                        objectType: objectType,
+                        isMock: true,
+                        mockData: options.mockData,
+                        enableCache: options.enableCache
+                    });
+                } else {
+                    // 使用基础封装类
+                    if (typeof BasePCBWrapper !== "undefined" && BasePCBWrapper.create) {
+                        wrapper = BasePCBWrapper.create({
+                            nativeObject: nativeObject,
+                            objectType: objectType,
+                            isMock: true,
+                            mockData: options.mockData,
+                            enableCache: options.enableCache
+                        });
+                    } else {
+                        throw new Error("[PCBObjectFactory][index.js][createWrapper] BasePCBWrapper not available");
+                    }
+                }
+                
+            } else {
+                // 创建真实对象封装
+                logger.debug("[PCBObjectFactory][index.js][createWrapper] Creating real wrapper");
+                
+                // 验证原生对象
+                var validation = _validateNativeObject(nativeObject);
+                if (!validation.valid) {
+                    throw new Error("[PCBObjectFactory][index.js][createWrapper] Invalid native object: " + validation.error);
+                }
+                
+                // 识别对象类型
+                objectType = _getObjectTypeFromId(nativeObject.ObjectId);
+                
+                if (objectType === "Unknown") {
+                    logger.warn("[PCBObjectFactory][index.js][createWrapper] Unknown object type for ObjectId: " + nativeObject.ObjectId);
+                    
+                    // 使用基础封装类
+                    if (typeof BasePCBWrapper !== "undefined" && BasePCBWrapper.create) {
+                        wrapper = BasePCBWrapper.create({
+                            nativeObject: nativeObject,
+                            objectType: "Unknown",
+                            isMock: false,
+                            enableCache: options.enableCache
+                        });
+                    } else {
+                        throw new Error("[PCBObjectFactory][index.js][createWrapper] BasePCBWrapper not available");
+                    }
+                } else {
+                    // 使用特定封装类
+                    if (_wrapperConstructors[objectType]) {
+                        wrapper = _wrapperConstructors[objectType]({
+                            nativeObject: nativeObject,
+                            objectType: objectType,
+                            isMock: false,
+                            enableCache: options.enableCache
+                        });
+                    } else {
+                        // 使用基础封装类
+                        if (typeof BasePCBWrapper !== "undefined" && BasePCBWrapper.create) {
+                            wrapper = BasePCBWrapper.create({
+                                nativeObject: nativeObject,
+                                objectType: objectType,
+                                isMock: false,
+                                enableCache: options.enableCache
+                            });
+                        } else {
+                            throw new Error("[PCBObjectFactory][index.js][createWrapper] BasePCBWrapper not available");
+                        }
+                    }
+                }
+            }
+            
+            // 初始化封装对象
+            if (wrapper && wrapper.init) {
+                wrapper.init();
+            }
+            
+            // 更新统计信息
+            _updateFactoryStats(objectType);
+            
+            logger.debug("[PCBObjectFactory][index.js][createWrapper] SUCCESS - Wrapper created for type: " + objectType);
+            
+            return wrapper;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][createWrapper] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function createWrappersFromIterator(iterator, options) {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][createWrappersFromIterator] START - Creating wrappers from iterator");
+        
+        try {
+            if (!iterator) {
+                throw new Error("[PCBObjectFactory][index.js][createWrappersFromIterator] Iterator is required");
+            }
+            
+            if (typeof iterator.First !== "function" || typeof iterator.Next !== "function") {
+                throw new Error("[PCBObjectFactory][index.js][createWrappersFromIterator] Invalid iterator interface");
+            }
+            
+            var wrappers = [];
+            var nativeObject = iterator.First;
+            var count = 0;
+            
+            while (nativeObject != null) {
+                try {
+                    var wrapper = createWrapper(nativeObject, options);
+                    if (wrapper) {
+                        wrappers.push(wrapper);
+                        count++;
+                    }
+                } catch (error) {
+                    logger.warn("[PCBObjectFactory][index.js][createWrappersFromIterator] Failed to create wrapper for object: " + error.message);
+                    // 继续处理其他对象
+                }
+                
+                nativeObject = iterator.Next;
+            }
+            
+            logger.debug("[PCBObjectFactory][index.js][createWrappersFromIterator] SUCCESS - Created " + count + " wrappers from iterator");
+            
+            return wrappers;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][createWrappersFromIterator] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function getObjectType(nativeObject) {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][getObjectType] START - Getting object type");
+        
+        try {
+            if (!nativeObject) {
+                logger.warn("[PCBObjectFactory][index.js][getObjectType] Native object is null");
+                return "Unknown";
+            }
+            
+            if (typeof nativeObject.ObjectId === "undefined") {
+                logger.warn("[PCBObjectFactory][index.js][getObjectType] Native object missing ObjectId");
+                return "Unknown";
+            }
+            
+            var objectType = _getObjectTypeFromId(nativeObject.ObjectId);
+            
+            logger.debug("[PCBObjectFactory][index.js][getObjectType] SUCCESS - Object type: " + objectType);
+            
+            return objectType;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][getObjectType] ERROR - " + error.message);
+            return "Unknown";
+        }
+    }
+    
+    function getSupportedObjectTypes() {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][getSupportedObjectTypes] START - Getting supported object types");
+        
+        try {
+            var types = [];
+            var key;
+            
+            for (key in _objectTypeMapping) {
+                if (_objectTypeMapping.hasOwnProperty(key)) {
+                    types.push(key);
+                }
+            }
+            
+            logger.debug("[PCBObjectFactory][index.js][getSupportedObjectTypes] SUCCESS - Found " + types.length + " supported types");
+            
+            return types;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][getSupportedObjectTypes] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function isObjectTypeSupported(objectType) {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][isObjectTypeSupported] START - Checking support for type: " + objectType);
+        
+        try {
+            var supported = _objectTypeMapping.hasOwnProperty(objectType);
+            
+            logger.debug("[PCBObjectFactory][index.js][isObjectTypeSupported] SUCCESS - Type " + objectType + " supported: " + supported);
+            
+            return supported;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][isObjectTypeSupported] ERROR - " + error.message);
+            return false;
+        }
+    }
+    
+    function getFactoryStatistics() {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][getFactoryStatistics] START - Getting factory statistics");
+        
+        try {
+            var stats = {
+                totalCreated: _factoryStats.totalCreated,
+                createdByType: {},
+                lastCreatedTime: _factoryStats.lastCreatedTime,
+                supportedTypes: Object.keys(_objectTypeMapping).length,
+                registeredWrappers: Object.keys(_wrapperConstructors).length
+            };
+            
+            // 复制创建统计
+            var key;
+            for (key in _factoryStats.createdByType) {
+                if (_factoryStats.createdByType.hasOwnProperty(key)) {
+                    stats.createdByType[key] = _factoryStats.createdByType[key];
+                }
+            }
+            
+            logger.debug("[PCBObjectFactory][index.js][getFactoryStatistics] SUCCESS - Statistics: " + JSON.stringify(stats));
+            
+            return stats;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][getFactoryStatistics] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function resetFactoryStatistics() {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][resetFactoryStatistics] START - Resetting factory statistics");
+        
+        try {
+            _factoryStats.totalCreated = 0;
+            _factoryStats.createdByType = {};
+            _factoryStats.lastCreatedTime = null;
+            
+            logger.debug("[PCBObjectFactory][index.js][resetFactoryStatistics] SUCCESS - Factory statistics reset");
+            
+            return true;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][resetFactoryStatistics] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    function initialize() {
+        var logger = _createFactoryLogger();
+        
+        logger.debug("[PCBObjectFactory][index.js][initialize] START - Initializing PCB Object Factory");
+        
+        try {
+            _initializeObjectTypeMapping();
+            
+            logger.debug("[PCBObjectFactory][index.js][initialize] SUCCESS - PCB Object Factory initialized with " + 
+                       Object.keys(_objectTypeMapping).length + " supported types");
+            
+            return true;
+            
+        } catch (error) {
+            logger.error("[PCBObjectFactory][index.js][initialize] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    return {
+        // 对象创建
+        createWrapper: createWrapper,
+        createWrappersFromIterator: createWrappersFromIterator,
+        
+        // 类型识别和查询
+        getObjectType: getObjectType,
+        getSupportedObjectTypes: getSupportedObjectTypes,
+        isObjectTypeSupported: isObjectTypeSupported,
+        
+        // 封装器注册
+        registerWrapperConstructor: registerWrapperConstructor,
+        
+        // 统计和管理
+        getFactoryStatistics: getFactoryStatistics,
+        resetFactoryStatistics: resetFactoryStatistics,
+        
+        // 初始化
+        initialize: initialize,
+        
+        // 版本信息
+        version: _moduleVersion
+    };
+})();
+
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.PCBObjectFactory = PCBObjectFactory;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = PCBObjectFactory;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.PCBObjectFactory = PCBObjectFactory;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/core/PCBObjectManager.js
+/**
+ * PCBObjectManager - PCB对象管理系统
+ * 提供对象创建、绑定、池管理功能
+ * 100% 兼容 JScript 5.8 (ES3)
+ */
+
+var PCBObjectManager = (function(){
+    
+    // 私有变量
+    var _moduleVersion = "1.0.0";
+    var _pendingPool = [];      // 待绑定池
+    var _boundObjects = {};     // 已绑定对象映射 {I_ObjectAddress: wrapper}
+    var _factory = null;        // 对象工厂引用
+    var _logger = null;         // 日志记录器
+    
+    // 私有工具函数
+    function _generateAddressKey(nativeObject) {
+        if (!nativeObject || !nativeObject.I_ObjectAddress) {
+            return null;
+        }
+        return "addr_" + nativeObject.I_ObjectAddress.toString();
+    }
+    
+    function _validateNativeObject(nativeObject) {
+        if (!nativeObject) {
+            throw new Error("[PCBObjectManager][index.js][_validateNativeObject] Native object is required");
+        }
+        
+        if (!nativeObject.I_ObjectAddress) {
+            throw new Error("[PCBObjectManager][index.js][_validateNativeObject] Native object must have I_ObjectAddress property");
+        }
+        
+        return true;
+    }
+    
+    function _validateWrapperType(wrapperType) {
+        var validTypes = ["track", "arc", "pad", "via"];
+        
+        if (!wrapperType) {
+            throw new Error("[PCBObjectManager][index.js][_validateWrapperType] Wrapper type is required");
+        }
+        
+        var lowerType = wrapperType.toLowerCase();
+        var isValid = false;
+        
+        for (var i = 0; i < validTypes.length; i++) {
+            if (lowerType === validTypes[i]) {
+                isValid = true;
+                break;
+            }
+        }
+        
+        if (!isValid) {
+            throw new Error("[PCBObjectManager][index.js][_validateWrapperType] Invalid wrapper type: " + wrapperType + 
+                           ". Valid types: " + validTypes.join(", "));
+        }
+        
+        return lowerType;
+    }
+    
+    function _createWrapperByType(nativeObject, wrapperType, options) {
+        var wrapper;
+        var lowerType = _validateWrapperType(wrapperType);
+        
+        // 根据类型创建对应的封装器
+        switch (lowerType) {
+            case "track":
+                if (typeof TrackWrapper !== "undefined") {
+                    wrapper = TrackWrapper.create(nativeObject, options);
+                } else {
+                    throw new Error("[PCBObjectManager][index.js][_createWrapperByType] TrackWrapper not available");
+                }
+                break;
+                
+            case "arc":
+                if (typeof ArcWrapper !== "undefined") {
+                    wrapper = ArcWrapper.create(nativeObject, options);
+                } else {
+                    throw new Error("[PCBObjectManager][index.js][_createWrapperByType] ArcWrapper not available");
+                }
+                break;
+                
+            case "pad":
+                if (typeof PadWrapper !== "undefined") {
+                    wrapper = PadWrapper.create(nativeObject, options);
+                } else {
+                    throw new Error("[PCBObjectManager][index.js][_createWrapperByType] PadWrapper not available");
+                }
+                break;
+                
+            case "via":
+                if (typeof ViaWrapper !== "undefined") {
+                    wrapper = ViaWrapper.create(nativeObject, options);
+                } else {
+                    throw new Error("[PCBObjectManager][index.js][_createWrapperByType] ViaWrapper not available");
+                }
+                break;
+                
+            default:
+                throw new Error("[PCBObjectManager][index.js][_createWrapperByType] Unsupported wrapper type: " + wrapperType);
+        }
+        
+        return wrapper;
+    }
+    
+    function _addToBoundObjects(wrapper) {
+        if (!wrapper || !wrapper.getNativeObject) {
+            return false;
+        }
+        
+        var nativeObj = wrapper.getNativeObject();
+        if (!nativeObj || !nativeObj.I_ObjectAddress) {
+            return false;
+        }
+        
+        var key = _generateAddressKey(nativeObj);
+        if (key) {
+            _boundObjects[key] = wrapper;
+            
+            if (_logger && _logger.debug) {
+                _logger.debug("[PCBObjectManager][index.js][_addToBoundObjects] Added wrapper to bound objects: " + key);
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    function _removeFromBoundObjects(wrapper) {
+        if (!wrapper || !wrapper.getNativeObject) {
+            return false;
+        }
+        
+        var nativeObj = wrapper.getNativeObject();
+        if (!nativeObj || !nativeObj.I_ObjectAddress) {
+            return false;
+        }
+        
+        var key = _generateAddressKey(nativeObj);
+        if (key && _boundObjects.hasOwnProperty(key)) {
+            delete _boundObjects[key];
+            
+            if (_logger && _logger.debug) {
+                _logger.debug("[PCBObjectManager][index.js][_removeFromBoundObjects] Removed wrapper from bound objects: " + key);
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    // 公有API函数
+    function initialize(factory, logger) {
+        if (!factory) {
+            throw new Error("[PCBObjectManager][index.js][initialize] Factory is required");
+        }
+        
+        _factory = factory;
+        _logger = logger || null;
+        
+        if (_logger && _logger.info) {
+            _logger.info("[PCBObjectManager][index.js][initialize] PCBObjectManager initialized");
+        }
+        
+        return true;
+    }
+    
+    // 模式1：创建时绑定
+    function createWrapper(nativeObject, wrapperType, options) {
+        if (!_factory) {
+            throw new Error("[PCBObjectManager][index.js][createWrapper] Manager not initialized. Call initialize() first.");
+        }
+        
+        _validateNativeObject(nativeObject);
+        var lowerType = _validateWrapperType(wrapperType);
+        
+        var wrapperOptions = options || {};
+        wrapperOptions.objectType = lowerType;
+        wrapperOptions.nativeObject = nativeObject;
+        
+        // 创建封装器
+        var wrapper = _createWrapperByType(nativeObject, lowerType, wrapperOptions);
+        
+        // 添加到已绑定对象映射
+        if (_addToBoundObjects(wrapper)) {
+            if (_logger && _logger.info) {
+                _logger.info("[PCBObjectManager][index.js][createWrapper] Created and bound wrapper: " + lowerType + 
+                            ", Address: " + nativeObject.I_ObjectAddress);
+            }
+            
+            return wrapper;
+        } else {
+            throw new Error("[PCBObjectManager][index.js][createWrapper] Failed to add wrapper to bound objects");
+        }
+    }
+    
+    // 模式2：创建空封装器（放入待绑定池）
+    function createEmptyWrapper(wrapperType, options) {
+        if (!_factory) {
+            throw new Error("[PCBObjectManager][index.js][createEmptyWrapper] Manager not initialized. Call initialize() first.");
+        }
+        
+        var lowerType = _validateWrapperType(wrapperType);
+        
+        var wrapperOptions = options || {};
+        wrapperOptions.objectType = lowerType;
+        wrapperOptions.isMock = true;  // 标记为Mock，因为没有原生对象
+        wrapperOptions.mockData = {};
+        
+        // 创建空封装器
+        var wrapper = _createWrapperByType(null, lowerType, wrapperOptions);
+        
+        // 添加到待绑定池
+        _pendingPool.push({
+            wrapper: wrapper,
+            wrapperType: lowerType,
+            createdTime: new Date(),
+            options: wrapperOptions
+        });
+        
+        if (_logger && _logger.info) {
+            _logger.info("[PCBObjectManager][index.js][createEmptyWrapper] Created empty wrapper: " + lowerType + 
+                        ", Pool size: " + _pendingPool.length);
+        }
+        
+        return wrapper;
+    }
+    
+    // 模式3：绑定已有对象
+    function bindToExisting(wrapper, nativeObject) {
+        if (!wrapper) {
+            throw new Error("[PCBObjectManager][index.js][bindToExisting] Wrapper is required");
+        }
+        
+        _validateNativeObject(nativeObject);
+        
+        // 检查是否已经在待绑定池中
+        var poolIndex = -1;
+        for (var i = 0; i < _pendingPool.length; i++) {
+            if (_pendingPool[i].wrapper === wrapper) {
+                poolIndex = i;
+                break;
+            }
+        }
+        
+        if (poolIndex === -1) {
+            throw new Error("[PCBObjectManager][index.js][bindToExisting] Wrapper not found in pending pool");
+        }
+        
+        // 从待绑定池中移除
+        _pendingPool.splice(poolIndex, 1);
+        
+        // 重新配置封装器
+        wrapper.nativeObject = nativeObject;
+        wrapper.isMock = false;
+        wrapper.options.nativeObject = nativeObject;
+        
+        // 重新初始化
+        if (wrapper.init) {
+            wrapper.init();
+        }
+        
+        // 从原生对象同步属性
+        if (wrapper.syncFromNative) {
+            wrapper.syncFromNative();
+        }
+        
+        // 添加到已绑定对象映射
+        if (_addToBoundObjects(wrapper)) {
+            if (_logger && _logger.info) {
+                _logger.info("[PCBObjectManager][index.js][bindToExisting] Bound wrapper to native object: " + 
+                            wrapper.objectType + ", Address: " + nativeObject.I_ObjectAddress);
+            }
+            
+            return wrapper;
+        } else {
+            throw new Error("[PCBObjectManager][index.js][bindToExisting] Failed to add wrapper to bound objects");
+        }
+    }
+    
+    // 从已有原生对象创建封装器
+    function createFromExisting(nativeObject, wrapperType, options) {
+        if (!_factory) {
+            throw new Error("[PCBObjectManager][index.js][createFromExisting] Manager not initialized. Call initialize() first.");
+        }
+        
+        _validateNativeObject(nativeObject);
+        var lowerType = _validateWrapperType(wrapperType);
+        
+        // 检查是否已经存在封装器
+        var existingWrapper = getWrapper(nativeObject);
+        if (existingWrapper) {
+            if (_logger && _logger.warn) {
+                _logger.warn("[PCBObjectManager][index.js][createFromExisting] Wrapper already exists for object: " + 
+                            nativeObject.I_ObjectAddress + ", returning existing wrapper");
+            }
+            
+            return existingWrapper;
+        }
+        
+        // 创建新的封装器
+        return createWrapper(nativeObject, lowerType, options);
+    }
+    
+    // 获取已绑定的封装器
+    function getWrapper(nativeObject) {
+        if (!nativeObject || !nativeObject.I_ObjectAddress) {
+            return null;
+        }
+        
+        var key = _generateAddressKey(nativeObject);
+        if (key && _boundObjects.hasOwnProperty(key)) {
+            return _boundObjects[key];
+        }
+        
+        return null;
+    }
+    
+    // 获取待绑定池中的封装器
+    function getPendingWrappers() {
+        var result = [];
+        
+        for (var i = 0; i < _pendingPool.length; i++) {
+            result.push(_pendingPool[i].wrapper);
+        }
+        
+        return result;
+    }
+    
+    // 获取待绑定池信息
+    function getPendingPoolInfo() {
+        var result = [];
+        
+        for (var i = 0; i < _pendingPool.length; i++) {
+            var item = _pendingPool[i];
+            result.push({
+                index: i,
+                wrapperType: item.wrapperType,
+                createdTime: item.createdTime,
+                isInitialized: item.wrapper.state ? item.wrapper.state.initialized : false
+            });
+        }
+        
+        return result;
+    }
+    
+    // 销毁封装器
+    function destroyWrapper(wrapper) {
+        if (!wrapper) {
+            return false;
+        }
+        
+        try {
+            // 从已绑定对象映射中移除
+            _removeFromBoundObjects(wrapper);
+            
+            // 从待绑定池中移除
+            var poolIndex = -1;
+            for (var i = 0; i < _pendingPool.length; i++) {
+                if (_pendingPool[i].wrapper === wrapper) {
+                    poolIndex = i;
+                    break;
+                }
+            }
+            
+            if (poolIndex !== -1) {
+                _pendingPool.splice(poolIndex, 1);
+            }
+            
+            // 销毁封装器
+            if (wrapper.destroy) {
+                wrapper.destroy();
+            }
+            
+            if (_logger && _logger.info) {
+                _logger.info("[PCBObjectManager][index.js][destroyWrapper] Wrapper destroyed: " + 
+                            (wrapper.objectType || "unknown"));
+            }
+            
+            return true;
+            
+        } catch (error) {
+            if (_logger && _logger.error) {
+                _logger.error("[PCBObjectManager][index.js][destroyWrapper] Error destroying wrapper: " + error.message);
+            }
+            
+            return false;
+        }
+    }
+    
+    // 清理所有对象
+    function clearAll() {
+        var destroyedCount = 0;
+        
+        try {
+            // 销毁所有已绑定对象
+            for (var key in _boundObjects) {
+                if (_boundObjects.hasOwnProperty(key)) {
+                    var wrapper = _boundObjects[key];
+                    if (wrapper && wrapper.destroy) {
+                        wrapper.destroy();
+                        destroyedCount++;
+                    }
+                }
+            }
+            
+            // 清空已绑定对象映射
+            _boundObjects = {};
+            
+            // 销毁待绑定池中的对象
+            for (var i = _pendingPool.length - 1; i >= 0; i--) {
+                var item = _pendingPool[i];
+                if (item.wrapper && item.wrapper.destroy) {
+                    item.wrapper.destroy();
+                    destroyedCount++;
+                }
+            }
+            
+            // 清空待绑定池
+            _pendingPool = [];
+            
+            if (_logger && _logger.info) {
+                _logger.info("[PCBObjectManager][index.js][clearAll] Cleared all objects, destroyed: " + destroyedCount);
+            }
+            
+            return true;
+            
+        } catch (error) {
+            if (_logger && _logger.error) {
+                _logger.error("[PCBObjectManager][index.js][clearAll] Error clearing all objects: " + error.message);
+            }
+            
+            return false;
+        }
+    }
+    
+    // 获取统计信息
+    function getStats() {
+        var boundCount = 0;
+        var pendingCount = _pendingPool.length;
+        
+        for (var key in _boundObjects) {
+            if (_boundObjects.hasOwnProperty(key)) {
+                boundCount++;
+            }
+        }
+        
+        return {
+            boundObjects: boundCount,
+            pendingObjects: pendingCount,
+            totalObjects: boundCount + pendingCount,
+            isInitialized: !!_factory
+        };
+    }
+    
+    // 获取调试信息
+    function getDebugInfo() {
+        var boundDetails = [];
+        var pendingDetails = [];
+        
+        // 已绑定对象详情
+        for (var key in _boundObjects) {
+            if (_boundObjects.hasOwnProperty(key)) {
+                var wrapper = _boundObjects[key];
+                boundDetails.push({
+                    key: key,
+                    objectType: wrapper.objectType || "unknown",
+                    isInitialized: wrapper.state ? wrapper.state.initialized : false,
+                    isDirty: wrapper.isDirty || false,
+                    isMock: wrapper.isMock || false
+                });
+            }
+        }
+        
+        // 待绑定对象详情
+        for (var i = 0; i < _pendingPool.length; i++) {
+            var item = _pendingPool[i];
+            pendingDetails.push({
+                index: i,
+                wrapperType: item.wrapperType,
+                createdTime: item.createdTime,
+                isInitialized: item.wrapper.state ? item.wrapper.state.initialized : false
+            });
+        }
+        
+        return {
+            stats: getStats(),
+            boundObjects: boundDetails,
+            pendingObjects: pendingDetails,
+            isInitialized: !!_factory
+        };
+    }
+    
+    return {
+        // 初始化
+        initialize: initialize,
+        
+        // 创建模式
+        createWrapper: createWrapper,           // 模式1：创建时绑定
+        createEmptyWrapper: createEmptyWrapper, // 模式2：创建空封装器
+        bindToExisting: bindToExisting,         // 模式3：绑定已有对象
+        createFromExisting: createFromExisting, // 从已有对象创建
+        
+        // 查询方法
+        getWrapper: getWrapper,
+        getPendingWrappers: getPendingWrappers,
+        getPendingPoolInfo: getPendingPoolInfo,
+        
+        // 管理方法
+        destroyWrapper: destroyWrapper,
+        clearAll: clearAll,
+        
+        // 状态方法
+        getStats: getStats,
+        getDebugInfo: getDebugInfo,
+        
+        // 版本信息
+        version: _moduleVersion
+    };
+})();
+
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.PCBObjectManager = PCBObjectManager;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = PCBObjectManager;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.PCBObjectManager = PCBObjectManager;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/core/PCBObjectPool.js
+/**
+ * PCBObjectPool - 唯一对象池（byHandle/byAddress）
+ * 提供对象生命周期管理与引用校验
+ * 100% 兼容 JScript 5.8 (ES3)
+ */
+
+var PCBObjectPool = (function(){
+    var _moduleVersion = "2.0.0";
+
+    var _byHandle = {};
+    var _byHandleRef = [];
+    var _byAddress = {};
+    var _byPoolId = {};
+    var _poolSeq = 0;
+    var _byType = {};
+    var _activeBoardKey = "";
+
+    var _stats = {
+        total: 0,
+        hits: 0,
+        misses: 0,
+        invalidations: 0,
+        registered: 0,
+        lastResetAt: 0,
+        lastResetReason: ""
+    };
+
+    function _ui(level, message, context, fnName) {
+        var text = String(message || "");
+        var payload = context || null;
+        var moduleName = "PCBObjectPool";
+        var functionName = fnName || "";
+
+        try {
+            if (typeof UILoggerModule !== "undefined" && UILoggerModule) {
+                if (level === "error" && UILoggerModule.uiError) {
+                    UILoggerModule.uiError(text, payload, moduleName, functionName);
+                    return;
+                }
+                if (level === "warn" && UILoggerModule.uiWarn) {
+                    UILoggerModule.uiWarn(text, payload, moduleName, functionName);
+                    return;
+                }
+                if (UILoggerModule.uiInfo) {
+                    UILoggerModule.uiInfo(text, payload, moduleName, functionName);
+                    return;
+                }
+            }
+        } catch (e1) {}
+
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) {
+                var line = "[" + String(level).toUpperCase() + "] " + text;
+                if (payload) {
+                    try { line += " " + JSON.stringify(payload); } catch (e2) {}
+                }
+                memLog.Lines.Add(line);
+                return;
+            }
+        } catch (e3) {}
+
+        try {
+            if (typeof ShowMessage !== "undefined") {
+                ShowMessage(text);
+            }
+        } catch (e4) {}
+    }
+
+    function _resetStats(reason) {
+        _stats = {
+            total: 0,
+            hits: 0,
+            misses: 0,
+            invalidations: 0,
+            registered: 0,
+            lastResetAt: new Date().getTime(),
+            lastResetReason: reason || ""
+        };
+    }
+
+    function _isRefHandle(value) {
+        var t = typeof value;
+        return (t === "object" || t === "function" || t === "unknown");
+    }
+
+    function _readHandle(wrapper) {
+        if (!wrapper) return null;
+        if (wrapper.handle !== undefined && wrapper.handle !== null) return wrapper.handle;
+        if (wrapper.getHandle && typeof wrapper.getHandle === "function") {
+            try { return wrapper.getHandle(); } catch (e1) {}
+        }
+        try {
+            if (wrapper.I_ObjectAddress !== undefined && wrapper.I_ObjectAddress !== null) {
+                if (typeof wrapper.I_ObjectAddress === "function" || typeof wrapper.I_ObjectAddress === "unknown") {
+                    try { return wrapper.I_ObjectAddress(); } catch (e2a) {}
+                }
+                return wrapper.I_ObjectAddress;
+            }
+        } catch (e2) {}
+        try {
+            if (wrapper.nativeObject && wrapper.nativeObject.I_ObjectAddress !== undefined && wrapper.nativeObject.I_ObjectAddress !== null) {
+                if (typeof wrapper.nativeObject.I_ObjectAddress === "function" || typeof wrapper.nativeObject.I_ObjectAddress === "unknown") {
+                    try { return wrapper.nativeObject.I_ObjectAddress(); } catch (e3a) {}
+                }
+                return wrapper.nativeObject.I_ObjectAddress;
+            }
+        } catch (e3) {}
+        return null;
+    }
+
+    function _readAddress(wrapper) {
+        if (!wrapper) return null;
+        if (wrapper.address !== undefined && wrapper.address !== null) return wrapper.address;
+        if (wrapper.getAddress && typeof wrapper.getAddress === "function") {
+            try { return wrapper.getAddress(); } catch (e1) {}
+        }
+        try {
+            if (wrapper.ObjectAddress !== undefined && wrapper.ObjectAddress !== null) {
+                return wrapper.ObjectAddress;
+            }
+        } catch (e2) {}
+        try {
+            if (wrapper.nativeObject && wrapper.nativeObject.ObjectAddress !== undefined) {
+                return wrapper.nativeObject.ObjectAddress;
+            }
+        } catch (e3) {}
+        return null;
+    }
+
+    function _toKey(value) {
+        if (value === null || value === undefined) return null;
+        if (typeof value === "unknown") return null;
+        if (typeof value === "function") {
+            try { value = value(); } catch (e0) {}
+        }
+        if (typeof value === "string" || typeof value === "number") return String(value);
+        try { return String(value); } catch (e1) {}
+        return null;
+    }
+
+    function _readType(wrapper) {
+        if (!wrapper) return "unknown";
+        if (wrapper.objectType) return String(wrapper.objectType);
+        if (wrapper.getObjectType && typeof wrapper.getObjectType === "function") {
+            try { return String(wrapper.getObjectType()); } catch (e1) {}
+        }
+        return "unknown";
+    }
+
+    function _removeFromType(wrapper) {
+        var type = _readType(wrapper);
+        if (!_byType[type] || !_byType[type].length) return;
+        var next = [];
+        var i;
+        for (i = 0; i < _byType[type].length; i++) {
+            if (_byType[type][i] !== wrapper) next.push(_byType[type][i]);
+        }
+        _byType[type] = next;
+    }
+
+    function attachBoard(boardKey) {
+        var key = String(boardKey || "");
+        if (_activeBoardKey && key && _activeBoardKey !== key) {
+            reset("boardKey changed: " + _activeBoardKey + " -> " + key);
+        }
+        _activeBoardKey = key;
+        return _activeBoardKey;
+    }
+
+    function register(wrapper) {
+        if (!wrapper) {
+            _ui("warn", "register: wrapper is null", null, "register");
+            return false;
+        }
+
+        var handle = _readHandle(wrapper);
+        var address = _readAddress(wrapper);
+        var type = _readType(wrapper);
+
+        if (wrapper.poolId === undefined || wrapper.poolId === null) {
+            _poolSeq = _poolSeq + 1;
+            wrapper.poolId = _poolSeq;
+        }
+
+        if (handle === null && address === null && (wrapper.poolId === null || wrapper.poolId === undefined)) {
+            _ui("warn", "register: missing handle/address", { type: type }, "register");
+            return false;
+        }
+
+        var handleKey = _toKey(handle);
+        var addrKey = _toKey(address);
+
+        if (handleKey !== null) {
+            _byHandle[handleKey] = wrapper;
+        } else if (_isRefHandle(handle)) {
+            _byHandleRef.push({ handle: handle, wrapper: wrapper });
+        }
+        if (addrKey !== null) {
+            _byAddress[addrKey] = wrapper;
+        }
+        if (wrapper.poolId !== undefined && wrapper.poolId !== null) {
+            _byPoolId[String(wrapper.poolId)] = wrapper;
+        }
+
+        if (!_byType[type]) {
+            _byType[type] = [];
+        }
+        _byType[type].push(wrapper);
+
+        _stats.registered++;
+        _stats.total = _countTotal();
+        return true;
+    }
+
+    function _countTotal() {
+        var key;
+        var count = 0;
+        var seen = [];
+        function _mark(wrapper) {
+            if (!wrapper) return;
+            var i;
+            for (i = 0; i < seen.length; i++) {
+                if (seen[i] === wrapper) return;
+            }
+            seen.push(wrapper);
+            count++;
+        }
+        for (key in _byHandle) {
+            if (_byHandle.hasOwnProperty(key)) _mark(_byHandle[key]);
+        }
+        for (key in _byAddress) {
+            if (_byAddress.hasOwnProperty(key)) _mark(_byAddress[key]);
+        }
+        for (key in _byPoolId) {
+            if (_byPoolId.hasOwnProperty(key)) _mark(_byPoolId[key]);
+        }
+        if (_byHandleRef.length) {
+            count += _byHandleRef.length;
+        }
+        return count;
+    }
+
+    function getByHandle(handle) {
+        if (_isRefHandle(handle)) {
+            var i;
+            for (i = 0; i < _byHandleRef.length; i++) {
+                if (_byHandleRef[i].handle === handle) {
+                    _stats.hits++;
+                    return _byHandleRef[i].wrapper;
+                }
+            }
+            _stats.misses++;
+            return null;
+        }
+
+        var key = String(handle || "");
+        if (_byHandle.hasOwnProperty(key)) {
+            _stats.hits++;
+            return _byHandle[key];
+        }
+        _stats.misses++;
+        return null;
+    }
+
+    function getByAddress(address) {
+        var key = String(address || "");
+        if (_byAddress.hasOwnProperty(key)) {
+            _stats.hits++;
+            return _byAddress[key];
+        }
+        _stats.misses++;
+        return null;
+    }
+
+    function getByPoolId(poolId) {
+        var key = String(poolId || "");
+        if (_byPoolId.hasOwnProperty(key)) {
+            _stats.hits++;
+            return _byPoolId[key];
+        }
+        _stats.misses++;
+        return null;
+    }
+
+    function invalidate(keyOrWrapper) {
+        var wrapper = null;
+        if (keyOrWrapper && typeof keyOrWrapper === "object") {
+            wrapper = keyOrWrapper;
+        } else {
+            var k = String(keyOrWrapper || "");
+            wrapper = _byHandle[k] || _byAddress[k] || _byPoolId[k] || null;
+        }
+
+        if (!wrapper) return false;
+
+        var handle = _readHandle(wrapper);
+        var address = _readAddress(wrapper);
+
+        if (handle !== null && handle !== undefined) {
+            if (_isRefHandle(handle)) {
+                var next = [];
+                var i;
+                for (i = 0; i < _byHandleRef.length; i++) {
+                    if (_byHandleRef[i].handle !== handle) next.push(_byHandleRef[i]);
+                }
+                _byHandleRef = next;
+            } else {
+                delete _byHandle[String(handle)];
+            }
+        }
+        if (address !== null && address !== undefined) {
+            delete _byAddress[String(address)];
+        }
+        if (wrapper.poolId !== undefined && wrapper.poolId !== null) {
+            delete _byPoolId[String(wrapper.poolId)];
+        }
+
+        _removeFromType(wrapper);
+        _stats.invalidations++;
+        _stats.total = _countTotal();
+        return true;
+    }
+
+    function reset(reason) {
+        _byHandle = {};
+        _byHandleRef = [];
+        _byAddress = {};
+        _byPoolId = {};
+        _poolSeq = 0;
+        _byType = {};
+        _resetStats(reason || "reset");
+        return true;
+    }
+
+    function stats() {
+        var typeCounts = {};
+        var key;
+        for (key in _byType) {
+            if (_byType.hasOwnProperty(key)) {
+                typeCounts[key] = _byType[key].length;
+            }
+        }
+        var handleCount = 0;
+        var addressCount = 0;
+        var poolCount = 0;
+        for (key in _byHandle) {
+            if (_byHandle.hasOwnProperty(key)) handleCount++;
+        }
+        for (key in _byAddress) {
+            if (_byAddress.hasOwnProperty(key)) addressCount++;
+        }
+        for (key in _byPoolId) {
+            if (_byPoolId.hasOwnProperty(key)) poolCount++;
+        }
+        return {
+            total: _stats.total,
+            hits: _stats.hits,
+            misses: _stats.misses,
+            invalidations: _stats.invalidations,
+            registered: _stats.registered,
+            lastResetAt: _stats.lastResetAt,
+            lastResetReason: _stats.lastResetReason,
+            boardKey: _activeBoardKey,
+            byType: typeCounts,
+            byHandleCount: handleCount,
+            byAddressCount: addressCount,
+            byPoolIdCount: poolCount
+        };
+    }
+
+    function validateRef(wrapper) {
+        if (!wrapper) {
+            return { ok: false, error: "no-wrapper" };
+        }
+
+        var ref = null;
+        try {
+            if (wrapper.directRef) ref = wrapper.directRef;
+        } catch (e1) {}
+
+        try {
+            if (!ref && wrapper.nativeObject) ref = wrapper.nativeObject;
+        } catch (e2) {}
+
+        try {
+            if (!ref && wrapper.getNativeObject && typeof wrapper.getNativeObject === "function") {
+                ref = wrapper.getNativeObject();
+            }
+        } catch (e3) {}
+
+        if (!ref) {
+            invalidate(wrapper);
+            return { ok: false, error: "no-direct-ref" };
+        }
+
+        try {
+            if (ref.I_ObjectAddress !== undefined || ref.ObjectAddress !== undefined) {
+                return { ok: true };
+            }
+        } catch (e4) {}
+
+        invalidate(wrapper);
+        return { ok: false, error: "invalid-ref" };
+    }
+
+    // === 兼容旧接口 ===
+    function initialize() {
+        return reset("initialize");
+    }
+
+    function addToPool(poolType, key, object) {
+        var obj = object || null;
+        if (obj && typeof obj === "object") {
+            if (key !== undefined && key !== null) {
+                obj.handle = obj.handle !== undefined ? obj.handle : key;
+                obj.address = obj.address !== undefined ? obj.address : key;
+            }
+            return register(obj);
+        }
+        if (key !== undefined && key !== null) {
+            _byHandle[String(key)] = obj;
+            _stats.total = _countTotal();
+            return true;
+        }
+        return false;
+    }
+
+    function getFromPool(poolType, key) {
+        return getByPoolId(key) || getByHandle(key) || getByAddress(key);
+    }
+
+    function removeFromPool(poolType, key) {
+        return invalidate(key);
+    }
+
+    function clearPool(poolType) {
+        return reset("clearPool:" + String(poolType || ""));
+    }
+
+    function clearAllPools() {
+        return reset("clearAllPools");
+    }
+
+    function getPoolSize(poolType) {
+        return _countTotal();
+    }
+
+    function getAllPoolObjects(poolType) {
+        var list = [];
+        var seen = {};
+        var key;
+        for (key in _byPoolId) {
+            if (_byPoolId.hasOwnProperty(key)) {
+                list.push({ poolId: key, handle: null, address: null, wrapper: _byPoolId[key], type: _readType(_byPoolId[key]) });
+                seen[key] = true;
+            }
+        }
+        for (key in _byHandle) {
+            if (_byHandle.hasOwnProperty(key)) {
+                list.push({ poolId: _byHandle[key] && _byHandle[key].poolId !== undefined ? _byHandle[key].poolId : null, handle: key, address: null, wrapper: _byHandle[key], type: _readType(_byHandle[key]) });
+                seen[key] = true;
+            }
+        }
+        for (key in _byAddress) {
+            if (_byAddress.hasOwnProperty(key) && !seen[key]) {
+                list.push({ poolId: _byAddress[key] && _byAddress[key].poolId !== undefined ? _byAddress[key].poolId : null, handle: null, address: key, wrapper: _byAddress[key], type: _readType(_byAddress[key]) });
+            }
+        }
+        return list;
+    }
+
+    function getPoolStatistics() {
+        return stats();
+    }
+
+    function configurePool(config) {
+        // 兼容接口：当前实现不启用自动清理
+        return true;
+    }
+
+    function performCleanup() {
+        // 兼容接口：当前实现不执行自动清理
+        return 0;
+    }
+
+    return {
+        // 新API
+        attachBoard: attachBoard,
+        register: register,
+        getByHandle: getByHandle,
+        getByAddress: getByAddress,
+        getByPoolId: getByPoolId,
+        invalidate: invalidate,
+        reset: reset,
+        stats: stats,
+        validateRef: validateRef,
+
+        // 兼容旧接口
+        initialize: initialize,
+        addToPool: addToPool,
+        getFromPool: getFromPool,
+        removeFromPool: removeFromPool,
+        clearPool: clearPool,
+        clearAllPools: clearAllPools,
+        getPoolSize: getPoolSize,
+        getAllPoolObjects: getAllPoolObjects,
+        getPoolStatistics: getPoolStatistics,
+        configurePool: configurePool,
+        performCleanup: performCleanup,
+
+        version: _moduleVersion
+    };
+})();
+
+// 统一的环境检测和导出
+(function() {
+    if (typeof exportModule !== "undefined" && exportModule) {
+        try { exportModule("PCBObjectPool", PCBObjectPool); } catch (e0) {}
+    }
+
+    if (typeof window !== "undefined") {
+        window.PCBObjectPool = PCBObjectPool;
+    }
+
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = PCBObjectPool;
+    }
+
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.PCBObjectPool = PCBObjectPool;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/core/StackMap.js
+/**
+ * StackMap - 规范层名 <-> AD 层 ID/层序映射
+ * 100% 兼容 JScript 5.8 (ES3)
+ */
+
+var StackMap = (function(){
+    var _normalizedToLayerId = {};
+    var _layerIdToNormalized = {};
+    var _ordered = [];
+    var _initOk = false;
+    var _lastError = "";
+
+    function _ui(level, message, context, fnName) {
+        var text = String(message || "");
+        var payload = context || null;
+        var moduleName = "StackMap";
+        var functionName = fnName || "";
+
+        try {
+            if (typeof UILoggerModule !== "undefined" && UILoggerModule) {
+                if (level === "error" && UILoggerModule.uiError) {
+                    UILoggerModule.uiError(text, payload, moduleName, functionName);
+                    return;
+                }
+                if (level === "warn" && UILoggerModule.uiWarn) {
+                    UILoggerModule.uiWarn(text, payload, moduleName, functionName);
+                    return;
+                }
+                if (UILoggerModule.uiInfo) {
+                    UILoggerModule.uiInfo(text, payload, moduleName, functionName);
+                    return;
+                }
+            }
+        } catch (e1) {}
+
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) {
+                var line = "[" + String(level).toUpperCase() + "] " + text;
+                if (payload) {
+                    try { line += " " + JSON.stringify(payload); } catch (e2) {}
+                }
+                memLog.Lines.Add(line);
+                return;
+            }
+        } catch (e3) {}
+
+        try {
+            if (typeof ShowMessage !== "undefined") {
+                ShowMessage(text);
+            }
+        } catch (e4) {}
+    }
+
+    function _reset() {
+        _normalizedToLayerId = {};
+        _layerIdToNormalized = {};
+        _ordered = [];
+        _initOk = false;
+        _lastError = "";
+    }
+
+    function _addMapping(name, layerId) {
+        if (!name || layerId === undefined || layerId === null) return;
+        _normalizedToLayerId[name] = layerId;
+        _layerIdToNormalized[String(layerId)] = name;
+        var exists = false;
+        var i;
+        for (i = 0; i < _ordered.length; i++) {
+            if (_ordered[i] === name) { exists = true; break; }
+        }
+        if (!exists) _ordered.push(name);
+    }
+
+    function _fallbackMinimal() {
+        if (typeof eTopLayer !== "undefined") {
+            _addMapping("TopLayer", eTopLayer);
+        }
+        if (typeof eBottomLayer !== "undefined") {
+            _addMapping("BottomLayer", eBottomLayer);
+        }
+        if (typeof eMultiLayer !== "undefined") {
+            _addMapping("MultiLayer", eMultiLayer);
+        }
+    }
+
+    function initFromBoard(boardRef) {
+        _reset();
+
+        if (!boardRef || !boardRef.LayerStack) {
+            _lastError = "LayerStack not available";
+            _fallbackMinimal();
+            _ui("warn", "StackMap fallback: LayerStack not available", { hasBoard: !!boardRef }, "initFromBoard");
+            return { ok: false, error: _lastError, layers: _ordered.slice(0) };
+        }
+
+        var stack = boardRef.LayerStack;
+        if (!stack || !stack.FirstLayer || !stack.NextLayer) {
+            _lastError = "LayerStack methods not available";
+            _fallbackMinimal();
+            _ui("warn", "StackMap fallback: LayerStack methods not available", null, "initFromBoard");
+            return { ok: false, error: _lastError, layers: _ordered.slice(0) };
+        }
+
+        var layerObj = null;
+        var midIndex = 1;
+        try {
+            layerObj = stack.FirstLayer();
+        } catch (e1) {}
+
+        while (layerObj) {
+            var layerId = null;
+            var layerName = null;
+            var isUsed = true;
+            try { layerId = layerObj.LayerID; } catch (e2) {}
+            try { layerName = layerObj.Name; } catch (e3) {}
+            try { if (layerObj.IsUsed === false) isUsed = false; } catch (e4) {}
+
+            if (isUsed && layerId !== null && layerId !== undefined) {
+                if (typeof eTopLayer !== "undefined" && layerId === eTopLayer) {
+                    _addMapping("TopLayer", layerId);
+                } else if (typeof eBottomLayer !== "undefined" && layerId === eBottomLayer) {
+                    _addMapping("BottomLayer", layerId);
+                } else if (typeof eMultiLayer !== "undefined" && layerId === eMultiLayer) {
+                    _addMapping("MultiLayer", layerId);
+                } else {
+                    _addMapping("MidLayer" + midIndex, layerId);
+                    midIndex++;
+                }
+            }
+
+            try {
+                layerObj = stack.NextLayer(layerObj);
+            } catch (e5) {
+                layerObj = null;
+            }
+        }
+
+        _fallbackMinimal();
+        _initOk = true;
+        return { ok: true, error: null, layers: _ordered.slice(0) };
+    }
+
+    function getLayerId(name) {
+        if (_normalizedToLayerId.hasOwnProperty(name)) {
+            return _normalizedToLayerId[name];
+        }
+        _ui("warn", "Unsupported layer name", { name: name }, "getLayerId");
+        return null;
+    }
+
+    function getNormalizedLayerName(adLayerId) {
+        var key = String(adLayerId || "");
+        if (_layerIdToNormalized.hasOwnProperty(key)) {
+            return _layerIdToNormalized[key];
+        }
+        return null;
+    }
+
+    function getAllNormalizedLayers() {
+        return _ordered.slice(0);
+    }
+
+    function isSupportedLayerName(name) {
+        return _normalizedToLayerId.hasOwnProperty(name);
+    }
+
+    return {
+        initFromBoard: initFromBoard,
+        getLayerId: getLayerId,
+        getNormalizedLayerName: getNormalizedLayerName,
+        getAllNormalizedLayers: getAllNormalizedLayers,
+        isSupportedLayerName: isSupportedLayerName
+    };
+})();
+
+// 统一的环境检测和导出
+(function() {
+    if (typeof exportModule !== "undefined" && exportModule) {
+        try { exportModule("StackMap", StackMap); } catch (e0) {}
+    }
+
+    if (typeof window !== "undefined") {
+        window.StackMap = StackMap;
+    }
+
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = StackMap;
+    }
+
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.StackMap = StackMap;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/calculators/GeometryCalculator.js
+/**
+ * GeometryCalculator - 几何计算器
+ * 
+ * 提供PCB对象几何计算的核心功能
+ * 
+ * @author AD21 PCB Interface Module
+ * @version 1.0.0
+ */
+
+var GeometryCalculator = (function(){
+    // 简化的日志系统（用于测试）
+    var SimpleLogger = {
+        debug: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[DEBUG] " + msg); 
+            }
+        },
+        info: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[INFO] " + msg); 
+            }
+        },
+        warn: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[WARN] " + msg); 
+            }
+        },
+        error: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[ERROR] " + msg); 
+            }
+        }
+    };
+
+    var logger = SimpleLogger;
+
+    /**
+     * GeometryCalculator构造函数
+     */
+    function GeometryCalculator() {
+        // 构造函数逻辑
+    }
+
+/**
+ * 计算两点之间的距离
+ * @param {number} x1 第一个点的X坐标
+ * @param {number} y1 第一个点的Y坐标
+ * @param {number} x2 第二个点的X坐标
+ * @param {number} y2 第二个点的Y坐标
+ * @returns {number} 距离
+ */
+GeometryCalculator.calculateDistance = function(x1, y1, x2, y2) {
+    logger.debug("[GeometryCalculator][calculateDistance] START - params: " + JSON.stringify({
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2
+    }));
+    
+    try {
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        var distance = Math.sqrt(dx * dx + dy * dy);
+        
+        logger.debug("[GeometryCalculator][calculateDistance] SUCCESS - result: " + distance);
+        return distance;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateDistance] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算线段的角度（度）
+ * @param {number} x1 起点X坐标
+ * @param {number} y1 起点Y坐标
+ * @param {number} x2 终点X坐标
+ * @param {number} y2 终点Y坐标
+ * @returns {number} 角度（度）
+ */
+GeometryCalculator.calculateAngle = function(x1, y1, x2, y2) {
+    logger.debug("[GeometryCalculator][calculateAngle] START - params: " + JSON.stringify({
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2
+    }));
+    
+    try {
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+        var angleRad = Math.atan2(dy, dx);
+        var angleDeg = angleRad * 180 / Math.PI;
+        
+        // 确保角度在0-360度范围内
+        if (angleDeg < 0) {
+            angleDeg += 360;
+        }
+        
+        logger.debug("[GeometryCalculator][calculateAngle] SUCCESS - result: " + angleDeg);
+        return angleDeg;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateAngle] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算线段的中点
+ * @param {number} x1 起点X坐标
+ * @param {number} y1 起点Y坐标
+ * @param {number} x2 终点X坐标
+ * @param {number} y2 终点Y坐标
+ * @returns {Object} {x, y} 中点坐标
+ */
+GeometryCalculator.calculateMidPoint = function(x1, y1, x2, y2) {
+    logger.debug("[GeometryCalculator][calculateMidPoint] START - params: " + JSON.stringify({
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2
+    }));
+    
+    try {
+        var midX = (x1 + x2) / 2;
+        var midY = (y1 + y2) / 2;
+        
+        var result = { x: midX, y: midY };
+        
+        logger.debug("[GeometryCalculator][calculateMidPoint] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateMidPoint] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 极坐标转换为直角坐标
+ * @param {number} centerX 中心点X坐标
+ * @param {number} centerY 中心点Y坐标
+ * @param {number} radius 半径
+ * @param {number} angle 角度（度）
+ * @returns {Object} {x, y} 直角坐标
+ */
+GeometryCalculator.polarToCartesian = function(centerX, centerY, radius, angle) {
+    logger.debug("[GeometryCalculator][polarToCartesian] START - params: " + JSON.stringify({
+        centerX: centerX,
+        centerY: centerY,
+        radius: radius,
+        angle: angle
+    }));
+    
+    try {
+        var angleRad = angle * Math.PI / 180;
+        var x = centerX + radius * Math.cos(angleRad);
+        var y = centerY + radius * Math.sin(angleRad);
+        
+        var result = { x: x, y: y };
+        
+        logger.debug("[GeometryCalculator][polarToCartesian] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][polarToCartesian] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算圆弧长度
+ * @param {number} radius 半径
+ * @param {number} startAngle 起始角度（度）
+ * @param {number} endAngle 结束角度（度）
+ * @returns {number} 圆弧长度
+ */
+GeometryCalculator.calculateArcLength = function(radius, startAngle, endAngle) {
+    logger.debug("[GeometryCalculator][calculateArcLength] START - params: " + JSON.stringify({
+        radius: radius,
+        startAngle: startAngle,
+        endAngle: endAngle
+    }));
+    
+    try {
+        var angleDiff = endAngle - startAngle;
+        
+        // 处理角度跨越0度的情况
+        if (angleDiff < 0) {
+            angleDiff += 360;
+        }
+        
+        var angleRad = angleDiff * Math.PI / 180;
+        var arcLength = radius * angleRad;
+        
+        logger.debug("[GeometryCalculator][calculateArcLength] SUCCESS - result: " + arcLength);
+        return arcLength;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateArcLength] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算圆的包围盒
+ * @param {number} centerX 中心点X坐标
+ * @param {number} centerY 中心点Y坐标
+ * @param {number} radius 半径
+ * @returns {Object} {x1, y1, x2, y2} 包围盒坐标
+ */
+GeometryCalculator.calculateCircleBoundingBox = function(centerX, centerY, radius) {
+    logger.debug("[GeometryCalculator][calculateCircleBoundingBox] START - params: " + JSON.stringify({
+        centerX: centerX,
+        centerY: centerY,
+        radius: radius
+    }));
+    
+    try {
+        var result = {
+            x1: centerX - radius,
+            y1: centerY - radius,
+            x2: centerX + radius,
+            y2: centerY + radius
+        };
+        
+        logger.debug("[GeometryCalculator][calculateCircleBoundingBox] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateCircleBoundingBox] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算矩形的包围盒
+ * @param {number} x 中心点X坐标
+ * @param {number} y 中心点Y坐标
+ * @param {number} width 宽度
+ * @param {number} height 高度
+ * @returns {Object} {x1, y1, x2, y2} 包围盒坐标
+ */
+GeometryCalculator.calculateRectBoundingBox = function(x, y, width, height) {
+    logger.debug("[GeometryCalculator][calculateRectBoundingBox] START - params: " + JSON.stringify({
+        x: x,
+        y: y,
+        width: width,
+        height: height
+    }));
+    
+    try {
+        var halfWidth = width / 2;
+        var halfHeight = height / 2;
+        
+        var result = {
+            x1: x - halfWidth,
+            y1: y - halfHeight,
+            x2: x + halfWidth,
+            y2: y + halfHeight
+        };
+        
+        logger.debug("[GeometryCalculator][calculateRectBoundingBox] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateRectBoundingBox] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算走线的包围盒
+ * @param {number} x1 起点X坐标
+ * @param {number} y1 起点Y坐标
+ * @param {number} x2 终点X坐标
+ * @param {number} y2 终点Y坐标
+ * @param {number} width 线宽
+ * @returns {Object} {x1, y1, x2, y2} 包围盒坐标
+ */
+GeometryCalculator.calculateTrackBoundingBox = function(x1, y1, x2, y2, width) {
+    logger.debug("[GeometryCalculator][calculateTrackBoundingBox] START - params: " + JSON.stringify({
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        width: width
+    }));
+    
+    try {
+        var halfWidth = width / 2;
+        
+        var result = {
+            x1: Math.min(x1, x2) - halfWidth,
+            y1: Math.min(y1, y2) - halfWidth,
+            x2: Math.max(x1, x2) + halfWidth,
+            y2: Math.max(y1, y2) + halfWidth
+        };
+        
+        logger.debug("[GeometryCalculator][calculateTrackBoundingBox] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateTrackBoundingBox] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算圆的面积
+ * @param {number} radius 半径
+ * @returns {number} 面积
+ */
+GeometryCalculator.calculateCircleArea = function(radius) {
+    logger.debug("[GeometryCalculator][calculateCircleArea] START - params: " + JSON.stringify({
+        radius: radius
+    }));
+    
+    try {
+        var area = Math.PI * radius * radius;
+        
+        logger.debug("[GeometryCalculator][calculateCircleArea] SUCCESS - result: " + area);
+        return area;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateCircleArea] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算焊盘面积
+ * @param {number} sizeX X方向尺寸
+ * @param {number} sizeY Y方向尺寸
+ * @param {string} shape 形状（Rect, Round, Octagonal, RoundedRect）
+ * @returns {number} 面积
+ */
+GeometryCalculator.calculatePadArea = function(sizeX, sizeY, shape) {
+    logger.debug("[GeometryCalculator][calculatePadArea] START - params: " + JSON.stringify({
+        sizeX: sizeX,
+        sizeY: sizeY,
+        shape: shape
+    }));
+    
+    try {
+        var area;
+        
+        switch (shape) {
+            case "Round":
+                var radius = Math.min(sizeX, sizeY) / 2;
+                area = Math.PI * radius * radius;
+                break;
+            case "Rect":
+                area = sizeX * sizeY;
+                break;
+            case "Octagonal":
+                // 八边形面积近似为矩形面积的0.828倍
+                area = sizeX * sizeY * 0.828;
+                break;
+            case "RoundedRect":
+                // 圆角矩形面积近似为矩形面积的0.95倍
+                area = sizeX * sizeY * 0.95;
+                break;
+            default:
+                area = sizeX * sizeY;
+        }
+        
+        logger.debug("[GeometryCalculator][calculatePadArea] SUCCESS - result: " + area);
+        return area;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculatePadArea] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 检查点是否在圆内
+ * @param {number} x 点的X坐标
+ * @param {number} y 点的Y坐标
+ * @param {number} centerX 圆心X坐标
+ * @param {number} centerY 圆心Y坐标
+ * @param {number} radius 半径
+ * @returns {boolean} 是否在圆内
+ */
+GeometryCalculator.isPointInCircle = function(x, y, centerX, centerY, radius) {
+    logger.debug("[GeometryCalculator][isPointInCircle] START - params: " + JSON.stringify({
+        x: x,
+        y: y,
+        centerX: centerX,
+        centerY: centerY,
+        radius: radius
+    }));
+    
+    try {
+        var distance = GeometryCalculator.calculateDistance(x, y, centerX, centerY);
+        var result = distance <= radius;
+        
+        logger.debug("[GeometryCalculator][isPointInCircle] SUCCESS - result: " + result);
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][isPointInCircle] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 检查点是否在线段上
+ * @param {number} x 点的X坐标
+ * @param {number} y 点的Y坐标
+ * @param {number} x1 线段起点X坐标
+ * @param {number} y1 线段起点Y坐标
+ * @param {number} x2 线段终点X坐标
+ * @param {number} y2 线段终点Y坐标
+ * @param {number} tolerance 容差
+ * @returns {boolean} 是否在线段上
+ */
+GeometryCalculator.isPointOnLine = function(x, y, x1, y1, x2, y2, tolerance) {
+    logger.debug("[GeometryCalculator][isPointOnLine] START - params: " + JSON.stringify({
+        x: x,
+        y: y,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        tolerance: tolerance
+    }));
+    
+    try {
+        // 计算点到线段的距离
+        var A = x - x1;
+        var B = y - y1;
+        var C = x2 - x1;
+        var D = y2 - y1;
+        
+        var dot = A * C + B * D;
+        var lenSq = C * C + D * D;
+        var param = -1;
+        
+        if (lenSq !== 0) {
+            param = dot / lenSq;
+        }
+        
+        var xx, yy;
+        
+        if (param < 0) {
+            xx = x1;
+            yy = y1;
+        } else if (param > 1) {
+            xx = x2;
+            yy = y2;
+        } else {
+            xx = x1 + param * C;
+            yy = y1 + param * D;
+        }
+        
+        var distance = GeometryCalculator.calculateDistance(x, y, xx, yy);
+        var result = distance <= tolerance;
+        
+        logger.debug("[GeometryCalculator][isPointOnLine] SUCCESS - result: " + result);
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][isPointOnLine] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 检查点是否在圆弧上
+ * @param {number} x 点的X坐标
+ * @param {number} y 点的Y坐标
+ * @param {number} centerX 圆弧中心X坐标
+ * @param {number} centerY 圆弧中心Y坐标
+ * @param {number} radius 半径
+ * @param {number} startAngle 起始角度（度）
+ * @param {number} endAngle 结束角度（度）
+ * @param {number} tolerance 容差
+ * @returns {boolean} 是否在圆弧上
+ */
+GeometryCalculator.isPointOnArc = function(x, y, centerX, centerY, radius, startAngle, endAngle, tolerance) {
+    logger.debug("[GeometryCalculator][isPointOnArc] START - params: " + JSON.stringify({
+        x: x,
+        y: y,
+        centerX: centerX,
+        centerY: centerY,
+        radius: radius,
+        startAngle: startAngle,
+        endAngle: endAngle,
+        tolerance: tolerance
+    }));
+    
+    try {
+        // 首先检查点是否在圆环内
+        var distance = GeometryCalculator.calculateDistance(x, y, centerX, centerY);
+        if (Math.abs(distance - radius) > tolerance) {
+            logger.debug("[GeometryCalculator][isPointOnArc] SUCCESS - result: false (not on circle)");
+            return false;
+        }
+        
+        // 计算点的角度
+        var angle = GeometryCalculator.calculateAngle(centerX, centerY, x, y);
+        
+        // 检查角度是否在圆弧范围内
+        var result;
+        if (startAngle <= endAngle) {
+            result = angle >= startAngle && angle <= endAngle;
+        } else {
+            // 处理跨越0度的情况
+            result = angle >= startAngle || angle <= endAngle;
+        }
+        
+        logger.debug("[GeometryCalculator][isPointOnArc] SUCCESS - result: " + result);
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][isPointOnArc] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 检查点是否在焊盘内
+ * @param {number} x 点的X坐标
+ * @param {number} y 点的Y坐标
+ * @param {number} padX 焊盘中心X坐标
+ * @param {number} padY 焊盘中心Y坐标
+ * @param {number} sizeX 焊盘X方向尺寸
+ * @param {number} sizeY 焊盘Y方向尺寸
+ * @param {string} shape 焊盘形状
+ * @param {number} rotation 旋转角度（度）
+ * @returns {boolean} 是否在焊盘内
+ */
+GeometryCalculator.isPointInPad = function(x, y, padX, padY, sizeX, sizeY, shape, rotation) {
+    logger.debug("[GeometryCalculator][isPointInPad] START - params: " + JSON.stringify({
+        x: x,
+        y: y,
+        padX: padX,
+        padY: padY,
+        sizeX: sizeX,
+        sizeY: sizeY,
+        shape: shape,
+        rotation: rotation
+    }));
+    
+    try {
+        // 如果有旋转，先旋转点坐标
+        if (rotation && rotation !== 0) {
+            var rotatedPoint = GeometryCalculator.rotatePoint(x, y, padX, padY, -rotation);
+            x = rotatedPoint.x;
+            y = rotatedPoint.y;
+        }
+        
+        var result;
+        
+        switch (shape) {
+            case "Round":
+                var radius = Math.min(sizeX, sizeY) / 2;
+                result = GeometryCalculator.isPointInCircle(x, y, padX, padY, radius);
+                break;
+            case "Rect":
+            case "RoundedRect":
+                var halfWidth = sizeX / 2;
+                var halfHeight = sizeY / 2;
+                result = x >= padX - halfWidth && x <= padX + halfWidth &&
+                        y >= padY - halfHeight && y <= padY + halfHeight;
+                break;
+            case "Octagonal":
+                // 八边形检测简化为内切圆检测
+                var inscribedRadius = Math.min(sizeX, sizeY) / 2 * 0.924;
+                result = GeometryCalculator.isPointInCircle(x, y, padX, padY, inscribedRadius);
+                break;
+            default:
+                // 默认按矩形处理
+                var halfWidth = sizeX / 2;
+                var halfHeight = sizeY / 2;
+                result = x >= padX - halfWidth && x <= padX + halfWidth &&
+                        y >= padY - halfHeight && y <= padY + halfHeight;
+        }
+        
+        logger.debug("[GeometryCalculator][isPointInPad] SUCCESS - result: " + result);
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][isPointInPad] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 旋转点坐标
+ * @param {number} x 点的X坐标
+ * @param {number} y 点的Y坐标
+ * @param {number} centerX 旋转中心X坐标
+ * @param {number} centerY 旋转中心Y坐标
+ * @param {number} angle 旋转角度（度）
+ * @returns {Object} {x, y} 旋转后的坐标
+ */
+GeometryCalculator.rotatePoint = function(x, y, centerX, centerY, angle) {
+    logger.debug("[GeometryCalculator][rotatePoint] START - params: " + JSON.stringify({
+        x: x,
+        y: y,
+        centerX: centerX,
+        centerY: centerY,
+        angle: angle
+    }));
+    
+    try {
+        var angleRad = angle * Math.PI / 180;
+        var cos = Math.cos(angleRad);
+        var sin = Math.sin(angleRad);
+        
+        var dx = x - centerX;
+        var dy = y - centerY;
+        
+        var rotatedX = centerX + dx * cos - dy * sin;
+        var rotatedY = centerY + dx * sin + dy * cos;
+        
+        var result = { x: rotatedX, y: rotatedY };
+        
+        logger.debug("[GeometryCalculator][rotatePoint] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][rotatePoint] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 延长线段
+ * @param {number} x1 线段起点X坐标
+ * @param {number} y1 线段起点Y坐标
+ * @param {number} x2 线段终点X坐标
+ * @param {number} y2 线段终点Y坐标
+ * @param {number} extension 延长距离
+ * @returns {Object} {x, y} 延长后的点坐标
+ */
+GeometryCalculator.extendLine = function(x1, y1, x2, y2, extension) {
+    logger.debug("[GeometryCalculator][extendLine] START - params: " + JSON.stringify({
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
+        extension: extension
+    }));
+    
+    try {
+        var angle = GeometryCalculator.calculateAngle(x1, y1, x2, y2);
+        var angleRad = angle * Math.PI / 180;
+        
+        var extendedX = x2 + extension * Math.cos(angleRad);
+        var extendedY = y2 + extension * Math.sin(angleRad);
+        
+        var result = { x: extendedX, y: extendedY };
+        
+        logger.debug("[GeometryCalculator][extendLine] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][extendLine] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 检查两个包围盒是否相交
+ * @param {Object} box1 第一个包围盒 {x1, y1, x2, y2}
+ * @param {Object} box2 第二个包围盒 {x1, y1, x2, y2}
+ * @returns {boolean} 是否相交
+ */
+GeometryCalculator.doBoundingBoxesIntersect = function(box1, box2) {
+    logger.debug("[GeometryCalculator][doBoundingBoxesIntersect] START - params: " + JSON.stringify({
+        box1: box1,
+        box2: box2
+    }));
+    
+    try {
+        var result = !(box1.x2 < box2.x1 || box2.x2 < box1.x1 ||
+                      box1.y2 < box2.y1 || box2.y2 < box1.y1);
+        
+        logger.debug("[GeometryCalculator][doBoundingBoxesIntersect] SUCCESS - result: " + result);
+        return result;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][doBoundingBoxesIntersect] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+// 电气计算相关方法（简化实现）
+
+/**
+ * 计算走线电阻
+ * @param {number} length 长度（mm）
+ * @param {number} width 宽度（mm）
+ * @param {number} thickness 厚度（mm）
+ * @returns {number} 电阻值（欧姆）
+ */
+GeometryCalculator.calculateTrackResistance = function(length, width, thickness) {
+    logger.debug("[GeometryCalculator][calculateTrackResistance] START - params: " + JSON.stringify({
+        length: length,
+        width: width,
+        thickness: thickness
+    }));
+    
+    try {
+        // 铜的电阻率：0.0175 Ω·mm?/m
+        var resistivity = 0.0175;
+        var crossSection = width * thickness; // mm?
+        var resistance = resistivity * length / 1000 / crossSection; // 转换为米
+        
+        logger.debug("[GeometryCalculator][calculateTrackResistance] SUCCESS - result: " + resistance);
+        return resistance;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateTrackResistance] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算走线电容
+ * @param {number} length 长度（mm）
+ * @param {number} width 宽度（mm）
+ * @param {Object} layer 层对象
+ * @returns {number} 电容值（pF）
+ */
+GeometryCalculator.calculateTrackCapacitance = function(length, width, layer) {
+    logger.debug("[GeometryCalculator][calculateTrackCapacitance] START - params: " + JSON.stringify({
+        length: length,
+        width: width,
+        layer: layer
+    }));
+    
+    try {
+        // 简化的电容计算，实际需要考虑介电常数、层间距等
+        var dielectricConstant = 4.5; // FR4的介电常数
+        var capacitancePerMm = 0.2; // pF/mm 经验值
+        var capacitance = length * capacitancePerMm;
+        
+        logger.debug("[GeometryCalculator][calculateTrackCapacitance] SUCCESS - result: " + capacitance);
+        return capacitance;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateTrackCapacitance] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算走线阻抗
+ * @param {number} width 宽度（mm）
+ * @param {number} thickness 厚度（mm）
+ * @param {Object} layer 层对象
+ * @returns {number} 阻抗值（欧姆）
+ */
+GeometryCalculator.calculateTrackImpedance = function(width, thickness, layer) {
+    logger.debug("[GeometryCalculator][calculateTrackImpedance] START - params: " + JSON.stringify({
+        width: width,
+        thickness: thickness,
+        layer: layer
+    }));
+    
+    try {
+        // 简化的阻抗计算，实际需要考虑层间距、介电常数等
+        var impedance = 50; // 默认50欧姆
+        if (width > 0.2) {
+            impedance = 35; // 较宽的走线阻抗较低
+        } else if (width < 0.1) {
+            impedance = 65; // 较窄的走线阻抗较高
+        }
+        
+        logger.debug("[GeometryCalculator][calculateTrackImpedance] SUCCESS - result: " + impedance);
+        return impedance;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateTrackImpedance] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算过孔电阻
+ * @param {number} size 过孔直径（mm）
+ * @param {number} holeSize 孔径（mm）
+ * @param {Object} startLayer 起始层
+ * @param {Object} endLayer 结束层
+ * @returns {number} 电阻值（欧姆）
+ */
+GeometryCalculator.calculateViaResistance = function(size, holeSize, startLayer, endLayer) {
+    logger.debug("[GeometryCalculator][calculateViaResistance] START - params: " + JSON.stringify({
+        size: size,
+        holeSize: holeSize,
+        startLayer: startLayer,
+        endLayer: endLayer
+    }));
+    
+    try {
+        // 简化的过孔电阻计算
+        var ringThickness = (size - holeSize) / 2;
+        var resistance = 0.001; // 典型过孔电阻约1mΩ
+        
+        logger.debug("[GeometryCalculator][calculateViaResistance] SUCCESS - result: " + resistance);
+        return resistance;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateViaResistance] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算过孔电容
+ * @param {number} size 过孔直径（mm）
+ * @param {number} holeSize 孔径（mm）
+ * @param {Object} startLayer 起始层
+ * @param {Object} endLayer 结束层
+ * @returns {number} 电容值（pF）
+ */
+GeometryCalculator.calculateViaCapacitance = function(size, holeSize, startLayer, endLayer) {
+    logger.debug("[GeometryCalculator][calculateViaCapacitance] START - params: " + JSON.stringify({
+        size: size,
+        holeSize: holeSize,
+        startLayer: startLayer,
+        endLayer: endLayer
+    }));
+    
+    try {
+        // 简化的过孔电容计算
+        var capacitance = 0.5; // 典型过孔电容约0.5pF
+        
+        logger.debug("[GeometryCalculator][calculateViaCapacitance] SUCCESS - result: " + capacitance);
+        return capacitance;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateViaCapacitance] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算过孔电感
+ * @param {number} size 过孔直径（mm）
+ * @param {number} holeSize 孔径（mm）
+ * @param {Object} startLayer 起始层
+ * @param {Object} endLayer 结束层
+ * @returns {number} 电感值（nH）
+ */
+GeometryCalculator.calculateViaInductance = function(size, holeSize, startLayer, endLayer) {
+    logger.debug("[GeometryCalculator][calculateViaInductance] START - params: " + JSON.stringify({
+        size: size,
+        holeSize: holeSize,
+        startLayer: startLayer,
+        endLayer: endLayer
+    }));
+    
+    try {
+        // 简化的过孔电感计算
+        var inductance = 1.0; // 典型过孔电感约1nH
+        
+        logger.debug("[GeometryCalculator][calculateViaInductance] SUCCESS - result: " + inductance);
+        return inductance;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateViaInductance] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算过孔阻抗
+ * @param {number} size 过孔直径（mm）
+ * @param {number} holeSize 孔径（mm）
+ * @returns {number} 阻抗值（欧姆）
+ */
+GeometryCalculator.calculateViaImpedance = function(size, holeSize) {
+    logger.debug("[GeometryCalculator][calculateViaImpedance] START - params: " + JSON.stringify({
+        size: size,
+        holeSize: holeSize
+    }));
+    
+    try {
+        // 简化的过孔阻抗计算
+        var impedance = 25; // 典型过孔阻抗约25欧姆
+        
+        logger.debug("[GeometryCalculator][calculateViaImpedance] SUCCESS - result: " + impedance);
+        return impedance;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateViaImpedance] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+/**
+ * 计算过孔纵横比
+ * @param {Object} startLayer 起始层
+ * @param {Object} endLayer 结束层
+ * @param {number} holeSize 孔径（mm）
+ * @returns {number} 纵横比
+ */
+GeometryCalculator.calculateViaAspectRatio = function(startLayer, endLayer, holeSize) {
+    logger.debug("[GeometryCalculator][calculateViaAspectRatio] START - params: " + JSON.stringify({
+        startLayer: startLayer,
+        endLayer: endLayer,
+        holeSize: holeSize
+    }));
+    
+    try {
+        // 简化的层间距计算
+        var layerDistance = 1.6; // 标准FR4板厚1.6mm
+        var aspectRatio = layerDistance / holeSize;
+        
+        logger.debug("[GeometryCalculator][calculateViaAspectRatio] SUCCESS - result: " + aspectRatio);
+        return aspectRatio;
+        
+    } catch (error) {
+        logger.error("[GeometryCalculator][calculateViaAspectRatio] ERROR - " + error.message);
+        throw error;
+    }
+};
+
+    // 返回GeometryCalculator对象
+    return GeometryCalculator;
+    
+})();
+
+// AD环境兼容性导出
+if (typeof window !== "undefined") {
+    window.GeometryCalculator = GeometryCalculator;
+}
+
+
+// File: src/modules/pcb-interfaces/wrappers/ArcWrapper.js
+/**
+ * ArcWrapper - 圆弧对象封装 (v2.0.0)
+ * 
+ * 基于双向绑定架构的IPCB_Arc接口封装，提供圆弧对象的属性访问、计算和Mock支持
+ * 
+ * @author AD21 PCB Interface Module
+ * @version 2.0.0
+ */
+
+var ArcWrapper = (function(){
+    // 引入依赖 - 使用全局变量
+    // 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+    // BasePCBWrapper, GeometryCalculator
+
+    /**
+     * ArcWrapper构造函数
+     * 
+     * @param {Object} options 配置选项
+     * @param {Object} options.nativeObject 原始IPCB_Arc对象
+     * @param {boolean} options.enableMock 是否启用Mock模式
+     * @param {Object} options.mockData Mock数据
+     * @param {string} options.syncMode 同步模式 (realtime/auto/manual)
+     */
+    function ArcWrapper(options) {
+    options = options || {};
+    
+    // 调用基类构造函数
+    var baseInst = BasePCBWrapper.create({
+        objectType: "Arc",
+        nativeObject: options.nativeObject,
+        isMock: options.isMock || options.enableMock,
+        enableMock: options.enableMock,
+        mockData: options.mockData || ArcWrapper.getDefaultMockData(),
+        syncMode: options.syncMode || "auto"
+    });
+    
+    /**
+     * 重写：提取圆弧特有属性
+     */
+    function _extractSpecificProperties() {
+        if (baseInst.isMockMode()) {
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (!nativeObj) {
+                return;
+            }
+            
+            // 提取圆弧特有属性
+            baseInst.setNativeProperty("XCenter", nativeObj.XCenter);
+            baseInst.setNativeProperty("YCenter", nativeObj.YCenter);
+            baseInst.setNativeProperty("Radius", nativeObj.Radius);
+            baseInst.setNativeProperty("StartAngle", nativeObj.StartAngle);
+            baseInst.setNativeProperty("EndAngle", nativeObj.EndAngle);
+            baseInst.setNativeProperty("LineWidth", nativeObj.LineWidth);
+            baseInst.setNativeProperty("Layer", nativeObj.Layer);
+            
+        } catch (error) {
+            baseInst.handleError("_extractSpecificProperties", error);
+        }
+    }
+    
+    /**
+     * 重写：同步属性到原生对象
+     */
+    function _syncPropertiesToNative() {
+        if (baseInst.isMockMode()) {
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (!nativeObj) {
+                return;
+            }
+            
+            // 同步圆弧特有属性
+            nativeObj.XCenter = baseInst.getNativeProperty("XCenter");
+            nativeObj.YCenter = baseInst.getNativeProperty("YCenter");
+            nativeObj.Radius = baseInst.getNativeProperty("Radius");
+            nativeObj.StartAngle = baseInst.getNativeProperty("StartAngle");
+            nativeObj.EndAngle = baseInst.getNativeProperty("EndAngle");
+            nativeObj.LineWidth = baseInst.getNativeProperty("LineWidth");
+            nativeObj.Layer = baseInst.getNativeProperty("Layer");
+            
+        } catch (error) {
+            baseInst.handleError("_syncPropertiesToNative", error);
+        }
+    }
+    
+    // 重写基类的属性提取和同步方法
+    baseInst._extractSpecificProperties = _extractSpecificProperties;
+    baseInst._syncPropertiesToNative = _syncPropertiesToNative;
+    
+    // 初始化时提取属性
+    _extractSpecificProperties();
+    
+    /**
+     * 获取圆弧中心点X坐标
+     * @returns {number} X坐标
+     */
+    function getCenterX() {
+        if (baseInst.isMockMode()) {
+            var mockData = baseInst.getMockData();
+            // 优先使用用户提供的centerX，否则使用X1，最后使用默认值
+            return mockData.centerX !== undefined ? mockData.centerX : 
+                   (mockData.X1 !== undefined ? mockData.X1 : 0);
+        }
+        return baseInst.getNativeProperty("XCenter");
+    }
+    
+    /**
+     * 设置圆弧中心点X坐标
+     * @param {number} value X坐标
+     */
+    function setCenterX(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().centerX = value;
+        }
+        baseInst.setNativeProperty("XCenter", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取圆弧中心点Y坐标
+     * @returns {number} Y坐标
+     */
+    function getCenterY() {
+        if (baseInst.isMockMode()) {
+            var mockData = baseInst.getMockData();
+            // 优先使用用户提供的centerY，否则使用Y1，最后使用默认值
+            return mockData.centerY !== undefined ? mockData.centerY : 
+                   (mockData.Y1 !== undefined ? mockData.Y1 : 0);
+        }
+        return baseInst.getNativeProperty("YCenter");
+    }
+    
+    /**
+     * 设置圆弧中心点Y坐标
+     * @param {number} value Y坐标
+     */
+    function setCenterY(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().centerY = value;
+        }
+        baseInst.setNativeProperty("YCenter", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取圆弧半径
+     * @returns {number} 半径
+     */
+    function getRadius() {
+        if (baseInst.isMockMode()) {
+            var mockData = baseInst.getMockData();
+            // 优先使用用户提供的radius，否则计算默认值
+            return mockData.radius !== undefined ? mockData.radius : 1000;
+        }
+        return baseInst.getNativeProperty("Radius");
+    }
+    
+    /**
+     * 设置圆弧半径
+     * @param {number} value 半径
+     */
+    function setRadius(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().radius = value;
+        }
+        baseInst.setNativeProperty("Radius", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取起始角度（度）
+     * @returns {number} 起始角度
+     */
+    function getStartAngle() {
+        if (baseInst.isMockMode()) {
+            var mockData = baseInst.getMockData();
+            // 优先使用用户提供的startAngle，否则使用默认值0
+            return mockData.startAngle !== undefined ? mockData.startAngle : 0;
+        }
+        return baseInst.getNativeProperty("StartAngle");
+    }
+    
+    /**
+     * 设置起始角度（度）
+     * @param {number} value 起始角度
+     */
+    function setStartAngle(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().startAngle = value;
+        }
+        baseInst.setNativeProperty("StartAngle", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取结束角度（度）
+     * @returns {number} 结束角度
+     */
+    function getEndAngle() {
+        if (baseInst.isMockMode()) {
+            var mockData = baseInst.getMockData();
+            // 优先使用用户提供的endAngle，否则使用默认值90
+            return mockData.endAngle !== undefined ? mockData.endAngle : 90;
+        }
+        return baseInst.getNativeProperty("EndAngle");
+    }
+    
+    /**
+     * 设置结束角度（度）
+     * @param {number} value 结束角度
+     */
+    function setEndAngle(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().endAngle = value;
+        }
+        baseInst.setNativeProperty("EndAngle", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取线宽
+     * @returns {number} 线宽
+     */
+    function getLineWidth() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().lineWidth || 0.1;
+        }
+        return baseInst.getNativeProperty("LineWidth");
+    }
+    
+    /**
+     * 设置线宽
+     * @param {number} value 线宽
+     */
+    function setLineWidth(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().lineWidth = value;
+        }
+        baseInst.setNativeProperty("LineWidth", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取所在层
+     * @returns {Object} 层对象
+     */
+    function getLayer() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().layer || { "Name": "Top Layer" };
+        }
+        return baseInst.getNativeProperty("Layer");
+    }
+    
+    /**
+     * 设置所在层
+     * @param {Object} value 层对象
+     */
+    function setLayer(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().layer = value;
+        }
+        baseInst.setNativeProperty("Layer", value);
+        baseInst._markDirty();
+    }
+    
+    // ========== 高优先级API实现 ==========
+    
+    /**
+     * 绕指定点旋转圆弧 (高优先级API)
+     * @param {number} centerX 旋转中心X坐标
+     * @param {number} centerY 旋转中心Y坐标
+     * @param {number} angle 旋转角度（度）
+     */
+    function rotateAroundXY(centerX, centerY, angle) {
+        if (baseInst.isMockMode()) {
+            // Mock模式下简单更新中心点位置
+            var currentCenterX = getCenterX();
+            var currentCenterY = getCenterY();
+            var rad = angle * Math.PI / 180;
+            var newCenterX = centerX + (currentCenterX - centerX) * Math.cos(rad) - (currentCenterY - centerY) * Math.sin(rad);
+            var newCenterY = centerY + (currentCenterX - centerX) * Math.sin(rad) + (currentCenterY - centerY) * Math.cos(rad);
+            setCenterX(newCenterX);
+            setCenterY(newCenterY);
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.RotateAroundXY === "function") {
+                nativeObj.RotateAroundXY(centerX, centerY, angle);
+                // 旋转后重新提取属性
+                _extractSpecificProperties();
+            } else {
+                // 降级处理：手动计算旋转
+                var currentCenterX = getCenterX();
+                var currentCenterY = getCenterY();
+                var rad = angle * Math.PI / 180;
+                var newCenterX = centerX + (currentCenterX - centerX) * Math.cos(rad) - (currentCenterY - centerY) * Math.sin(rad);
+                var newCenterY = centerY + (currentCenterX - centerX) * Math.sin(rad) + (currentCenterY - centerY) * Math.cos(rad);
+                setCenterX(newCenterX);
+                setCenterY(newCenterY);
+                // 同时更新起始和结束角度
+                setStartAngle(getStartAngle() + angle);
+                setEndAngle(getEndAngle() + angle);
+            }
+        } catch (error) {
+            baseInst.handleError("rotateAroundXY", error);
+        }
+    }
+    
+    /**
+     * 精确点碰撞检测 (高优先级API)
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @returns {boolean} 是否碰撞
+     */
+    function getState_StrictHitTest(x, y) {
+        if (baseInst.isMockMode()) {
+            // Mock模式下使用简单的圆弧检测
+            return isPointOnArc(x, y, getLineWidth());
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.GetState_StrictHitTest === "function") {
+                return nativeObj.GetState_StrictHitTest(x, y);
+            }
+            // 降级处理：使用几何计算
+            return isPointOnArc(x, y, getLineWidth());
+        } catch (error) {
+            baseInst.handleError("getState_StrictHitTest", error);
+            return false;
+        }
+    }
+    
+    // ========== 几何计算方法 ==========
+    
+    /**
+     * 获取圆弧的起点坐标
+     * @returns {Object} {x, y} 坐标
+     */
+    function getStartPoint() {
+        var centerX = getCenterX();
+        var centerY = getCenterY();
+        var radius = getRadius();
+        var startAngle = getStartAngle();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.polarToCartesian(centerX, centerY, radius, startAngle);
+        }
+        
+        // 降级处理：手动计算
+        var rad = startAngle * Math.PI / 180;
+        return {
+            x: centerX + radius * Math.cos(rad),
+            y: centerY + radius * Math.sin(rad)
+        };
+    }
+    
+    /**
+     * 获取圆弧的终点坐标
+     * @returns {Object} {x, y} 坐标
+     */
+    function getEndPoint() {
+        var centerX = getCenterX();
+        var centerY = getCenterY();
+        var radius = getRadius();
+        var endAngle = getEndAngle();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.polarToCartesian(centerX, centerY, radius, endAngle);
+        }
+        
+        // 降级处理：手动计算
+        var rad = endAngle * Math.PI / 180;
+        return {
+            x: centerX + radius * Math.cos(rad),
+            y: centerY + radius * Math.sin(rad)
+        };
+    }
+    
+    /**
+     * 获取圆弧长度
+     * @returns {number} 圆弧长度
+     */
+    function getArcLength() {
+        var radius = getRadius();
+        var startAngle = getStartAngle();
+        var endAngle = getEndAngle();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateArcLength(radius, startAngle, endAngle);
+        }
+        
+        // 降级处理：手动计算
+        var angleDiff = endAngle - startAngle;
+        // 标准化角度差到0-360度范围
+        while (angleDiff < 0) {
+            angleDiff += 360;
+        }
+        while (angleDiff > 360) {
+            angleDiff -= 360;
+        }
+        return 2 * Math.PI * radius * (angleDiff / 360);
+    }
+    
+    /**
+     * 获取圆弧的包围盒
+     * @returns {Object} {x1, y1, x2, y2} 包围盒坐标
+     */
+    function getBoundingBox() {
+        var centerX = getCenterX();
+        var centerY = getCenterY();
+        var radius = getRadius();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateCircleBoundingBox(centerX, centerY, radius);
+        }
+        
+        // 降级处理：简单的圆形包围盒
+        return {
+            x1: centerX - radius,
+            y1: centerY - radius,
+            x2: centerX + radius,
+            y2: centerY + radius
+        };
+    }
+    
+    /**
+     * 检查点是否在圆弧上
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @param {number} tolerance 容差
+     * @returns {boolean} 是否在圆弧上
+     */
+    function isPointOnArc(x, y, tolerance) {
+        tolerance = tolerance || 0.01;
+        var centerX = getCenterX();
+        var centerY = getCenterY();
+        var radius = getRadius();
+        var startAngle = getStartAngle();
+        var endAngle = getEndAngle();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.isPointOnArc(x, y, centerX, centerY, radius, startAngle, endAngle, tolerance);
+        }
+        
+        // 降级处理：手动计算
+        // 1. 检查点到圆心的距离是否接近半径
+        var distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        if (Math.abs(distance - radius) > tolerance) {
+            return false;
+        }
+        
+        // 2. 检查点是否在圆弧角度范围内
+        var pointAngle = Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
+        var normalizedStart = startAngle % 360;
+        var normalizedEnd = endAngle % 360;
+        var normalizedPoint = pointAngle % 360;
+        
+        // 处理角度范围跨越0度的情况
+        if (normalizedStart <= normalizedEnd) {
+            return normalizedPoint >= normalizedStart && normalizedPoint <= normalizedEnd;
+        } else {
+            return normalizedPoint >= normalizedStart || normalizedPoint <= normalizedEnd;
+        }
+    }
+    
+    /**
+     * 反转圆弧方向
+     */
+    function reverse() {
+        var startAngle = getStartAngle();
+        var endAngle = getEndAngle();
+        
+        setStartAngle(endAngle);
+        setEndAngle(startAngle);
+    }
+    
+    /**
+     * 获取圆弧的完整信息
+     * @returns {Object} 圆弧信息对象
+     */
+    function getArcInfo() {
+        return {
+            centerX: getCenterX(),
+            centerY: getCenterY(),
+            radius: getRadius(),
+            startAngle: getStartAngle(),
+            endAngle: getEndAngle(),
+            lineWidth: getLineWidth(),
+            layer: getLayer(),
+            startPoint: getStartPoint(),
+            endPoint: getEndPoint(),
+            arcLength: getArcLength(),
+            boundingBox: getBoundingBox()
+        };
+    }
+    
+    /**
+     * 同步所有属性到原生对象
+     */
+    function syncToNative() {
+        baseInst.syncToNative();
+    }
+    
+    /**
+     * 从原生对象同步所有属性
+     */
+    function syncFromNative() {
+        _extractSpecificProperties();
+    }
+    
+    /**
+     * 获取默认Mock数据
+     * @returns {Object} 默认Mock数据
+     */
+    function getDefaultMockData() {
+        return {
+            centerX: 0,
+            centerY: 0,
+            radius: 1,
+            startAngle: 0,
+            endAngle: 90,
+            lineWidth: 0.1,
+            layer: { "Name": "Top Layer" }
+        };
+    }
+    
+    // 扩展基类实例
+    baseInst.getCenterX = getCenterX;
+    baseInst.setCenterX = setCenterX;
+    baseInst.getCenterY = getCenterY;
+    baseInst.setCenterY = setCenterY;
+    baseInst.getRadius = getRadius;
+    baseInst.setRadius = setRadius;
+    baseInst.getStartAngle = getStartAngle;
+    baseInst.setStartAngle = setStartAngle;
+    baseInst.getEndAngle = getEndAngle;
+    baseInst.setEndAngle = setEndAngle;
+    baseInst.getLineWidth = getLineWidth;
+    baseInst.setLineWidth = setLineWidth;
+    baseInst.getLayer = getLayer;
+    baseInst.setLayer = setLayer;
+    baseInst.getStartPoint = getStartPoint;
+    baseInst.getEndPoint = getEndPoint;
+    baseInst.getArcLength = getArcLength;
+    baseInst.getBoundingBox = getBoundingBox;
+    baseInst.isPointOnArc = isPointOnArc;
+    baseInst.reverse = reverse;
+    baseInst.getArcInfo = getArcInfo;
+    baseInst.syncToNative = syncToNative;
+    baseInst.syncFromNative = syncFromNative;
+    
+    // 高优先级API
+    baseInst.rotateAroundXY = rotateAroundXY;
+    baseInst.getState_StrictHitTest = getState_StrictHitTest;
+    
+    return baseInst;
+}
+
+/**
+ * 创建ArcWrapper实例
+ * 
+ * @param {Object} options 配置选项
+ * @returns {Object} ArcWrapper实例
+ */
+ArcWrapper.create = function(options) {
+    return ArcWrapper(options);
+};
+
+/**
+ * 获取默认Mock数据
+ * @returns {Object} 默认Mock数据
+ */
+ArcWrapper.getDefaultMockData = function() {
+    return {
+        centerX: 0,
+        centerY: 0,
+        radius: 1,
+        startAngle: 0,
+        endAngle: 90,
+        lineWidth: 0.1,
+        layer: { "Name": "Top Layer" }
+    };
+};
+
+    // 返回ArcWrapper构造函数
+    return ArcWrapper;
+    
+})();
+
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.ArcWrapper = ArcWrapper;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = ArcWrapper;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.ArcWrapper = ArcWrapper;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/wrappers/PadWrapper.js
+/**
+ * PadWrapper - 焊盘对象封装 (v2.0.0)
+ * 
+ * 基于双向绑定架构的IPCB_Pad接口封装，提供焊盘对象的属性访问、计算和Mock支持
+ * 
+ * @author AD21 PCB Interface Module
+ * @version 2.0.0
+ */
+
+var PadWrapper = (function(){
+    // 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+    // BasePCBWrapper, GeometryCalculator
+
+    /**
+     * PadWrapper构造函数
+     * 
+     * @param {Object} options 配置选项
+     * @param {Object} options.nativeObject 原始IPCB_Pad对象
+     * @param {boolean} options.enableMock 是否启用Mock模式
+     * @param {Object} options.mockData Mock数据
+     * @param {string} options.syncMode 同步模式 (realtime/auto/manual)
+     */
+    function PadWrapper(options) {
+    options = options || {};
+    
+    // 调用基类构造函数
+    var baseInst = BasePCBWrapper.create({
+        objectType: "Pad",
+        nativeObject: options.nativeObject,
+        isMock: options.isMock || options.enableMock,
+        enableMock: options.enableMock,
+        mockData: options.mockData || PadWrapper.getDefaultMockData(),
+        syncMode: options.syncMode || "auto"
+    });
+    
+    /**
+     * 重写：提取焊盘特有属性
+     */
+    function _extractSpecificProperties() {
+        if (baseInst.isMockMode()) {
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (!nativeObj) {
+                return;
+            }
+            
+            // 提取焊盘特有属性
+            baseInst.cachedProperties.X = nativeObj.X;
+            baseInst.cachedProperties.Y = nativeObj.Y;
+            baseInst.cachedProperties.SizeX = nativeObj.SizeX;
+            baseInst.cachedProperties.SizeY = nativeObj.SizeY;
+            baseInst.cachedProperties.Shape = nativeObj.Shape;
+            baseInst.cachedProperties.HoleSize = nativeObj.HoleSize;
+            baseInst.cachedProperties.Layer = nativeObj.Layer;
+            baseInst.cachedProperties.Name = nativeObj.Name;
+            baseInst.cachedProperties.PadType = nativeObj.PadType;
+            baseInst.cachedProperties.Rotation = nativeObj.Rotation;
+            baseInst.cachedProperties.Plated = nativeObj.Plated;
+            baseInst.cachedProperties.Connected = nativeObj.Connected;
+            
+            // 高优先级API：PadMode
+            if (typeof nativeObj.PadMode !== "undefined") {
+                baseInst.cachedProperties.PadMode = nativeObj.PadMode;
+            }
+            
+            // 中优先级API
+            if (typeof nativeObj.TopShape !== "undefined") {
+                baseInst.cachedProperties.TopShape = nativeObj.TopShape;
+            }
+            if (typeof nativeObj.MidShape !== "undefined") {
+                baseInst.cachedProperties.MidShape = nativeObj.MidShape;
+            }
+            if (typeof nativeObj.BotShape !== "undefined") {
+                baseInst.cachedProperties.BotShape = nativeObj.BotShape;
+            }
+            if (typeof nativeObj.SlotSize !== "undefined") {
+                baseInst.cachedProperties.SlotSize = nativeObj.SlotSize;
+            }
+            if (typeof nativeObj.SlotXSize !== "undefined") {
+                baseInst.cachedProperties.SlotXSize = nativeObj.SlotXSize;
+            }
+            if (typeof nativeObj.SlotYSize !== "undefined") {
+                baseInst.cachedProperties.SlotYSize = nativeObj.SlotYSize;
+            }
+            
+        } catch (error) {
+            baseInst.handleError("_extractSpecificProperties", error);
+        }
+    }
+    
+    /**
+     * 重写：同步属性到原生对象
+     */
+    function _syncPropertiesToNative() {
+        if (baseInst.isMockMode()) {
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (!nativeObj) {
+                return;
+            }
+            
+            // 同步基础属性
+            nativeObj.X = baseInst.getNativeProperty("X");
+            nativeObj.Y = baseInst.getNativeProperty("Y");
+            nativeObj.SizeX = baseInst.getNativeProperty("SizeX");
+            nativeObj.SizeY = baseInst.getNativeProperty("SizeY");
+            nativeObj.Shape = baseInst.getNativeProperty("Shape");
+            nativeObj.HoleSize = baseInst.getNativeProperty("HoleSize");
+            nativeObj.Layer = baseInst.getNativeProperty("Layer");
+            nativeObj.Name = baseInst.getNativeProperty("Name");
+            nativeObj.PadType = baseInst.getNativeProperty("PadType");
+            nativeObj.Rotation = baseInst.getNativeProperty("Rotation");
+            nativeObj.Plated = baseInst.getNativeProperty("Plated");
+            nativeObj.Connected = baseInst.getNativeProperty("Connected");
+            
+            // 同步高优先级API
+            if (typeof nativeObj.PadMode !== "undefined") {
+                nativeObj.PadMode = baseInst.getNativeProperty("PadMode");
+            }
+            
+            // 同步中优先级API
+            if (typeof nativeObj.TopShape !== "undefined") {
+                nativeObj.TopShape = baseInst.getNativeProperty("TopShape");
+            }
+            if (typeof nativeObj.MidShape !== "undefined") {
+                nativeObj.MidShape = baseInst.getNativeProperty("MidShape");
+            }
+            if (typeof nativeObj.BotShape !== "undefined") {
+                nativeObj.BotShape = baseInst.getNativeProperty("BotShape");
+            }
+            if (typeof nativeObj.SlotSize !== "undefined") {
+                nativeObj.SlotSize = baseInst.getNativeProperty("SlotSize");
+            }
+            if (typeof nativeObj.SlotXSize !== "undefined") {
+                nativeObj.SlotXSize = baseInst.getNativeProperty("SlotXSize");
+            }
+            if (typeof nativeObj.SlotYSize !== "undefined") {
+                nativeObj.SlotYSize = baseInst.getNativeProperty("SlotYSize");
+            }
+            
+        } catch (error) {
+            baseInst.handleError("_syncPropertiesToNative", error);
+        }
+    }
+    
+    // 重写基类的属性提取和同步方法
+    baseInst._extractSpecificProperties = _extractSpecificProperties;
+    baseInst._syncPropertiesToNative = _syncPropertiesToNative;
+
+    function _ui(level, message, context, fnName) {
+        var text = String(message || "");
+        var payload = context || null;
+        try {
+            if (typeof UILoggerModule !== "undefined" && UILoggerModule) {
+                if (level === "error" && UILoggerModule.uiError) {
+                    UILoggerModule.uiError(text, payload, "PadWrapper", fnName || "");
+                    return;
+                }
+                if (level === "warn" && UILoggerModule.uiWarn) {
+                    UILoggerModule.uiWarn(text, payload, "PadWrapper", fnName || "");
+                    return;
+                }
+                if (UILoggerModule.uiInfo) {
+                    UILoggerModule.uiInfo(text, payload, "PadWrapper", fnName || "");
+                    return;
+                }
+            }
+        } catch (e1) {}
+
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) {
+                var line = "[" + String(level).toUpperCase() + "] " + text;
+                if (payload) {
+                    try { line += " " + JSON.stringify(payload); } catch (e2) {}
+                }
+                memLog.Lines.Add(line);
+                return;
+            }
+        } catch (e3) {}
+
+        try { if (typeof ShowMessage !== "undefined") { ShowMessage(text); } } catch (e4) {}
+    }
+
+    function _setIdentityFromNative(nativeRef) {
+        if (!nativeRef) return;
+        baseInst.nativeObject = nativeRef;
+        baseInst.directRef = nativeRef;
+        baseInst.isMock = false;
+        try {
+            if (nativeRef.I_ObjectAddress !== undefined && nativeRef.I_ObjectAddress !== null) {
+                var t = typeof nativeRef.I_ObjectAddress;
+                var addr = null;
+                try { addr = nativeRef.I_ObjectAddress; } catch (eAddr1) {}
+                if (typeof addr === "function") {
+                    try { addr = addr(); } catch (eAddr2) {}
+                }
+                if (addr === null || addr === undefined || addr === 0) {
+                    if (t === "function" || t === "unknown") {
+                        addr = nativeRef.I_ObjectAddress();
+                    }
+                }
+                baseInst.handle = addr;
+                baseInst.address = addr;
+            } else if (nativeRef.ObjectAddress !== undefined && nativeRef.ObjectAddress !== null) {
+                baseInst.address = nativeRef.ObjectAddress;
+                baseInst.handle = nativeRef.ObjectAddress;
+            }
+        } catch (e1) {}
+        if (!baseInst.handle && nativeRef) {
+            baseInst.handle = nativeRef;
+            baseInst.address = nativeRef;
+        }
+    }
+
+    function _resolveLayerName(layerId) {
+        if (typeof StackMap !== "undefined" && StackMap && StackMap.getNormalizedLayerName) {
+            var name = StackMap.getNormalizedLayerName(layerId);
+            if (name) return name;
+        }
+        if (typeof eTopLayer !== "undefined" && layerId === eTopLayer) return "TopLayer";
+        if (typeof eBottomLayer !== "undefined" && layerId === eBottomLayer) return "BottomLayer";
+        if (typeof eMultiLayer !== "undefined" && layerId === eMultiLayer) return "MultiLayer";
+        return null;
+    }
+
+    function _resolveLayerId(layerName) {
+        if (typeof StackMap !== "undefined" && StackMap && StackMap.getLayerId) {
+            return StackMap.getLayerId(layerName);
+        }
+        if (layerName === "TopLayer" && typeof eTopLayer !== "undefined") return eTopLayer;
+        if (layerName === "BottomLayer" && typeof eBottomLayer !== "undefined") return eBottomLayer;
+        if (layerName === "MultiLayer" && typeof eMultiLayer !== "undefined") return eMultiLayer;
+        return null;
+    }
+
+    function _padModeToLayerMode(padMode) {
+        if (typeof ePadMode_Simple !== "undefined" && padMode === ePadMode_Simple) return "multilayer";
+        if (typeof ePadMode_LocalStack !== "undefined" && padMode === ePadMode_LocalStack) return "top-mid-bot";
+        if (typeof ePadMode_ExternalStack !== "undefined" && padMode === ePadMode_ExternalStack) return "full-stack";
+        if (padMode === 0) return "multilayer";
+        if (padMode === 1) return "top-mid-bot";
+        if (padMode === 2) return "full-stack";
+        return "multilayer";
+    }
+
+    function _layerModeToPadMode(layerMode) {
+        if (layerMode === "top-mid-bot") {
+            if (typeof ePadMode_LocalStack !== "undefined") return ePadMode_LocalStack;
+            return 1;
+        }
+        if (layerMode === "full-stack") {
+            if (typeof ePadMode_ExternalStack !== "undefined") return ePadMode_ExternalStack;
+            return 2;
+        }
+        if (typeof ePadMode_Simple !== "undefined") return ePadMode_Simple;
+        return 0;
+    }
+    
+    // 初始化时提取属性
+    _extractSpecificProperties();
+
+    if (options.nativeObject) {
+        _setIdentityFromNative(options.nativeObject);
+    }
+
+    if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+        try { PCBObjectPool.register(baseInst); } catch (eReg) {}
+    }
+    
+    /**
+     * 获取焊盘中心点X坐标
+     * @returns {number} X坐标
+     */
+    function getX() {
+        return baseInst.getNativeProperty("X");
+    }
+    
+    /**
+     * 设置焊盘中心点X坐标
+     * @param {number} value X坐标
+     */
+    function setX(value) {
+        baseInst.setNativeProperty("X", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取焊盘中心点Y坐标
+     * @returns {number} Y坐标
+     */
+    function getY() {
+        return baseInst.getNativeProperty("Y");
+    }
+    
+    /**
+     * 设置焊盘中心点Y坐标
+     * @param {number} value Y坐标
+     */
+    function setY(value) {
+        baseInst.setNativeProperty("Y", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取焊盘尺寸（X方向）
+     * @returns {number} X方向尺寸
+     */
+    function getSizeX() {
+        return baseInst.getNativeProperty("SizeX");
+    }
+    
+    /**
+     * 设置焊盘尺寸（X方向）
+     * @param {number} value X方向尺寸
+     */
+    function setSizeX(value) {
+        baseInst.setNativeProperty("SizeX", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取焊盘尺寸（Y方向）
+     * @returns {number} Y方向尺寸
+     */
+    function getSizeY() {
+        return baseInst.getNativeProperty("SizeY");
+    }
+    
+    /**
+     * 设置焊盘尺寸（Y方向）
+     * @param {number} value Y方向尺寸
+     */
+    function setSizeY(value) {
+        baseInst.setNativeProperty("SizeY", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取焊盘形状
+     * @returns {string} 焊盘形状（Rect, Round, Octagonal, RoundedRect）
+     */
+    function getShape() {
+        return baseInst.getNativeProperty("Shape");
+    }
+    
+    /**
+     * 设置焊盘形状
+     * @param {string} value 焊盘形状
+     */
+    function setShape(value) {
+        baseInst.setNativeProperty("Shape", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取钻孔尺寸
+     * @returns {number} 钻孔尺寸
+     */
+    function getHoleSize() {
+        return baseInst.getNativeProperty("HoleSize");
+    }
+    
+    /**
+     * 设置钻孔尺寸
+     * @param {number} value 钻孔尺寸
+     */
+    function setHoleSize(value) {
+        baseInst.setNativeProperty("HoleSize", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取所在层
+     * @returns {Object} 层对象
+     */
+    function getLayer() {
+        return baseInst.getNativeProperty("Layer");
+    }
+    
+    /**
+     * 设置所在层
+     * @param {Object} value 层对象
+     */
+    function setLayer(value) {
+        baseInst.setNativeProperty("Layer", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取焊盘编号
+     * @returns {string} 焊盘编号
+     */
+    function getName() {
+        return baseInst.getNativeProperty("Name");
+    }
+    
+    /**
+     * 设置焊盘编号
+     * @param {string} value 焊盘编号
+     */
+    function setName(value) {
+        baseInst.setNativeProperty("Name", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取焊盘类型
+     * @returns {string} 焊盘类型（Standard, Mechanical, Thermal, Fiducial）
+     */
+    function getPadType() {
+        return baseInst.getNativeProperty("PadType");
+    }
+    
+    /**
+     * 设置焊盘类型
+     * @param {string} value 焊盘类型
+     */
+    function setPadType(value) {
+        baseInst.setNativeProperty("PadType", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取焊盘旋转角度
+     * @returns {number} 旋转角度（度）
+     */
+    function getRotation() {
+        return baseInst.getNativeProperty("Rotation");
+    }
+    
+    /**
+     * 设置焊盘旋转角度
+     * @param {number} value 旋转角度（度）
+     */
+    function setRotation(value) {
+        baseInst.setNativeProperty("Rotation", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 检查焊盘是否被电镀
+     * @returns {boolean} 是否被电镀
+     */
+    function isPlated() {
+        return baseInst.getNativeProperty("Plated");
+    }
+    
+    /**
+     * 设置焊盘电镀状态
+     * @param {boolean} value 是否电镀
+     */
+    function setPlated(value) {
+        baseInst.setNativeProperty("Plated", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 检查焊盘是否已连接
+     * @returns {boolean} 是否已连接
+     */
+    function isConnected() {
+        return baseInst.getNativeProperty("Connected");
+    }
+    
+    // ========== 高优先级API实现 ==========
+    
+    /**
+     * 获取焊盘模式 (最高优先级API)
+     * @returns {number} 焊盘模式
+     */
+    function getPadMode() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().padMode || 0;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.PadMode !== "undefined") {
+                return nativeObj.PadMode;
+            }
+            return baseInst.getNativeProperty("PadMode") || 0;
+        } catch (error) {
+            baseInst.handleError("getPadMode", error);
+            return 0;
+        }
+    }
+    
+    /**
+     * 设置焊盘模式 (最高优先级API)
+     * @param {number} value 焊盘模式
+     */
+    function setPadMode(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().padMode = value;
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.PadMode !== "undefined") {
+                nativeObj.PadMode = value;
+            }
+            baseInst.setNativeProperty("PadMode", value);
+            baseInst._markDirty();
+        } catch (error) {
+            baseInst.handleError("setPadMode", error);
+        }
+    }
+    
+    /**
+     * 绕指定点旋转焊盘 (高优先级API)
+     * @param {number} centerX 旋转中心X坐标
+     * @param {number} centerY 旋转中心Y坐标
+     * @param {number} angle 旋转角度（度）
+     */
+    function rotateAroundXY(centerX, centerY, angle) {
+        if (baseInst.isMockMode()) {
+            // Mock模式下简单更新旋转角度
+            var currentRotation = getRotation();
+            setRotation(currentRotation + angle);
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.RotateAroundXY === "function") {
+                nativeObj.RotateAroundXY(centerX, centerY, angle);
+                // 旋转后重新提取属性
+                _extractSpecificProperties();
+            } else {
+                // 降级处理：手动计算旋转
+                var currentX = getX();
+                var currentY = getY();
+                var rad = angle * Math.PI / 180;
+                var newX = centerX + (currentX - centerX) * Math.cos(rad) - (currentY - centerY) * Math.sin(rad);
+                var newY = centerY + (currentX - centerX) * Math.sin(rad) + (currentY - centerY) * Math.cos(rad);
+                setX(newX);
+                setY(newY);
+                setRotation(getRotation() + angle);
+            }
+        } catch (error) {
+            baseInst.handleError("rotateAroundXY", error);
+        }
+    }
+    
+    /**
+     * 精确点碰撞检测 (高优先级API)
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @returns {boolean} 是否碰撞
+     */
+    function getState_StrictHitTest(x, y) {
+        if (baseInst.isMockMode()) {
+            // Mock模式下使用简单的矩形检测
+            var padX = getX();
+            var padY = getY();
+            var sizeX = getSizeX();
+            var sizeY = getSizeY();
+            return x >= padX - sizeX/2 && x <= padX + sizeX/2 &&
+                   y >= padY - sizeY/2 && y <= padY + sizeY/2;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.GetState_StrictHitTest === "function") {
+                return nativeObj.GetState_StrictHitTest(x, y);
+            }
+            // 降级处理：使用几何计算
+            return isPointInside(x, y);
+        } catch (error) {
+            baseInst.handleError("getState_StrictHitTest", error);
+            return false;
+        }
+    }
+    
+    // ========== 中优先级API实现 ==========
+    
+    /**
+     * 获取顶层焊盘形状 (中优先级API)
+     * @returns {string} 顶层形状
+     */
+    function getTopShape() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().topShape || getShape();
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.TopShape !== "undefined") {
+                return nativeObj.TopShape;
+            }
+            return baseInst.getNativeProperty("TopShape") || getShape();
+        } catch (error) {
+            baseInst.handleError("getTopShape", error);
+            return getShape();
+        }
+    }
+    
+    /**
+     * 设置顶层焊盘形状 (中优先级API)
+     * @param {string} value 顶层形状
+     */
+    function setTopShape(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().topShape = value;
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.TopShape !== "undefined") {
+                nativeObj.TopShape = value;
+            }
+            baseInst.setNativeProperty("TopShape", value);
+            baseInst._markDirty();
+        } catch (error) {
+            baseInst.handleError("setTopShape", error);
+        }
+    }
+    
+    /**
+     * 获取中间层焊盘形状 (中优先级API)
+     * @returns {string} 中间层形状
+     */
+    function getMidShape() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().midShape || getShape();
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.MidShape !== "undefined") {
+                return nativeObj.MidShape;
+            }
+            return baseInst.getNativeProperty("MidShape") || getShape();
+        } catch (error) {
+            baseInst.handleError("getMidShape", error);
+            return getShape();
+        }
+    }
+    
+    /**
+     * 设置中间层焊盘形状 (中优先级API)
+     * @param {string} value 中间层形状
+     */
+    function setMidShape(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().midShape = value;
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.MidShape !== "undefined") {
+                nativeObj.MidShape = value;
+            }
+            baseInst.setNativeProperty("MidShape", value);
+            baseInst._markDirty();
+        } catch (error) {
+            baseInst.handleError("setMidShape", error);
+        }
+    }
+    
+    /**
+     * 获取底层焊盘形状 (中优先级API)
+     * @returns {string} 底层形状
+     */
+    function getBotShape() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().botShape || getShape();
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.BotShape !== "undefined") {
+                return nativeObj.BotShape;
+            }
+            return baseInst.getNativeProperty("BotShape") || getShape();
+        } catch (error) {
+            baseInst.handleError("getBotShape", error);
+            return getShape();
+        }
+    }
+    
+    /**
+     * 设置底层焊盘形状 (中优先级API)
+     * @param {string} value 底层形状
+     */
+    function setBotShape(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().botShape = value;
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.BotShape !== "undefined") {
+                nativeObj.BotShape = value;
+            }
+            baseInst.setNativeProperty("BotShape", value);
+            baseInst._markDirty();
+        } catch (error) {
+            baseInst.handleError("setBotShape", error);
+        }
+    }
+    
+    /**
+     * 获取槽孔尺寸 (中优先级API)
+     * @returns {number} 槽孔尺寸
+     */
+    function getSlotSize() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().slotSize || getHoleSize();
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.SlotSize !== "undefined") {
+                return nativeObj.SlotSize;
+            }
+            return baseInst.getNativeProperty("SlotSize") || getHoleSize();
+        } catch (error) {
+            baseInst.handleError("getSlotSize", error);
+            return getHoleSize();
+        }
+    }
+    
+    /**
+     * 设置槽孔尺寸 (中优先级API)
+     * @param {number} value 槽孔尺寸
+     */
+    function setSlotSize(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().slotSize = value;
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.SlotSize !== "undefined") {
+                nativeObj.SlotSize = value;
+            }
+            baseInst.setNativeProperty("SlotSize", value);
+            baseInst._markDirty();
+        } catch (error) {
+            baseInst.handleError("setSlotSize", error);
+        }
+    }
+    
+    /**
+     * 获取槽孔X方向尺寸 (中优先级API)
+     * @returns {number} 槽孔X方向尺寸
+     */
+    function getSlotXSize() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().slotXSize || getHoleSize();
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.SlotXSize !== "undefined") {
+                return nativeObj.SlotXSize;
+            }
+            return baseInst.getNativeProperty("SlotXSize") || getHoleSize();
+        } catch (error) {
+            baseInst.handleError("getSlotXSize", error);
+            return getHoleSize();
+        }
+    }
+    
+    /**
+     * 设置槽孔X方向尺寸 (中优先级API)
+     * @param {number} value 槽孔X方向尺寸
+     */
+    function setSlotXSize(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().slotXSize = value;
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.SlotXSize !== "undefined") {
+                nativeObj.SlotXSize = value;
+            }
+            baseInst.setNativeProperty("SlotXSize", value);
+            baseInst._markDirty();
+        } catch (error) {
+            baseInst.handleError("setSlotXSize", error);
+        }
+    }
+    
+    /**
+     * 获取槽孔Y方向尺寸 (中优先级API)
+     * @returns {number} 槽孔Y方向尺寸
+     */
+    function getSlotYSize() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().slotYSize || getHoleSize();
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.SlotYSize !== "undefined") {
+                return nativeObj.SlotYSize;
+            }
+            return baseInst.getNativeProperty("SlotYSize") || getHoleSize();
+        } catch (error) {
+            baseInst.handleError("getSlotYSize", error);
+            return getHoleSize();
+        }
+    }
+    
+    /**
+     * 设置槽孔Y方向尺寸 (中优先级API)
+     * @param {number} value 槽孔Y方向尺寸
+     */
+    function setSlotYSize(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().slotYSize = value;
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.SlotYSize !== "undefined") {
+                nativeObj.SlotYSize = value;
+            }
+            baseInst.setNativeProperty("SlotYSize", value);
+            baseInst._markDirty();
+        } catch (error) {
+            baseInst.handleError("setSlotYSize", error);
+        }
+    }
+    
+    // ========== 几何计算方法 ==========
+    
+    /**
+     * 获取焊盘的包围盒
+     * @returns {Object} {x1, y1, x2, y2} 包围盒坐标
+     */
+    function getBoundingBox() {
+        var x = getX();
+        var y = getY();
+        var sizeX = getSizeX();
+        var sizeY = getSizeY();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateRectBoundingBox(x, y, sizeX, sizeY);
+        }
+        
+        // 降级处理
+        return {
+            x1: x - sizeX / 2,
+            y1: y - sizeY / 2,
+            x2: x + sizeX / 2,
+            y2: y + sizeY / 2
+        };
+    }
+    
+    /**
+     * 获取焊盘面积
+     * @returns {number} 焊盘面积
+     */
+    function getArea() {
+        var sizeX = getSizeX();
+        var sizeY = getSizeY();
+        var shape = getShape();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculatePadArea(sizeX, sizeY, shape);
+        }
+        
+        // 降级处理：简单矩形面积
+        return sizeX * sizeY;
+    }
+    
+    /**
+     * 检查点是否在焊盘内
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @returns {boolean} 是否在焊盘内
+     */
+    function isPointInside(x, y) {
+        var padX = getX();
+        var padY = getY();
+        var sizeX = getSizeX();
+        var sizeY = getSizeY();
+        var shape = getShape();
+        var rotation = getRotation();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.isPointInPad(x, y, padX, padY, sizeX, sizeY, shape, rotation);
+        }
+        
+        // 降级处理：简单的矩形检测
+        return x >= padX - sizeX/2 && x <= padX + sizeX/2 &&
+               y >= padY - sizeY/2 && y <= padY + sizeY/2;
+    }
+    
+    /**
+     * 获取焊盘的电气特性
+     * @returns {Object} 电气特性对象
+     */
+    function getElectricalProperties() {
+        return {
+            isPlated: isPlated(),
+            isConnected: isConnected(),
+            netName: getNetName(),
+            voltage: getVoltage()
+        };
+    }
+    
+    /**
+     * 获取网络名称
+     * @returns {string} 网络名称
+     */
+    function getNetName() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().netName || "";
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && nativeObj.Net && nativeObj.Net.Name) {
+                return nativeObj.Net.Name;
+            }
+            return "";
+        } catch (error) {
+            baseInst.handleError("getNetName", error);
+            return "";
+        }
+    }
+    
+    /**
+     * 获取焊盘电压
+     * @returns {number} 电压值
+     */
+    function getVoltage() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().voltage || 0;
+        }
+        // 实际实现需要从网络或其他地方获取电压信息
+        return 0;
+    }
+    
+    /**
+     * 获取焊盘的完整信息
+     * @returns {Object} 焊盘信息对象
+     */
+    function getPadInfo() {
+        return {
+            x: getX(),
+            y: getY(),
+            sizeX: getSizeX(),
+            sizeY: getSizeY(),
+            shape: getShape(),
+            holeSize: getHoleSize(),
+            layer: getLayer(),
+            name: getName(),
+            padType: getPadType(),
+            rotation: getRotation(),
+            padMode: getPadMode(),
+            topShape: getTopShape(),
+            midShape: getMidShape(),
+            botShape: getBotShape(),
+            slotSize: getSlotSize(),
+            slotXSize: getSlotXSize(),
+            slotYSize: getSlotYSize(),
+            boundingBox: getBoundingBox(),
+            area: getArea(),
+            electrical: getElectricalProperties()
+        };
+    }
+
+    function initFromNative(nativeRef) {
+        if (!nativeRef) {
+            _ui("warn", "initFromNative: nativeRef is null", null, "initFromNative");
+            return false;
+        }
+        _setIdentityFromNative(nativeRef);
+        try { _extractSpecificProperties(); } catch (e1) {}
+        if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+            try { PCBObjectPool.register(baseInst); } catch (eReg) {}
+        }
+        return true;
+    }
+
+    function toSpec() {
+        var nativeObj = baseInst.nativeObject || null;
+        var x = null, y = null, sizeX = null, sizeY = null, hole = null, shape = null;
+        var padMode = null;
+        var layerId = null;
+
+        try { x = nativeObj.X; } catch (e1) {}
+        try { y = nativeObj.Y; } catch (e2) {}
+        try { sizeX = nativeObj.SizeX; } catch (e3) {}
+        try { sizeY = nativeObj.SizeY; } catch (e4) {}
+        try { hole = nativeObj.HoleSize; } catch (e5) {}
+        try { shape = nativeObj.Shape; } catch (e6) {}
+        try { padMode = nativeObj.PadMode; } catch (e7) {}
+        try { layerId = nativeObj.Layer; } catch (e8) {}
+
+        var layerMode = _padModeToLayerMode(padMode);
+        var layerTable = {};
+        var note = null;
+
+        if (layerMode === "multilayer") {
+            var defaultLayerName = _resolveLayerName(layerId) || "MultiLayer";
+            layerTable[defaultLayerName] = { shape: shape, xSize: sizeX, ySize: sizeY };
+        } else if (layerMode === "top-mid-bot") {
+            layerTable.TopLayer = { shape: getTopShape(), xSize: sizeX, ySize: sizeY };
+            layerTable.MidLayer1 = { shape: getMidShape(), xSize: sizeX, ySize: sizeY };
+            layerTable.BottomLayer = { shape: getBotShape(), xSize: sizeX, ySize: sizeY };
+        } else {
+            // full-stack: 尝试按 StackMap 逐层读取（未确认具体API）
+            var layerNames = (typeof StackMap !== "undefined" && StackMap && StackMap.getAllNormalizedLayers) ? StackMap.getAllNormalizedLayers() : [];
+            var i;
+            for (i = 0; i < layerNames.length; i++) {
+                var name = layerNames[i];
+                if (name === "MultiLayer") continue;
+                var lid = _resolveLayerId(name);
+                if (lid === null) continue;
+                var xStack = null;
+                var yStack = null;
+                var sStack = null;
+                try {
+                    if (nativeObj.GetState_XStackSizeOnLayer) xStack = nativeObj.GetState_XStackSizeOnLayer(lid);
+                } catch (e9) {}
+                try {
+                    if (nativeObj.GetState_YStackSizeOnLayer) yStack = nativeObj.GetState_YStackSizeOnLayer(lid);
+                } catch (e10) {}
+                try {
+                    if (nativeObj.GetState_StackShapeOnLayer) sStack = nativeObj.GetState_StackShapeOnLayer(lid);
+                } catch (e11) {}
+
+                if (xStack !== null || yStack !== null || sStack !== null) {
+                    layerTable[name] = { shape: sStack || shape, xSize: xStack || sizeX, ySize: yStack || sizeY };
+                }
+            }
+            var hasAny = false;
+            var k;
+            for (k in layerTable) {
+                if (layerTable.hasOwnProperty(k)) { hasAny = true; break; }
+            }
+            if (!hasAny) {
+                layerTable.TopLayer = { shape: shape, xSize: sizeX, ySize: sizeY };
+                note = "未确认: full-stack 层数据读取";
+            }
+        }
+
+        return {
+            schema: "spec/0.1",
+            type: "pad",
+            handle: baseInst.handle || null,
+            address: baseInst.address || null,
+            payload: {
+                common: {
+                    x: x,
+                    y: y,
+                    net: getNetName(),
+                    rotation: getRotation(),
+                    isPlated: isPlated(),
+                    hole: { diameter: hole },
+                    note: note
+                },
+                layerMode: layerMode,
+                layerTable: layerTable
+            }
+        };
+    }
+
+    function applySpec(specPayload) {
+        if (!specPayload || !specPayload.common) {
+            return { ok: false, error: { code: "BAD_SPEC", message: "payload.common is required" } };
+        }
+
+        var nativeObj = baseInst.nativeObject || null;
+        if (!nativeObj) {
+            return { ok: false, error: { code: "NO_NATIVE", message: "native object not available" } };
+        }
+
+        var c = specPayload.common;
+        try { if (c.x !== undefined) nativeObj.X = c.x; } catch (e1) {}
+        try { if (c.y !== undefined) nativeObj.Y = c.y; } catch (e2) {}
+        try { if (c.rotation !== undefined) nativeObj.Rotation = c.rotation; } catch (e3) {}
+        try { if (c.isPlated !== undefined) nativeObj.Plated = c.isPlated; } catch (e4) {}
+        try { if (c.hole && c.hole.diameter !== undefined) nativeObj.HoleSize = c.hole.diameter; } catch (e5) {}
+
+        if (specPayload.layerMode) {
+            try { nativeObj.PadMode = _layerModeToPadMode(specPayload.layerMode); } catch (e6) {}
+        }
+
+        var layerTable = specPayload.layerTable || {};
+
+        if (specPayload.layerMode === "multilayer") {
+            var layerKey = layerTable.MultiLayer ? "MultiLayer" : (layerTable.TopLayer ? "TopLayer" : null);
+            if (layerKey) {
+                try { if (layerTable[layerKey].shape !== undefined) nativeObj.Shape = layerTable[layerKey].shape; } catch (e7) {}
+                try { if (layerTable[layerKey].xSize !== undefined) nativeObj.SizeX = layerTable[layerKey].xSize; } catch (e8) {}
+                try { if (layerTable[layerKey].ySize !== undefined) nativeObj.SizeY = layerTable[layerKey].ySize; } catch (e9) {}
+            }
+        } else if (specPayload.layerMode === "top-mid-bot") {
+            try { if (layerTable.TopLayer && layerTable.TopLayer.shape !== undefined) nativeObj.TopShape = layerTable.TopLayer.shape; } catch (e10) {}
+            try { if (layerTable.MidLayer1 && layerTable.MidLayer1.shape !== undefined) nativeObj.MidShape = layerTable.MidLayer1.shape; } catch (e11) {}
+            try { if (layerTable.BottomLayer && layerTable.BottomLayer.shape !== undefined) nativeObj.BotShape = layerTable.BottomLayer.shape; } catch (e12) {}
+            try { if (layerTable.TopLayer && layerTable.TopLayer.xSize !== undefined) nativeObj.SizeX = layerTable.TopLayer.xSize; } catch (e13) {}
+            try { if (layerTable.TopLayer && layerTable.TopLayer.ySize !== undefined) nativeObj.SizeY = layerTable.TopLayer.ySize; } catch (e14) {}
+        } else if (specPayload.layerMode === "full-stack") {
+            var canSetStack = (nativeObj.SetState_XStackSizeOnLayer || nativeObj.SetState_YStackSizeOnLayer || nativeObj.SetState_StackShapeOnLayer);
+            if (!canSetStack) {
+                _ui("warn", "applySpec: full-stack setters not available", null, "applySpec");
+            } else {
+                var name;
+                for (name in layerTable) {
+                    if (layerTable.hasOwnProperty(name)) {
+                        var lid = _resolveLayerId(name);
+                        if (lid === null) continue;
+                        try { if (nativeObj.SetState_XStackSizeOnLayer && layerTable[name].xSize !== undefined) nativeObj.SetState_XStackSizeOnLayer(lid, layerTable[name].xSize); } catch (e15) {}
+                        try { if (nativeObj.SetState_YStackSizeOnLayer && layerTable[name].ySize !== undefined) nativeObj.SetState_YStackSizeOnLayer(lid, layerTable[name].ySize); } catch (e16) {}
+                        try { if (nativeObj.SetState_StackShapeOnLayer && layerTable[name].shape !== undefined) nativeObj.SetState_StackShapeOnLayer(lid, layerTable[name].shape); } catch (e17) {}
+                    }
+                }
+            }
+        }
+
+        if (c.net) {
+            // 未确认：Net/Net.Name 写入方式，使用 feature-detect
+            try {
+                if (nativeObj.Net && nativeObj.Net.Name !== undefined) {
+                    nativeObj.Net.Name = c.net;
+                }
+            } catch (e18) {}
+        }
+
+        return { ok: true };
+    }
+    
+    /**
+     * 同步所有属性到原生对象
+     */
+    function syncToNative() {
+        baseInst.syncToNative();
+    }
+    
+    /**
+     * 从原生对象同步所有属性
+     */
+    function syncFromNative() {
+        _extractSpecificProperties();
+    }
+    
+    /**
+     * 获取默认Mock数据
+     * @returns {Object} 默认Mock数据
+     */
+    function getDefaultMockData() {
+        return {
+            x: 0,
+            y: 0,
+            sizeX: 1,
+            sizeY: 1,
+            shape: "Rect",
+            holeSize: 0.5,
+            layer: { "Name": "Top Layer" },
+            name: "1",
+            padType: "Standard",
+            rotation: 0,
+            plated: true,
+            connected: false,
+            netName: "",
+            voltage: 0,
+            padMode: 0,
+            topShape: "Rect",
+            midShape: "Rect",
+            botShape: "Rect",
+            slotSize: 0.5,
+            slotXSize: 0.5,
+            slotYSize: 0.5
+        };
+    }
+    
+    // 扩展基类实例
+    baseInst.getX = getX;
+    baseInst.setX = setX;
+    baseInst.getY = getY;
+    baseInst.setY = setY;
+    baseInst.getSizeX = getSizeX;
+    baseInst.setSizeX = setSizeX;
+    baseInst.getSizeY = getSizeY;
+    baseInst.setSizeY = setSizeY;
+    baseInst.getShape = getShape;
+    baseInst.setShape = setShape;
+    baseInst.getHoleSize = getHoleSize;
+    baseInst.setHoleSize = setHoleSize;
+    baseInst.getLayer = getLayer;
+    baseInst.setLayer = setLayer;
+    baseInst.getName = getName;
+    baseInst.setName = setName;
+    baseInst.getPadType = getPadType;
+    baseInst.setPadType = setPadType;
+    baseInst.getRotation = getRotation;
+    baseInst.setRotation = setRotation;
+    baseInst.isPlated = isPlated;
+    baseInst.setPlated = setPlated;
+    baseInst.isConnected = isConnected;
+    baseInst.getElectricalProperties = getElectricalProperties;
+    baseInst.getNetName = getNetName;
+    baseInst.getVoltage = getVoltage;
+    baseInst.getBoundingBox = getBoundingBox;
+    baseInst.getArea = getArea;
+    baseInst.isPointInside = isPointInside;
+    baseInst.getPadInfo = getPadInfo;
+    baseInst.syncToNative = syncToNative;
+    baseInst.syncFromNative = syncFromNative;
+    
+    // 高优先级API
+    baseInst.getPadMode = getPadMode;
+    baseInst.setPadMode = setPadMode;
+    baseInst.rotateAroundXY = rotateAroundXY;
+    baseInst.getState_StrictHitTest = getState_StrictHitTest;
+    
+    // 中优先级API
+    baseInst.getTopShape = getTopShape;
+    baseInst.setTopShape = setTopShape;
+    baseInst.getMidShape = getMidShape;
+    baseInst.setMidShape = setMidShape;
+    baseInst.getBotShape = getBotShape;
+    baseInst.setBotShape = setBotShape;
+    baseInst.getSlotSize = getSlotSize;
+    baseInst.setSlotSize = setSlotSize;
+    baseInst.getSlotXSize = getSlotXSize;
+    baseInst.setSlotXSize = setSlotXSize;
+    baseInst.getSlotYSize = getSlotYSize;
+    baseInst.setSlotYSize = setSlotYSize;
+
+    baseInst.initFromNative = initFromNative;
+    baseInst.toSpec = toSpec;
+    baseInst.applySpec = applySpec;
+    
+    return baseInst;
+}
+
+/**
+ * 创建PadWrapper实例
+ * 
+ * @param {Object} options 配置选项
+ * @returns {Object} PadWrapper实例
+ */
+PadWrapper.create = function(options) {
+    return PadWrapper(options);
+};
+
+/**
+ * 获取默认Mock数据
+ * @returns {Object} 默认Mock数据
+ */
+PadWrapper.getDefaultMockData = function() {
+    return {
+        x: 0,
+        y: 0,
+        sizeX: 1,
+        sizeY: 1,
+        shape: "Rect",
+        holeSize: 0.5,
+        layer: { "Name": "Top Layer" },
+        name: "1",
+        padType: "Standard",
+        rotation: 0,
+        plated: true,
+        connected: false,
+        netName: "",
+        voltage: 0,
+        padMode: 0,
+        topShape: "Rect",
+        midShape: "Rect",
+        botShape: "Rect",
+        slotSize: 0.5,
+        slotXSize: 0.5,
+        slotYSize: 0.5
+    };
+};
+
+    // 返回PadWrapper构造函数
+    return PadWrapper;
+    
+})();
+
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.PadWrapper = PadWrapper;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = PadWrapper;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.PadWrapper = PadWrapper;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/wrappers/TrackWrapper.js
+/**
+ * TrackWrapper - 走线对象封装（双向绑定架构）
+ * 
+ * 封装IPCB_Track接口，提供走线对象的属性访问、计算和Mock支持
+ * 支持直接访问原生对象和双向绑定
+ * 
+ * @author AD21 PCB Interface Module
+ * @version 2.0.0
+ */
+
+var TrackWrapper = (function(){
+    // 引入依赖 - 使用全局变量
+    // 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+    // BasePCBWrapper, GeometryCalculator
+
+    /**
+     * TrackWrapper构造函数
+     * 
+     * @param {Object} options 配置选项
+     * @param {Object} options.nativeObject 原始IPCB_Track对象
+     * @param {boolean} options.enableMock 是否启用Mock模式
+     * @param {Object} options.mockData Mock数据
+     */
+    function TrackWrapper(options) {
+    options = options || {};
+    
+    // 调用基类构造函数，启用直接访问和实时同步
+    var baseInst = BasePCBWrapper.create({
+        objectType: "Track",
+        nativeObject: options.nativeObject,
+        isMock: options.isMock || options.enableMock,
+        enableMock: options.enableMock,
+        mockData: options.mockData || TrackWrapper.getDefaultMockData(),
+        enableDirectAccess: true,
+        syncMode: options.syncMode || "auto"  // 默认自动同步模式
+    });
+    
+    // 重写基类的属性提取方法
+    baseInst._extractSpecificProperties = function() {
+        if (baseInst.nativeObject) {
+            // 提取Track特有属性
+            baseInst.cachedProperties.X1 = baseInst.nativeObject.X1;
+            baseInst.cachedProperties.Y1 = baseInst.nativeObject.Y1;
+            baseInst.cachedProperties.X2 = baseInst.nativeObject.X2;
+            baseInst.cachedProperties.Y2 = baseInst.nativeObject.Y2;
+            baseInst.cachedProperties.Width = baseInst.nativeObject.Width;
+            baseInst.cachedProperties.Layer = baseInst.nativeObject.Layer;
+            baseInst.cachedProperties.Net = baseInst.nativeObject.Net;
+            baseInst.cachedProperties.ObjectId = baseInst.nativeObject.ObjectId;
+            baseInst.cachedProperties.I_ObjectAddress = baseInst.nativeObject.I_ObjectAddress;
+            baseInst.cachedProperties.V6_LayerID = baseInst.nativeObject.V6_LayerID;
+            baseInst.cachedProperties.V7_LayerID = baseInst.nativeObject.V7_LayerID;
+            baseInst.cachedProperties.LayerStack = baseInst.nativeObject.LayerStack;
+        }
+    };
+    
+    // 重写基类的属性同步方法
+    baseInst._syncPropertiesToNative = function() {
+        if (baseInst.nativeObject && baseInst.isDirty) {
+            // 同步Track特有属性
+            if (baseInst.cachedProperties.hasOwnProperty("X1")) {
+                baseInst.nativeObject.X1 = baseInst.cachedProperties.X1;
+            }
+            if (baseInst.cachedProperties.hasOwnProperty("Y1")) {
+                baseInst.nativeObject.Y1 = baseInst.cachedProperties.Y1;
+            }
+            if (baseInst.cachedProperties.hasOwnProperty("X2")) {
+                baseInst.nativeObject.X2 = baseInst.cachedProperties.X2;
+            }
+            if (baseInst.cachedProperties.hasOwnProperty("Y2")) {
+                baseInst.nativeObject.Y2 = baseInst.cachedProperties.Y2;
+            }
+            if (baseInst.cachedProperties.hasOwnProperty("Width")) {
+                baseInst.nativeObject.Width = baseInst.cachedProperties.Width;
+            }
+            if (baseInst.cachedProperties.hasOwnProperty("Layer")) {
+                baseInst.nativeObject.Layer = baseInst.cachedProperties.Layer;
+            }
+            if (baseInst.cachedProperties.hasOwnProperty("Net")) {
+                baseInst.nativeObject.Net = baseInst.cachedProperties.Net;
+            }
+            
+            return true;
+        }
+        return true;
+    };
+
+    if (options.nativeObject) {
+        _setIdentityFromNative(options.nativeObject);
+    }
+
+    if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+        try { PCBObjectPool.register(baseInst); } catch (eReg) {}
+    }
+
+    function _ui(level, message, context, fnName) {
+        var text = String(message || "");
+        var payload = context || null;
+        try {
+            if (typeof UILoggerModule !== "undefined" && UILoggerModule) {
+                if (level === "error" && UILoggerModule.uiError) {
+                    UILoggerModule.uiError(text, payload, "TrackWrapper", fnName || "");
+                    return;
+                }
+                if (level === "warn" && UILoggerModule.uiWarn) {
+                    UILoggerModule.uiWarn(text, payload, "TrackWrapper", fnName || "");
+                    return;
+                }
+                if (UILoggerModule.uiInfo) {
+                    UILoggerModule.uiInfo(text, payload, "TrackWrapper", fnName || "");
+                    return;
+                }
+            }
+        } catch (e1) {}
+
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) {
+                var line = "[" + String(level).toUpperCase() + "] " + text;
+                if (payload) {
+                    try { line += " " + JSON.stringify(payload); } catch (e2) {}
+                }
+                memLog.Lines.Add(line);
+                return;
+            }
+        } catch (e3) {}
+
+        try { if (typeof ShowMessage !== "undefined") { ShowMessage(text); } } catch (e4) {}
+    }
+
+    function _setIdentityFromNative(nativeRef) {
+        if (!nativeRef) return;
+        baseInst.nativeObject = nativeRef;
+        baseInst.directRef = nativeRef;
+        baseInst.isMock = false;
+        try {
+            if (nativeRef.I_ObjectAddress !== undefined && nativeRef.I_ObjectAddress !== null) {
+                var t = typeof nativeRef.I_ObjectAddress;
+                var addr = null;
+                try { addr = nativeRef.I_ObjectAddress; } catch (eAddr1) {}
+                if (typeof addr === "function") {
+                    try { addr = addr(); } catch (eAddr2) {}
+                }
+                if (addr === null || addr === undefined || addr === 0) {
+                    if (t === "function" || t === "unknown") {
+                        addr = nativeRef.I_ObjectAddress();
+                    }
+                }
+                baseInst.handle = addr;
+                baseInst.address = addr;
+            } else if (nativeRef.ObjectAddress !== undefined && nativeRef.ObjectAddress !== null) {
+                baseInst.address = nativeRef.ObjectAddress;
+                baseInst.handle = nativeRef.ObjectAddress;
+            }
+        } catch (e1) {}
+        if (!baseInst.handle && nativeRef) {
+            baseInst.handle = nativeRef;
+            baseInst.address = nativeRef;
+        }
+    }
+
+    function _resolveLayerName(layerId) {
+        if (typeof StackMap !== "undefined" && StackMap && StackMap.getNormalizedLayerName) {
+            var name = StackMap.getNormalizedLayerName(layerId);
+            if (name) return name;
+        }
+        if (typeof eTopLayer !== "undefined" && layerId === eTopLayer) return "TopLayer";
+        if (typeof eBottomLayer !== "undefined" && layerId === eBottomLayer) return "BottomLayer";
+        if (typeof eMultiLayer !== "undefined" && layerId === eMultiLayer) return "MultiLayer";
+        return null;
+    }
+
+    function _resolveLayerId(layerName) {
+        if (typeof StackMap !== "undefined" && StackMap && StackMap.getLayerId) {
+            return StackMap.getLayerId(layerName);
+        }
+        if (layerName === "TopLayer" && typeof eTopLayer !== "undefined") return eTopLayer;
+        if (layerName === "BottomLayer" && typeof eBottomLayer !== "undefined") return eBottomLayer;
+        if (layerName === "MultiLayer" && typeof eMultiLayer !== "undefined") return eMultiLayer;
+        return null;
+    }
+    
+    // === 基础属性访问方法（双向绑定） ===
+    
+    /**
+     * 获取起点X坐标
+     * @returns {number} X坐标
+     */
+    function getX1() {
+        return baseInst.getProperty("X1");
+    }
+    
+    /**
+     * 设置起点X坐标
+     * @param {number} value X坐标
+     */
+    function setX1(value) {
+        baseInst.setProperty("X1", value);
+    }
+    
+    /**
+     * 获取起点Y坐标
+     * @returns {number} Y坐标
+     */
+    function getY1() {
+        return baseInst.getProperty("Y1");
+    }
+    
+    /**
+     * 设置起点Y坐标
+     * @param {number} value Y坐标
+     */
+    function setY1(value) {
+        baseInst.setProperty("Y1", value);
+    }
+    
+    /**
+     * 获取终点X坐标
+     * @returns {number} X坐标
+     */
+    function getX2() {
+        return baseInst.getProperty("X2");
+    }
+    
+    /**
+     * 设置终点X坐标
+     * @param {number} value X坐标
+     */
+    function setX2(value) {
+        baseInst.setProperty("X2", value);
+    }
+    
+    /**
+     * 获取终点Y坐标
+     * @returns {number} Y坐标
+     */
+    function getY2() {
+        return baseInst.getProperty("Y2");
+    }
+    
+    /**
+     * 设置终点Y坐标
+     * @param {number} value Y坐标
+     */
+    function setY2(value) {
+        baseInst.setProperty("Y2", value);
+    }
+    
+    /**
+     * 获取线宽
+     * @returns {number} 线宽
+     */
+    function getWidth() {
+        return baseInst.getProperty("Width");
+    }
+    
+    /**
+     * 设置线宽
+     * @param {number} value 线宽
+     */
+    function setWidth(value) {
+        baseInst.setProperty("Width", value);
+    }
+    
+    /**
+     * 获取所在层
+     * @returns {Object} 层对象
+     */
+    function getLayer() {
+        return baseInst.getProperty("Layer");
+    }
+    
+    /**
+     * 设置所在层
+     * @param {Object} value 层对象
+     */
+    function setLayer(value) {
+        baseInst.setProperty("Layer", value);
+    }
+    
+    /**
+     * 获取网络对象
+     * @returns {Object} 网络对象
+     */
+    function getNet() {
+        return baseInst.getProperty("Net");
+    }
+    
+    /**
+     * 设置网络对象
+     * @param {Object} value 网络对象
+     */
+    function setNet(value) {
+        baseInst.setProperty("Net", value);
+    }
+    
+    /**
+     * 获取网络名称
+     * @returns {string} 网络名称
+     */
+    function getNetName() {
+        var net = getNet();
+        if (net && net.Name) {
+            return net.Name;
+        }
+        return "";
+    }
+    
+    // === 高优先级缺失API实现 ===
+    
+    /**
+     * 绕指定点旋转走线（高优先级API）
+     * @param {number} cx 旋转中心X坐标
+     * @param {number} cy 旋转中心Y坐标
+     * @param {number} angle 旋转角度（度）
+     * @returns {boolean} 是否成功
+     */
+    function rotateAroundXY(cx, cy, angle) {
+        if (baseInst.isMock) {
+            // Mock模式：手动计算旋转
+            var x1 = getX1();
+            var y1 = getY1();
+            var x2 = getX2();
+            var y2 = getY2();
+            
+            var rad = angle * Math.PI / 180;
+            var cos = Math.cos(rad);
+            var sin = Math.sin(rad);
+            
+            // 旋转起点
+            var newX1 = cx + (x1 - cx) * cos - (y1 - cy) * sin;
+            var newY1 = cy + (x1 - cx) * sin + (y1 - cy) * cos;
+            
+            // 旋转终点
+            var newX2 = cx + (x2 - cx) * cos - (y2 - cy) * sin;
+            var newY2 = cy + (x2 - cx) * sin + (y2 - cy) * cos;
+            
+            setX1(newX1);
+            setY1(newY1);
+            setX2(newX2);
+            setY2(newY2);
+            
+            return true;
+        } else {
+            // 直接调用原生方法
+            try {
+                baseInst.callNativeMethod("RotateAroundXY", cx, cy, angle);
+                // 重新同步属性
+                baseInst.syncFromNative();
+                return true;
+            } catch (error) {
+                if (baseInst.logger && baseInst.logger.error) {
+                    baseInst.logger.error("[TrackWrapper][index.js][rotateAroundXY] Native method failed: " + error.message);
+                }
+                return false;
+            }
+        }
+    }
+    
+    /**
+     * 获取精确点碰撞检测结果（中优先级API）
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @returns {boolean} 是否碰撞
+     */
+    function getState_StrictHitTest(x, y) {
+        if (baseInst.isMock) {
+            // Mock模式：使用几何计算
+            return isPointOnTrack(x, y, getWidth() / 2);
+        } else {
+            // 直接调用原生方法
+            try {
+                return baseInst.callNativeMethod("GetState_StrictHitTest", x, y);
+            } catch (error) {
+                if (baseInst.logger && baseInst.logger.error) {
+                    baseInst.logger.error("[TrackWrapper][index.js][getState_StrictHitTest] Native method failed: " + error.message);
+                }
+                // 降级到几何计算
+                return isPointOnTrack(x, y, getWidth() / 2);
+            }
+        }
+    }
+    
+    // === 计算方法 ===
+    
+    /**
+     * 获取走线长度
+     * @returns {number} 走线长度
+     */
+    function getLength() {
+        var x1 = getX1();
+        var y1 = getY1();
+        var x2 = getX2();
+        var y2 = getY2();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateDistance(x1, y1, x2, y2);
+        } else {
+            // 降级计算
+            var dx = x2 - x1;
+            var dy = y2 - y1;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+    }
+    
+    /**
+     * 获取走线角度（度）
+     * @returns {number} 走线角度
+     */
+    function getAngle() {
+        var x1 = getX1();
+        var y1 = getY1();
+        var x2 = getX2();
+        var y2 = getY2();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateAngle(x1, y1, x2, y2);
+        } else {
+            // 降级计算
+            var dx = x2 - x1;
+            var dy = y2 - y1;
+            return Math.atan2(dy, dx) * 180 / Math.PI;
+        }
+    }
+    
+    /**
+     * 获取走线的包围盒
+     * @returns {Object} {x1, y1, x2, y2} 包围盒坐标
+     */
+    function getBoundingBox() {
+        var x1 = getX1();
+        var y1 = getY1();
+        var x2 = getX2();
+        var y2 = getY2();
+        var width = getWidth();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateTrackBoundingBox(x1, y1, x2, y2, width);
+        } else {
+            // 降级计算
+            return {
+                x1: Math.min(x1, x2) - width / 2,
+                y1: Math.min(y1, y2) - width / 2,
+                x2: Math.max(x1, x2) + width / 2,
+                y2: Math.max(y1, y2) + width / 2
+            };
+        }
+    }
+    
+    /**
+     * 获取走线面积
+     * @returns {number} 走线面积
+     */
+    function getArea() {
+        var length = getLength();
+        var width = getWidth();
+        return length * width;
+    }
+    
+    /**
+     * 检查点是否在走线上
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @param {number} tolerance 容差
+     * @returns {boolean} 是否在走线上
+     */
+    function isPointOnTrack(x, y, tolerance) {
+        tolerance = tolerance || getWidth() / 2;
+        var x1 = getX1();
+        var y1 = getY1();
+        var x2 = getX2();
+        var y2 = getY2();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.isPointOnLine(x, y, x1, y1, x2, y2, tolerance);
+        } else {
+            // 降级计算
+            var A = x - x1;
+            var B = y - y1;
+            var C = x2 - x1;
+            var D = y2 - y1;
+            
+            var dot = A * C + B * D;
+            var lenSq = C * C + D * D;
+            var param = lenSq !== 0 ? dot / lenSq : -1;
+            
+            var xx, yy;
+            
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+            
+            var dx = x - xx;
+            var dy = y - yy;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+            
+            return distance <= tolerance;
+        }
+    }
+    
+    /**
+     * 获取走线中点坐标
+     * @returns {Object} {x, y} 中点坐标
+     */
+    function getMidPoint() {
+        var x1 = getX1();
+        var y1 = getY1();
+        var x2 = getX2();
+        var y2 = getY2();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateMidPoint(x1, y1, x2, y2);
+        } else {
+            // 降级计算
+            return {
+                x: (x1 + x2) / 2,
+                y: (y1 + y2) / 2
+            };
+        }
+    }
+    
+    // === 操作方法 ===
+    
+    /**
+     * 反转走线方向
+     */
+    function reverse() {
+        var x1 = getX1();
+        var y1 = getY1();
+        var x2 = getX2();
+        var y2 = getY2();
+        
+        setX1(x2);
+        setY1(y2);
+        setX2(x1);
+        setY2(y1);
+    }
+    
+    /**
+     * 延长走线
+     * @param {number} startExtension 起点延长距离
+     * @param {number} endExtension 终点延长距离
+     */
+    function extend(startExtension, endExtension) {
+        startExtension = startExtension || 0;
+        endExtension = endExtension || 0;
+        
+        var x1 = getX1();
+        var y1 = getY1();
+        var x2 = getX2();
+        var y2 = getY2();
+        var angle = getAngle();
+        
+        if (startExtension > 0) {
+            var rad = angle * Math.PI / 180;
+            var newX1 = x1 - startExtension * Math.cos(rad);
+            var newY1 = y1 - startExtension * Math.sin(rad);
+            setX1(newX1);
+            setY1(newY1);
+        }
+        
+        if (endExtension > 0) {
+            var rad = angle * Math.PI / 180;
+            var newX2 = x2 + endExtension * Math.cos(rad);
+            var newY2 = y2 + endExtension * Math.sin(rad);
+            setX2(newX2);
+            setY2(newY2);
+        }
+    }
+    
+    /**
+     * 移动走线
+     * @param {number} dx X方向偏移
+     * @param {number} dy Y方向偏移
+     */
+    function move(dx, dy) {
+        setX1(getX1() + dx);
+        setY1(getY1() + dy);
+        setX2(getX2() + dx);
+        setY2(getY2() + dy);
+    }
+    
+    /**
+     * 设置走线坐标
+     * @param {number} x1 起点X
+     * @param {number} y1 起点Y
+     * @param {number} x2 终点X
+     * @param {number} y2 终点Y
+     */
+    function setCoordinates(x1, y1, x2, y2) {
+        setX1(x1);
+        setY1(y1);
+        setX2(x2);
+        setY2(y2);
+    }
+    
+    // === 电气特性计算 ===
+    
+    /**
+     * 获取走线的电气特性
+     * @returns {Object} 电气特性对象
+     */
+    function getElectricalProperties() {
+        return {
+            netName: getNetName(),
+            resistance: calculateResistance(),
+            capacitance: calculateCapacitance(),
+            impedance: calculateImpedance()
+        };
+    }
+    
+    /**
+     * 计算走线电阻
+     * @returns {number} 电阻值（欧姆）
+     */
+    function calculateResistance() {
+        var length = getLength();
+        var width = getWidth();
+        var thickness = 0.035; // 默认铜厚35um
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateTrackResistance(length, width, thickness);
+        } else {
+            // 降级计算（简化公式）
+            return 0.0175 * length / (width * thickness); // 铜电阻率
+        }
+    }
+    
+    /**
+     * 计算走线电容
+     * @returns {number} 电容值（pF）
+     */
+    function calculateCapacitance() {
+        var length = getLength();
+        var width = getWidth();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateTrackCapacitance(length, width, getLayer());
+        } else {
+            // 降级计算（简化公式）
+            return 0.1 * length * width; // 简化估算
+        }
+    }
+    
+    /**
+     * 计算走线阻抗
+     * @returns {number} 阻抗值（欧姆）
+     */
+    function calculateImpedance() {
+        var width = getWidth();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateTrackImpedance(width, 0.035, getLayer());
+        } else {
+            // 降级计算（简化公式）
+            return 50 / width; // 简化估算
+        }
+    }
+    
+    // === 冲突检测 ===
+    
+    /**
+     * 检查走线是否与其他对象冲突
+     * @param {Array} otherObjects 其他对象数组
+     * @returns {Array} 冲突对象数组
+     */
+    function checkConflicts(otherObjects) {
+        var conflicts = [];
+        var boundingBox = getBoundingBox();
+        
+        for (var i = 0; i < otherObjects.length; i++) {
+            var obj = otherObjects[i];
+            if (obj.getObjectId && obj.getObjectId() !== baseInst.getObjectId()) {
+                var objBoundingBox = obj.getBoundingBox();
+                if (GeometryCalculator && GeometryCalculator.doBoundingBoxesIntersect) {
+                    if (GeometryCalculator.doBoundingBoxesIntersect(boundingBox, objBoundingBox)) {
+                        conflicts.push(obj);
+                    }
+                } else {
+                    // 降级检测
+                    if (objBoundingBox && 
+                        !(boundingBox.x2 < objBoundingBox.x1 || 
+                          boundingBox.x1 > objBoundingBox.x2 || 
+                          boundingBox.y2 < objBoundingBox.y1 || 
+                          boundingBox.y1 > objBoundingBox.y2)) {
+                        conflicts.push(obj);
+                    }
+                }
+            }
+        }
+        
+        return conflicts;
+    }
+    
+    // === 信息获取 ===
+    
+    /**
+     * 获取走线的完整信息
+     * @returns {Object} 走线信息对象
+     */
+    function getTrackInfo() {
+        return {
+            x1: getX1(),
+            y1: getY1(),
+            x2: getX2(),
+            y2: getY2(),
+            width: getWidth(),
+            layer: getLayer(),
+            netName: getNetName(),
+            length: getLength(),
+            angle: getAngle(),
+            boundingBox: getBoundingBox(),
+            area: getArea(),
+            midPoint: getMidPoint(),
+            electrical: getElectricalProperties(),
+            objectId: baseInst.getObjectId(),
+            isMock: baseInst.isMockObject()
+        };
+    }
+
+    function initFromNative(nativeRef) {
+        if (!nativeRef) {
+            _ui("warn", "initFromNative: nativeRef is null", null, "initFromNative");
+            return false;
+        }
+        _setIdentityFromNative(nativeRef);
+        try { baseInst._extractSpecificProperties(); } catch (e1) {}
+        if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+            try { PCBObjectPool.register(baseInst); } catch (eReg) {}
+        }
+        return true;
+    }
+
+    function toSpec() {
+        var nativeObj = baseInst.nativeObject || null;
+        var x1 = null, y1 = null, x2 = null, y2 = null, width = null, layerId = null;
+        try { x1 = nativeObj.X1; } catch (e1) {}
+        try { y1 = nativeObj.Y1; } catch (e2) {}
+        try { x2 = nativeObj.X2; } catch (e3) {}
+        try { y2 = nativeObj.Y2; } catch (e4) {}
+        try { width = nativeObj.Width; } catch (e5) {}
+        try { layerId = nativeObj.Layer; } catch (e6) {}
+
+        var netName = "";
+        try { if (nativeObj.Net && nativeObj.Net.Name) netName = nativeObj.Net.Name; } catch (e7) {}
+
+        var layerName = _resolveLayerName(layerId);
+        if (!layerName) {
+            _ui("warn", "toSpec: layer name not resolved", { layerId: layerId }, "toSpec");
+        }
+
+        return {
+            schema: "spec/0.1",
+            type: "track",
+            handle: baseInst.handle || null,
+            address: baseInst.address || null,
+            payload: {
+                common: {
+                    x1: x1, y1: y1, x2: x2, y2: y2,
+                    width: width,
+                    layer: layerName,
+                    net: netName
+                }
+            }
+        };
+    }
+
+    function applySpec(specPayload) {
+        if (!specPayload || !specPayload.common) {
+            return { ok: false, error: { code: "BAD_SPEC", message: "payload.common is required" } };
+        }
+
+        var nativeObj = baseInst.nativeObject || null;
+        if (!nativeObj) {
+            return { ok: false, error: { code: "NO_NATIVE", message: "native object not available" } };
+        }
+
+        var c = specPayload.common;
+        try { if (c.x1 !== undefined) nativeObj.X1 = c.x1; } catch (e1) {}
+        try { if (c.y1 !== undefined) nativeObj.Y1 = c.y1; } catch (e2) {}
+        try { if (c.x2 !== undefined) nativeObj.X2 = c.x2; } catch (e3) {}
+        try { if (c.y2 !== undefined) nativeObj.Y2 = c.y2; } catch (e4) {}
+        try { if (c.width !== undefined) nativeObj.Width = c.width; } catch (e5) {}
+
+        if (c.layer) {
+            var layerId = _resolveLayerId(c.layer);
+            if (layerId !== null && layerId !== undefined) {
+                try { nativeObj.Layer = layerId; } catch (e6) {}
+            } else {
+                _ui("warn", "applySpec: unsupported layer", { layer: c.layer }, "applySpec");
+            }
+        }
+
+        if (c.net) {
+            // 未确认：Net/Net.Name 写入方式，使用 feature-detect
+            try {
+                if (nativeObj.Net && nativeObj.Net.Name !== undefined) {
+                    nativeObj.Net.Name = c.net;
+                }
+            } catch (e7) {}
+        }
+
+        return { ok: true };
+    }
+    
+    /**
+     * 获取默认Mock数据
+     * @returns {Object} 默认Mock数据
+     */
+    function getDefaultMockData() {
+        return {
+            X1: 0,
+            Y1: 0,
+            X2: 1,
+            Y2: 0,
+            Width: 0.1,
+            Layer: { "Name": "Top Layer", "V6_LayerID": 1 },
+            Net: { "Name": "" },
+            ObjectId: "mock_track_001",
+            I_ObjectAddress: 1001,
+            V6_LayerID: 1,
+            V7_LayerID: 1,
+            LayerStack: null
+        };
+    }
+    
+    // === 扩展基类实例 ===
+    baseInst.getX1 = getX1;
+    baseInst.setX1 = setX1;
+    baseInst.getY1 = getY1;
+    baseInst.setY1 = setY1;
+    baseInst.getX2 = getX2;
+    baseInst.setX2 = setX2;
+    baseInst.getY2 = getY2;
+    baseInst.setY2 = setY2;
+    baseInst.getWidth = getWidth;
+    baseInst.setWidth = setWidth;
+    baseInst.getLayer = getLayer;
+    baseInst.setLayer = setLayer;
+    baseInst.getNet = getNet;
+    baseInst.setNet = setNet;
+    baseInst.getNetName = getNetName;
+    
+    // 高优先级API
+    baseInst.rotateAroundXY = rotateAroundXY;
+    baseInst.getState_StrictHitTest = getState_StrictHitTest;
+    
+    // 计算方法
+    baseInst.getLength = getLength;
+    baseInst.getAngle = getAngle;
+    baseInst.getBoundingBox = getBoundingBox;
+    baseInst.getArea = getArea;
+    baseInst.isPointOnTrack = isPointOnTrack;
+    baseInst.getMidPoint = getMidPoint;
+    
+    // 操作方法
+    baseInst.reverse = reverse;
+    baseInst.extend = extend;
+    baseInst.move = move;
+    baseInst.setCoordinates = setCoordinates;
+    
+    // 电气特性
+    baseInst.getElectricalProperties = getElectricalProperties;
+    baseInst.calculateResistance = calculateResistance;
+    baseInst.calculateCapacitance = calculateCapacitance;
+    baseInst.calculateImpedance = calculateImpedance;
+    
+    // 冲突检测
+    baseInst.checkConflicts = checkConflicts;
+    
+    // 信息获取
+    baseInst.getTrackInfo = getTrackInfo;
+    baseInst.getDefaultMockData = getDefaultMockData;
+
+    baseInst.initFromNative = initFromNative;
+    baseInst.toSpec = toSpec;
+    baseInst.applySpec = applySpec;
+    
+    return baseInst;
+}
+
+/**
+ * 创建TrackWrapper实例
+ * 
+ * @param {Object} options 配置选项
+ * @returns {Object} TrackWrapper实例
+ */
+TrackWrapper.create = function(options) {
+    return TrackWrapper(options);
+};
+
+/**
+ * 获取默认Mock数据
+ * @returns {Object} 默认Mock数据
+ */
+TrackWrapper.getDefaultMockData = function() {
+    return {
+        X1: 0,
+        Y1: 0,
+        X2: 1,
+        Y2: 0,
+        Width: 0.1,
+        Layer: { "Name": "Top Layer", "V6_LayerID": 1 },
+        Net: { "Name": "" },
+        ObjectId: "mock_track_001",
+        I_ObjectAddress: 1001,
+        V6_LayerID: 1,
+        V7_LayerID: 1,
+        LayerStack: null
+    };
+};
+
+    // 返回TrackWrapper构造函数
+    return TrackWrapper;
+    
+})();
+
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.TrackWrapper = TrackWrapper;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = TrackWrapper;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.TrackWrapper = TrackWrapper;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/wrappers/ViaWrapper.js
+/**
+ * ViaWrapper - 过孔对象封装 (v2.0.0)
+ * 
+ * 基于双向绑定架构的IPCB_Via接口封装，提供过孔对象的属性访问、计算和Mock支持
+ * 
+ * @author AD21 PCB Interface Module
+ * @version 2.0.0
+ */
+
+var ViaWrapper = (function(){
+    // 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+    // BasePCBWrapper, GeometryCalculator
+
+    /**
+     * ViaWrapper构造函数
+     * 
+     * @param {Object} options 配置选项
+     * @param {Object} options.nativeObject 原始IPCB_Via对象
+     * @param {boolean} options.enableMock 是否启用Mock模式
+     * @param {Object} options.mockData Mock数据
+     * @param {string} options.syncMode 同步模式 (realtime/auto/manual)
+     */
+    function ViaWrapper(options) {
+    options = options || {};
+    
+    // 调用基类构造函数
+    var baseInst = BasePCBWrapper.create({
+        objectType: "Via",
+        nativeObject: options.nativeObject,
+        isMock: options.isMock || options.enableMock,
+        mockData: options.mockData || ViaWrapper.getDefaultMockData(),
+        syncMode: options.syncMode || "auto"
+    });
+    
+    /**
+     * 重写：提取过孔特有属性
+     */
+    function _extractSpecificProperties() {
+        if (baseInst.isMockMode()) {
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (!nativeObj) {
+                return;
+            }
+            
+            // 提取过孔特有属性
+            baseInst.cachedProperties.X = nativeObj.X;
+            baseInst.cachedProperties.Y = nativeObj.Y;
+            baseInst.cachedProperties.HoleSize = nativeObj.HoleSize;
+            baseInst.cachedProperties.Size = nativeObj.Size;
+            baseInst.cachedProperties.StartLayer = nativeObj.StartLayer;
+            baseInst.cachedProperties.EndLayer = nativeObj.EndLayer;
+            baseInst.cachedProperties.ViaType = nativeObj.ViaType;
+            baseInst.cachedProperties.Plated = nativeObj.Plated;
+            
+        } catch (error) {
+            baseInst.handleError("_extractSpecificProperties", error);
+        }
+    }
+    
+    /**
+     * 重写：同步属性到原生对象
+     */
+    function _syncPropertiesToNative() {
+        if (baseInst.isMockMode()) {
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (!nativeObj) {
+                return;
+            }
+            
+            // 同步过孔特有属性
+            nativeObj.X = baseInst.getNativeProperty("X");
+            nativeObj.Y = baseInst.getNativeProperty("Y");
+            nativeObj.HoleSize = baseInst.getNativeProperty("HoleSize");
+            nativeObj.Size = baseInst.getNativeProperty("Size");
+            nativeObj.StartLayer = baseInst.getNativeProperty("StartLayer");
+            nativeObj.EndLayer = baseInst.getNativeProperty("EndLayer");
+            nativeObj.ViaType = baseInst.getNativeProperty("ViaType");
+            nativeObj.Plated = baseInst.getNativeProperty("Plated");
+            
+        } catch (error) {
+            baseInst.handleError("_syncPropertiesToNative", error);
+        }
+    }
+    
+    // 重写基类的属性提取和同步方法
+    baseInst._extractSpecificProperties = _extractSpecificProperties;
+    baseInst._syncPropertiesToNative = _syncPropertiesToNative;
+
+    function _ui(level, message, context, fnName) {
+        var text = String(message || "");
+        var payload = context || null;
+        try {
+            if (typeof UILoggerModule !== "undefined" && UILoggerModule) {
+                if (level === "error" && UILoggerModule.uiError) {
+                    UILoggerModule.uiError(text, payload, "ViaWrapper", fnName || "");
+                    return;
+                }
+                if (level === "warn" && UILoggerModule.uiWarn) {
+                    UILoggerModule.uiWarn(text, payload, "ViaWrapper", fnName || "");
+                    return;
+                }
+                if (UILoggerModule.uiInfo) {
+                    UILoggerModule.uiInfo(text, payload, "ViaWrapper", fnName || "");
+                    return;
+                }
+            }
+        } catch (e1) {}
+
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) {
+                var line = "[" + String(level).toUpperCase() + "] " + text;
+                if (payload) {
+                    try { line += " " + JSON.stringify(payload); } catch (e2) {}
+                }
+                memLog.Lines.Add(line);
+                return;
+            }
+        } catch (e3) {}
+
+        try { if (typeof ShowMessage !== "undefined") { ShowMessage(text); } } catch (e4) {}
+    }
+
+    function _setIdentityFromNative(nativeRef) {
+        if (!nativeRef) return;
+        baseInst.nativeObject = nativeRef;
+        baseInst.directRef = nativeRef;
+        baseInst.isMock = false;
+        try {
+            if (nativeRef.I_ObjectAddress !== undefined && nativeRef.I_ObjectAddress !== null) {
+                var t = typeof nativeRef.I_ObjectAddress;
+                var addr = null;
+                try { addr = nativeRef.I_ObjectAddress; } catch (eAddr1) {}
+                if (typeof addr === "function") {
+                    try { addr = addr(); } catch (eAddr2) {}
+                }
+                if (addr === null || addr === undefined || addr === 0) {
+                    if (t === "function" || t === "unknown") {
+                        addr = nativeRef.I_ObjectAddress();
+                    }
+                }
+                baseInst.handle = addr;
+                baseInst.address = addr;
+            } else if (nativeRef.ObjectAddress !== undefined && nativeRef.ObjectAddress !== null) {
+                baseInst.address = nativeRef.ObjectAddress;
+                baseInst.handle = nativeRef.ObjectAddress;
+            }
+        } catch (e1) {}
+        if (!baseInst.handle && nativeRef) {
+            baseInst.handle = nativeRef;
+            baseInst.address = nativeRef;
+        }
+    }
+
+    function _resolveLayerName(layerId) {
+        if (typeof StackMap !== "undefined" && StackMap && StackMap.getNormalizedLayerName) {
+            var name = StackMap.getNormalizedLayerName(layerId);
+            if (name) return name;
+        }
+        if (typeof eTopLayer !== "undefined" && layerId === eTopLayer) return "TopLayer";
+        if (typeof eBottomLayer !== "undefined" && layerId === eBottomLayer) return "BottomLayer";
+        if (typeof eMultiLayer !== "undefined" && layerId === eMultiLayer) return "MultiLayer";
+        return null;
+    }
+
+    function _resolveLayerId(layerName) {
+        if (typeof StackMap !== "undefined" && StackMap && StackMap.getLayerId) {
+            return StackMap.getLayerId(layerName);
+        }
+        if (layerName === "TopLayer" && typeof eTopLayer !== "undefined") return eTopLayer;
+        if (layerName === "BottomLayer" && typeof eBottomLayer !== "undefined") return eBottomLayer;
+        if (layerName === "MultiLayer" && typeof eMultiLayer !== "undefined") return eMultiLayer;
+        return null;
+    }
+    
+    // 初始化时提取属性
+    _extractSpecificProperties();
+
+    if (options.nativeObject) {
+        _setIdentityFromNative(options.nativeObject);
+    }
+
+    if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+        try { PCBObjectPool.register(baseInst); } catch (eReg) {}
+    }
+    
+    /**
+     * 获取过孔中心点X坐标
+     * @returns {number} X坐标
+     */
+    function getX() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().x || 0;
+        }
+        return baseInst.getNativeProperty("X");
+    }
+    
+    /**
+     * 设置过孔中心点X坐标
+     * @param {number} value X坐标
+     */
+    function setX(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().x = value;
+        }
+        baseInst.setNativeProperty("X", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取过孔中心点Y坐标
+     * @returns {number} Y坐标
+     */
+    function getY() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().y || 0;
+        }
+        return baseInst.getNativeProperty("Y");
+    }
+    
+    /**
+     * 设置过孔中心点Y坐标
+     * @param {number} value Y坐标
+     */
+    function setY(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().y = value;
+        }
+        baseInst.setNativeProperty("Y", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取过孔孔径
+     * @returns {number} 孔径
+     */
+    function getHoleSize() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().holeSize || 0.2;
+        }
+        return baseInst.getNativeProperty("HoleSize");
+    }
+    
+    /**
+     * 设置过孔孔径
+     * @param {number} value 孔径
+     */
+    function setHoleSize(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().holeSize = value;
+        }
+        baseInst.setNativeProperty("HoleSize", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取过孔直径
+     * @returns {number} 直径
+     */
+    function getSize() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().size || 0.5;
+        }
+        return baseInst.getNativeProperty("Size");
+    }
+    
+    /**
+     * 设置过孔直径
+     * @param {number} value 直径
+     */
+    function setSize(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().size = value;
+        }
+        baseInst.setNativeProperty("Size", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取起始层
+     * @returns {Object} 起始层对象
+     */
+    function getStartLayer() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().startLayer || { "Name": "Top Layer" };
+        }
+        return baseInst.getNativeProperty("StartLayer");
+    }
+    
+    /**
+     * 设置起始层
+     * @param {Object} value 起始层对象
+     */
+    function setStartLayer(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().startLayer = value;
+        }
+        baseInst.setNativeProperty("StartLayer", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取结束层
+     * @returns {Object} 结束层对象
+     */
+    function getEndLayer() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().endLayer || { "Name": "Bottom Layer" };
+        }
+        return baseInst.getNativeProperty("EndLayer");
+    }
+    
+    /**
+     * 设置结束层
+     * @param {Object} value 结束层对象
+     */
+    function setEndLayer(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().endLayer = value;
+        }
+        baseInst.setNativeProperty("EndLayer", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 获取过孔类型
+     * @returns {string} 过孔类型（Through, Blind, Buried）
+     */
+    function getViaType() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().viaType || "Through";
+        }
+        return baseInst.getNativeProperty("ViaType");
+    }
+    
+    /**
+     * 设置过孔类型
+     * @param {string} value 过孔类型
+     */
+    function setViaType(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().viaType = value;
+        }
+        baseInst.setNativeProperty("ViaType", value);
+        baseInst._markDirty();
+    }
+    
+    /**
+     * 检查过孔是否被电镀
+     * @returns {boolean} 是否被电镀
+     */
+    function isPlated() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().plated !== false;
+        }
+        return baseInst.getNativeProperty("Plated");
+    }
+    
+    /**
+     * 设置过孔电镀状态
+     * @param {boolean} value 是否电镀
+     */
+    function setPlated(value) {
+        if (baseInst.isMockMode()) {
+            baseInst.getMockData().plated = value;
+        }
+        baseInst.setNativeProperty("Plated", value);
+        baseInst._markDirty();
+    }
+    
+    // ========== 高优先级API实现 ==========
+    
+    /**
+     * 绕指定点旋转过孔 (高优先级API)
+     * @param {number} centerX 旋转中心X坐标
+     * @param {number} centerY 旋转中心Y坐标
+     * @param {number} angle 旋转角度（度）
+     */
+    function rotateAroundXY(centerX, centerY, angle) {
+        if (baseInst.isMockMode()) {
+            // Mock模式下简单更新位置
+            var currentX = getX();
+            var currentY = getY();
+            var rad = angle * Math.PI / 180;
+            var newX = centerX + (currentX - centerX) * Math.cos(rad) - (currentY - centerY) * Math.sin(rad);
+            var newY = centerY + (currentX - centerX) * Math.sin(rad) + (currentY - centerY) * Math.cos(rad);
+            setX(newX);
+            setY(newY);
+            return;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.RotateAroundXY === "function") {
+                nativeObj.RotateAroundXY(centerX, centerY, angle);
+                // 旋转后重新提取属性
+                _extractSpecificProperties();
+            } else {
+                // 降级处理：手动计算旋转
+                var currentX = getX();
+                var currentY = getY();
+                var rad = angle * Math.PI / 180;
+                var newX = centerX + (currentX - centerX) * Math.cos(rad) - (currentY - centerY) * Math.sin(rad);
+                var newY = centerY + (currentX - centerX) * Math.sin(rad) + (currentY - centerY) * Math.cos(rad);
+                setX(newX);
+                setY(newY);
+            }
+        } catch (error) {
+            baseInst.handleError("rotateAroundXY", error);
+        }
+    }
+    
+    /**
+     * 精确点碰撞检测 (高优先级API)
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @returns {boolean} 是否碰撞
+     */
+    function getState_StrictHitTest(x, y) {
+        if (baseInst.isMockMode()) {
+            // Mock模式下使用简单的圆形检测
+            return isPointInside(x, y);
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.GetState_StrictHitTest === "function") {
+                return nativeObj.GetState_StrictHitTest(x, y);
+            }
+            // 降级处理：使用几何计算
+            return isPointInside(x, y);
+        } catch (error) {
+            baseInst.handleError("getState_StrictHitTest", error);
+            return false;
+        }
+    }
+    
+    // ========== 几何计算方法 ==========
+    
+    /**
+     * 获取网络名称
+     * @returns {string} 网络名称
+     */
+    function getNetName() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().netName || "";
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && nativeObj.Net && nativeObj.Net.Name) {
+                return nativeObj.Net.Name;
+            }
+            return "";
+        } catch (error) {
+            baseInst.handleError("getNetName", error);
+            return "";
+        }
+    }
+    
+    /**
+     * 获取过孔的包围盒
+     * @returns {Object} {x1, y1, x2, y2} 包围盒坐标
+     */
+    function getBoundingBox() {
+        var x = getX();
+        var y = getY();
+        var size = getSize();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateCircleBoundingBox(x, y, size / 2);
+        }
+        
+        // 降级处理：手动计算
+        var radius = size / 2;
+        return {
+            x1: x - radius,
+            y1: y - radius,
+            x2: x + radius,
+            y2: y + radius
+        };
+    }
+    
+    /**
+     * 获取过孔面积
+     * @returns {number} 过孔面积
+     */
+    function getArea() {
+        var size = getSize();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateCircleArea(size / 2);
+        }
+        
+        // 降级处理：手动计算
+        var radius = size / 2;
+        return Math.PI * radius * radius;
+    }
+    
+    /**
+     * 获取过孔孔面积
+     * @returns {number} 孔面积
+     */
+    function getHoleArea() {
+        var holeSize = getHoleSize();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateCircleArea(holeSize / 2);
+        }
+        
+        // 降级处理：手动计算
+        var radius = holeSize / 2;
+        return Math.PI * radius * radius;
+    }
+    
+    /**
+     * 获取过孔环面积
+     * @returns {number} 环面积
+     */
+    function getRingArea() {
+        return getArea() - getHoleArea();
+    }
+    
+    /**
+     * 检查点是否在过孔内
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @returns {boolean} 是否在过孔内
+     */
+    function isPointInside(x, y) {
+        var viaX = getX();
+        var viaY = getY();
+        var size = getSize();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.isPointInCircle(x, y, viaX, viaY, size / 2);
+        }
+        
+        // 降级处理：手动计算
+        var radius = size / 2;
+        var distance = Math.sqrt(Math.pow(x - viaX, 2) + Math.pow(y - viaY, 2));
+        return distance <= radius;
+    }
+    
+    /**
+     * 检查点是否在过孔孔内
+     * @param {number} x X坐标
+     * @param {number} y Y坐标
+     * @returns {boolean} 是否在过孔孔内
+     */
+    function isPointInHole(x, y) {
+        var viaX = getX();
+        var viaY = getY();
+        var holeSize = getHoleSize();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.isPointInCircle(x, y, viaX, viaY, holeSize / 2);
+        }
+        
+        // 降级处理：手动计算
+        var radius = holeSize / 2;
+        var distance = Math.sqrt(Math.pow(x - viaX, 2) + Math.pow(y - viaY, 2));
+        return distance <= radius;
+    }
+    
+    /**
+     * 获取过孔的电气特性
+     * @returns {Object} 电气特性对象
+     */
+    function getElectricalProperties() {
+        return {
+            netName: getNetName(),
+            resistance: calculateResistance(),
+            capacitance: calculateCapacitance(),
+            inductance: calculateInductance(),
+            impedance: calculateImpedance()
+        };
+    }
+    
+    /**
+     * 计算过孔电阻
+     * @returns {number} 电阻值（欧姆）
+     */
+    function calculateResistance() {
+        var size = getSize();
+        var holeSize = getHoleSize();
+        var startLayer = getStartLayer();
+        var endLayer = getEndLayer();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateViaResistance(size, holeSize, startLayer, endLayer);
+        }
+        
+        // 降级处理：简单估算
+        return 0.001; // 1mΩ 典型值
+    }
+    
+    /**
+     * 计算过孔电容
+     * @returns {number} 电容值（pF）
+     */
+    function calculateCapacitance() {
+        var size = getSize();
+        var holeSize = getHoleSize();
+        var startLayer = getStartLayer();
+        var endLayer = getEndLayer();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateViaCapacitance(size, holeSize, startLayer, endLayer);
+        }
+        
+        // 降级处理：简单估算
+        return 0.1; // 0.1pF 典型值
+    }
+    
+    /**
+     * 计算过孔电感
+     * @returns {number} 电感值（nH）
+     */
+    function calculateInductance() {
+        var size = getSize();
+        var holeSize = getHoleSize();
+        var startLayer = getStartLayer();
+        var endLayer = getEndLayer();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateViaInductance(size, holeSize, startLayer, endLayer);
+        }
+        
+        // 降级处理：简单估算
+        return 1.0; // 1nH 典型值
+    }
+    
+    /**
+     * 计算过孔阻抗
+     * @returns {number} 阻抗值（欧姆）
+     */
+    function calculateImpedance() {
+        var size = getSize();
+        var holeSize = getHoleSize();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateViaImpedance(size, holeSize);
+        }
+        
+        // 降级处理：简单估算
+        return 50; // 50Ω 典型值
+    }
+    
+    /**
+     * 获取过孔的机械特性
+     * @returns {Object} 机械特性对象
+     */
+    function getMechanicalProperties() {
+        return {
+            plated: isPlated(),
+            viaType: getViaType(),
+            aspectRatio: calculateAspectRatio(),
+            drillTolerance: getDrillTolerance(),
+            minAnnularRing: getMinAnnularRing()
+        };
+    }
+    
+    /**
+     * 计算纵横比
+     * @returns {number} 纵横比
+     */
+    function calculateAspectRatio() {
+        var startLayer = getStartLayer();
+        var endLayer = getEndLayer();
+        var holeSize = getHoleSize();
+        
+        if (GeometryCalculator) {
+            return GeometryCalculator.calculateViaAspectRatio(startLayer, endLayer, holeSize);
+        }
+        
+        // 降级处理：简单估算
+        return 8.0; // 8:1 典型值
+    }
+    
+    /**
+     * 获取钻孔公差
+     * @returns {number} 钻孔公差
+     */
+    function getDrillTolerance() {
+        if (baseInst.isMockMode()) {
+            return baseInst.getMockData().drillTolerance || 0.05;
+        }
+        
+        try {
+            var nativeObj = baseInst.getNativeObject();
+            if (nativeObj && typeof nativeObj.DrillTolerance !== "undefined") {
+                return nativeObj.DrillTolerance;
+            }
+        } catch (error) {
+            baseInst.handleError("getDrillTolerance", error);
+        }
+        
+        return 0.05; // 默认值
+    }
+    
+    /**
+     * 获取最小环宽
+     * @returns {number} 最小环宽
+     */
+    function getMinAnnularRing() {
+        var size = getSize();
+        var holeSize = getHoleSize();
+        var drillTolerance = getDrillTolerance();
+        
+        return (size - holeSize) / 2 - drillTolerance;
+    }
+    
+    /**
+     * 检查过孔是否满足制造约束
+     * @returns {Object} 约束检查结果
+     */
+    function checkManufacturingConstraints() {
+        var aspectRatio = calculateAspectRatio();
+        var minAnnularRing = getMinAnnularRing();
+        var viaType = getViaType();
+        
+        return {
+            aspectRatioOK: aspectRatio <= 10, // 通常最大纵横比为10:1
+            minAnnularRingOK: minAnnularRing >= 0.05, // 最小环宽0.05mm
+            drillSizeOK: getHoleSize() >= 0.1, // 最小钻孔0.1mm
+            viaTypeOK: viaType === "Through" || viaType === "Blind" || viaType === "Buried"
+        };
+    }
+    
+    /**
+     * 获取过孔的完整信息
+     * @returns {Object} 过孔信息对象
+     */
+    function getViaInfo() {
+        return {
+            x: getX(),
+            y: getY(),
+            holeSize: getHoleSize(),
+            size: getSize(),
+            startLayer: getStartLayer(),
+            endLayer: getEndLayer(),
+            viaType: getViaType(),
+            netName: getNetName(),
+            plated: isPlated(),
+            boundingBox: getBoundingBox(),
+            area: getArea(),
+            holeArea: getHoleArea(),
+            ringArea: getRingArea(),
+            electrical: getElectricalProperties(),
+            mechanical: getMechanicalProperties(),
+            constraints: checkManufacturingConstraints()
+        };
+    }
+
+    function initFromNative(nativeRef) {
+        if (!nativeRef) {
+            _ui("warn", "initFromNative: nativeRef is null", null, "initFromNative");
+            return false;
+        }
+        _setIdentityFromNative(nativeRef);
+        try { _extractSpecificProperties(); } catch (e1) {}
+        if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+            try { PCBObjectPool.register(baseInst); } catch (eReg) {}
+        }
+        return true;
+    }
+
+    function toSpec() {
+        var nativeObj = baseInst.nativeObject || null;
+        var x = null, y = null, hole = null, size = null;
+        var startLayerId = null, endLayerId = null;
+        try { x = nativeObj.X; } catch (e1) {}
+        try { y = nativeObj.Y; } catch (e2) {}
+        try { hole = nativeObj.HoleSize; } catch (e3) {}
+        try { size = nativeObj.Size; } catch (e4) {}
+
+        try { if (nativeObj.LowLayer !== undefined) startLayerId = nativeObj.LowLayer; } catch (e5) {}
+        try { if (nativeObj.HighLayer !== undefined) endLayerId = nativeObj.HighLayer; } catch (e6) {}
+        try {
+            if (startLayerId === null && nativeObj.StartLayer !== undefined) {
+                if (typeof nativeObj.StartLayer === "number") startLayerId = nativeObj.StartLayer;
+                else if (nativeObj.StartLayer && nativeObj.StartLayer.LayerID !== undefined) startLayerId = nativeObj.StartLayer.LayerID;
+            }
+        } catch (e7) {}
+        try {
+            if (endLayerId === null && nativeObj.EndLayer !== undefined) {
+                if (typeof nativeObj.EndLayer === "number") endLayerId = nativeObj.EndLayer;
+                else if (nativeObj.EndLayer && nativeObj.EndLayer.LayerID !== undefined) endLayerId = nativeObj.EndLayer.LayerID;
+            }
+        } catch (e8) {}
+
+        var fromName = _resolveLayerName(startLayerId);
+        var toName = _resolveLayerName(endLayerId);
+        var layerMode = "multilayer";
+        if (fromName && toName) {
+            if (fromName === "TopLayer" && toName === "BottomLayer") {
+                layerMode = "multilayer";
+            } else if (fromName === "TopLayer" || toName === "BottomLayer") {
+                layerMode = "top-mid-bot";
+            } else {
+                layerMode = "full-stack";
+            }
+        }
+
+        return {
+            schema: "spec/0.1",
+            type: "via",
+            handle: baseInst.handle || null,
+            address: baseInst.address || null,
+            payload: {
+                common: {
+                    x: x,
+                    y: y,
+                    net: getNetName(),
+                    hole: { diameter: hole },
+                    size: { xSize: size, ySize: size },
+                    isPlated: isPlated()
+                },
+                layerMode: layerMode,
+                layerSpan: (fromName && toName) ? { from: fromName, to: toName } : null
+            }
+        };
+    }
+
+    function applySpec(specPayload) {
+        if (!specPayload || !specPayload.common) {
+            return { ok: false, error: { code: "BAD_SPEC", message: "payload.common is required" } };
+        }
+
+        var nativeObj = baseInst.nativeObject || null;
+        if (!nativeObj) {
+            return { ok: false, error: { code: "NO_NATIVE", message: "native object not available" } };
+        }
+
+        var c = specPayload.common;
+        try { if (c.x !== undefined) nativeObj.X = c.x; } catch (e1) {}
+        try { if (c.y !== undefined) nativeObj.Y = c.y; } catch (e2) {}
+        try { if (c.hole && c.hole.diameter !== undefined) nativeObj.HoleSize = c.hole.diameter; } catch (e3) {}
+        try { if (c.size && c.size.xSize !== undefined) nativeObj.Size = c.size.xSize; } catch (e4) {}
+        try { if (c.isPlated !== undefined) nativeObj.Plated = c.isPlated; } catch (e5) {}
+
+        if (specPayload.layerSpan && specPayload.layerSpan.from && specPayload.layerSpan.to) {
+            var fromId = _resolveLayerId(specPayload.layerSpan.from);
+            var toId = _resolveLayerId(specPayload.layerSpan.to);
+            if (fromId !== null && toId !== null) {
+                // 未确认：StartLayer/EndLayer 或 LowLayer/HighLayer，使用 feature-detect
+                try { if (nativeObj.LowLayer !== undefined) nativeObj.LowLayer = fromId; } catch (e6) {}
+                try { if (nativeObj.HighLayer !== undefined) nativeObj.HighLayer = toId; } catch (e7) {}
+                try { if (nativeObj.StartLayer !== undefined) nativeObj.StartLayer = fromId; } catch (e8) {}
+                try { if (nativeObj.EndLayer !== undefined) nativeObj.EndLayer = toId; } catch (e9) {}
+            } else {
+                _ui("warn", "applySpec: unsupported layerSpan", specPayload.layerSpan, "applySpec");
+            }
+        }
+
+        return { ok: true };
+    }
+    
+    /**
+     * 同步所有属性到原生对象
+     */
+    function syncToNative() {
+        baseInst.syncToNative();
+    }
+    
+    /**
+     * 从原生对象同步所有属性
+     */
+    function syncFromNative() {
+        _extractSpecificProperties();
+    }
+    
+    /**
+     * 获取默认Mock数据
+     * @returns {Object} 默认Mock数据
+     */
+    function getDefaultMockData() {
+        return {
+            x: 0,
+            y: 0,
+            holeSize: 0.2,
+            size: 0.5,
+            startLayer: { "Name": "Top Layer" },
+            endLayer: { "Name": "Bottom Layer" },
+            viaType: "Through",
+            netName: "",
+            plated: true,
+            drillTolerance: 0.05
+        };
+    }
+    
+    // 扩展基类实例
+    baseInst.getX = getX;
+    baseInst.setX = setX;
+    baseInst.getY = getY;
+    baseInst.setY = setY;
+    baseInst.getHoleSize = getHoleSize;
+    baseInst.setHoleSize = setHoleSize;
+    baseInst.getSize = getSize;
+    baseInst.setSize = setSize;
+    baseInst.getStartLayer = getStartLayer;
+    baseInst.setStartLayer = setStartLayer;
+    baseInst.getEndLayer = getEndLayer;
+    baseInst.setEndLayer = setEndLayer;
+    baseInst.getViaType = getViaType;
+    baseInst.setViaType = setViaType;
+    baseInst.getNetName = getNetName;
+    baseInst.isPlated = isPlated;
+    baseInst.setPlated = setPlated;
+    baseInst.getBoundingBox = getBoundingBox;
+    baseInst.getArea = getArea;
+    baseInst.getHoleArea = getHoleArea;
+    baseInst.getRingArea = getRingArea;
+    baseInst.isPointInside = isPointInside;
+    baseInst.isPointInHole = isPointInHole;
+    baseInst.getElectricalProperties = getElectricalProperties;
+    baseInst.calculateResistance = calculateResistance;
+    baseInst.calculateCapacitance = calculateCapacitance;
+    baseInst.calculateInductance = calculateInductance;
+    baseInst.calculateImpedance = calculateImpedance;
+    baseInst.getMechanicalProperties = getMechanicalProperties;
+    baseInst.calculateAspectRatio = calculateAspectRatio;
+    baseInst.getDrillTolerance = getDrillTolerance;
+    baseInst.getMinAnnularRing = getMinAnnularRing;
+    baseInst.checkManufacturingConstraints = checkManufacturingConstraints;
+    baseInst.getViaInfo = getViaInfo;
+    baseInst.syncToNative = syncToNative;
+    baseInst.syncFromNative = syncFromNative;
+    
+    // 高优先级API
+    baseInst.rotateAroundXY = rotateAroundXY;
+    baseInst.getState_StrictHitTest = getState_StrictHitTest;
+
+    baseInst.initFromNative = initFromNative;
+    baseInst.toSpec = toSpec;
+    baseInst.applySpec = applySpec;
+    
+    return baseInst;
+}
+
+/**
+ * 创建ViaWrapper实例
+ * 
+ * @param {Object} options 配置选项
+ * @returns {Object} ViaWrapper实例
+ */
+ViaWrapper.create = function(options) {
+    return ViaWrapper(options);
+};
+
+/**
+ * 获取默认Mock数据
+ * @returns {Object} 默认Mock数据
+ */
+ViaWrapper.getDefaultMockData = function() {
+    return {
+        x: 0,
+        y: 0,
+        holeSize: 0.2,
+        size: 0.5,
+        startLayer: { "Name": "Top Layer" },
+        endLayer: { "Name": "Bottom Layer" },
+        viaType: "Through",
+        netName: "",
+        plated: true,
+        drillTolerance: 0.05
+    };
+};
+
+    // 返回ViaWrapper构造函数
+    return ViaWrapper;
+    
+})();
+
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.ViaWrapper = ViaWrapper;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = ViaWrapper;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.ViaWrapper = ViaWrapper;
+    }
+})();
+
+
+// File: src/modules/pcb-interfaces/index.js
+/**
+ * PCB Interfaces Module - 主入口文件
+ * 
+ * 提供PCB对象接口封装的统一入口
+ * 包含所有核心组件和封装器的导出
+ * 
+ * IIFE模块架构说明
+ * 
+ * 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();
+ * 2. 构建后所有模块变量在同一作用域，可直接引用
+ * 3. 不处理模块间依赖，需构建到一个文件中使用
+ * 4. 通过window导出，确保AD环境可访问
+ * 5. 依赖的模块必须在当前模块之前加载（通过merge-order.json控制）
+ * 
+ * @author AD21 PCB Interface Module
+ * @version 1.0.0
+ */
+
+// 简化的日志系统（用于测试）
+var SimpleLogger = {
+    debug: function(msg) { 
+        if (typeof console !== "undefined" && console.log) {
+            console.log("[DEBUG] " + msg); 
+        }
+    },
+    info: function(msg) { 
+        if (typeof console !== "undefined" && console.log) {
+            console.log("[INFO] " + msg); 
+        }
+    },
+    warn: function(msg) { 
+        if (typeof console !== "undefined" && console.log) {
+            console.log("[WARN] " + msg); 
+        }
+    },
+    error: function(msg) { 
+        if (typeof console !== "undefined" && console.log) {
+            console.log("[ERROR] " + msg); 
+        }
+    }
+};
+
+// 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+var logger = SimpleLogger;
+
+// 核心组件 - 直接引用（构建后自动可访问）
+// BasePCBWrapper, PCBMockSystem, PCBObjectFactory, PCBObjectManager, PCBObjectPool
+
+// 计算器 - 直接引用（构建后自动可访问）
+// GeometryCalculator
+
+// 封装器 - 直接引用（构建后自动可访问）
+// ArcWrapper, PadWrapper, TrackWrapper, ViaWrapper
+
+/**
+ * PCBInterfaces主模块
+ */
+var PCBInterfaces = (function(){
+    
+    var moduleInstance = null;
+    var isInitialized = false;
+    
+    /**
+     * 初始化PCB接口模块
+     * @param {Object} options 配置选项
+     * @param {boolean} options.enableMock 是否启用Mock模式
+     * @param {Object} options.logger 日志器实例
+     * @param {number} options.maxPoolSize 对象池最大大小
+     */
+    function initialize(options) {
+        logger.debug("[PCBInterfaces][initialize] START - params: " + JSON.stringify(options));
+        
+        try {
+            options = options || {};
+            
+            // 初始化Mock系统
+            if (PCBMockSystem && PCBMockSystem.initialize) {
+                PCBMockSystem.initialize();
+            }
+            
+            // 初始化对象工厂
+            if (PCBObjectFactory && PCBObjectFactory.initialize) {
+                PCBObjectFactory.initialize();
+            }
+            
+            // 初始化对象池
+            if (PCBObjectPool && PCBObjectPool.initialize) {
+                PCBObjectPool.initialize();
+            }
+            
+            // 注册所有封装器到工厂
+            registerWrappers();
+            
+            isInitialized = true;
+            
+            logger.info("[PCBInterfaces][initialize] SUCCESS - PCB Interface Module initialized");
+            return true;
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][initialize] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 注册所有封装器到对象工厂
+     */
+    function registerWrappers() {
+        logger.debug("[PCBInterfaces][registerWrappers] START");
+        
+        try {
+            // 注册设计对象封装器
+            if (PCBObjectFactory && PCBObjectFactory.registerWrapperConstructor) {
+                PCBObjectFactory.registerWrapperConstructor("Arc", ArcWrapper);
+                PCBObjectFactory.registerWrapperConstructor("Pad", PadWrapper);
+                PCBObjectFactory.registerWrapperConstructor("Track", TrackWrapper);
+                PCBObjectFactory.registerWrapperConstructor("Via", ViaWrapper);
+            }
+            
+            logger.debug("[PCBInterfaces][registerWrappers] SUCCESS - All wrappers registered");
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][registerWrappers] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 创建封装对象
+     * @param {string} objectType 对象类型
+     * @param {Object} options 配置选项
+     * @returns {Object} 封装对象实例
+     */
+    function createWrapper(objectType, options) {
+        logger.debug("[PCBInterfaces][createWrapper] START - params: " + JSON.stringify({
+            objectType: objectType,
+            options: options
+        }));
+        
+        try {
+            if (!isInitialized) {
+                throw new Error("PCBInterfaces module not initialized. Call initialize() first.");
+            }
+            
+            // 验证对象类型
+            if (!PCBObjectFactory.isObjectTypeSupported(objectType)) {
+                throw new Error("Invalid object type: " + objectType);
+            }
+            
+            // 准备选项
+            options = options || {};
+            options.isMock = options.enableMock || false;
+            options.mockType = options.isMock ? objectType : null;
+            
+            var wrapper = PCBObjectFactory.createWrapper(options.nativeObject, options);
+            
+            logger.debug("[PCBInterfaces][createWrapper] SUCCESS - wrapper created for " + objectType);
+            return wrapper;
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][createWrapper] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 从迭代器批量创建封装对象
+     * @param {Object} iterator AD迭代器对象
+     * @param {string} objectType 对象类型
+     * @param {Object} options 配置选项
+     * @returns {Array} 封装对象数组
+     */
+    function createFromIterator(iterator, objectType, options) {
+        logger.debug("[PCBInterfaces][createFromIterator] START - params: " + JSON.stringify({
+            objectType: objectType,
+            options: options
+        }));
+        
+        try {
+            if (!isInitialized) {
+                throw new Error("PCBInterfaces module not initialized. Call initialize() first.");
+            }
+            
+            var wrappers = PCBObjectFactory.createFromIterator(iterator, objectType, options);
+            
+            logger.debug("[PCBInterfaces][createFromIterator] SUCCESS - created " + wrappers.length + " wrappers");
+            return wrappers;
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][createFromIterator] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 创建Mock对象
+     * @param {string} objectType 对象类型
+     * @param {Object} mockData Mock数据
+     * @returns {Object} 封装的Mock对象实例
+     */
+    function createMock(objectType, mockData) {
+        logger.debug("[PCBInterfaces][createMock] START - params: " + JSON.stringify({
+            objectType: objectType,
+            mockData: mockData
+        }));
+        
+        try {
+            if (!isInitialized) {
+                throw new Error("PCBInterfaces module not initialized. Call initialize() first.");
+            }
+            
+            // 创建原生Mock对象
+            var nativeMockObject = PCBMockSystem.createMockObject(objectType, mockData);
+            
+            // 创建封装对象
+            var wrapper = PCBObjectFactory.createWrapper(nativeMockObject, {
+                isMock: true,
+                mockType: objectType,
+                mockData: mockData
+            });
+            
+            logger.debug("[PCBInterfaces][createMock] SUCCESS - wrapped mock created for " + objectType);
+            return wrapper;
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][createMock] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 获取对象池
+     * @param {string} poolType 池类型（native, wrapped, modified）
+     * @returns {Object} 对象池实例
+     */
+    function getObjectPool(poolType) {
+        logger.debug("[PCBInterfaces][getObjectPool] START - params: " + JSON.stringify({
+            poolType: poolType
+        }));
+        
+        try {
+            if (!isInitialized) {
+                throw new Error("PCBInterfaces module not initialized. Call initialize() first.");
+            }
+            
+            var pool = PCBObjectPool.getAllPoolObjects(poolType);
+            
+            logger.debug("[PCBInterfaces][getObjectPool] SUCCESS - pool retrieved: " + poolType);
+            return pool;
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][getObjectPool] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 获取模块统计信息
+     * @returns {Object} 统计信息
+     */
+    function getStatistics() {
+        logger.debug("[PCBInterfaces][getStatistics] START");
+        
+        try {
+            if (!isInitialized) {
+                throw new Error("PCBInterfaces module not initialized. Call initialize() first.");
+            }
+            
+            var stats = {
+                initialized: isInitialized,
+                factory: PCBObjectFactory.getFactoryStatistics(),
+                pools: PCBObjectPool.getPoolStatistics(),
+                mockSystem: PCBMockSystem.getMockStatistics()
+            };
+            
+            logger.debug("[PCBInterfaces][getStatistics] SUCCESS - stats: " + JSON.stringify(stats));
+            return stats;
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][getStatistics] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 清理模块资源
+     */
+    function cleanup() {
+        logger.debug("[PCBInterfaces][cleanup] START");
+        
+        try {
+            // 清理对象池
+            if (PCBObjectPool && PCBObjectPool.clearAllPools) {
+                PCBObjectPool.clearAllPools();
+            }
+            
+            // 重置Mock系统
+            if (PCBMockSystem && PCBMockSystem.clearAllMockObjects) {
+                PCBMockSystem.clearAllMockObjects();
+            }
+            
+            // 重置工厂
+            if (PCBObjectFactory && PCBObjectFactory.resetFactoryStatistics) {
+                PCBObjectFactory.resetFactoryStatistics();
+            }
+            
+            isInitialized = false;
+            moduleInstance = null;
+            
+            logger.info("[PCBInterfaces][cleanup] SUCCESS - PCB Interface Module cleaned up");
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][cleanup] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 检查模块是否已初始化
+     * @returns {boolean} 是否已初始化
+     */
+    function isReady() {
+        return isInitialized;
+    }
+    
+    /**
+     * 获取支持的封装器类型
+     * @returns {Array} 支持的类型数组
+     */
+    function getSupportedTypes() {
+        logger.debug("[PCBInterfaces][getSupportedTypes] START");
+        
+        try {
+            var types = PCBObjectFactory.getSupportedObjectTypes();
+            
+            logger.debug("[PCBInterfaces][getSupportedTypes] SUCCESS - types: " + JSON.stringify(types));
+            return types;
+            
+        } catch (error) {
+            logger.error("[PCBInterfaces][getSupportedTypes] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    // 公共接口
+    return {
+        initialize: initialize,
+        createWrapper: createWrapper,
+        createFromIterator: createFromIterator,
+        createMock: createMock,
+        getObjectPool: getObjectPool,
+        getStatistics: getStatistics,
+        cleanup: cleanup,
+        isReady: isReady,
+        getSupportedTypes: getSupportedTypes,
+        
+        // 直接访问核心组件（高级用法）
+        BasePCBWrapper: BasePCBWrapper,
+        PCBMockSystem: PCBMockSystem,
+        PCBObjectFactory: PCBObjectFactory,
+        PCBObjectPool: PCBObjectPool,
+        StackMap: (typeof StackMap !== "undefined" ? StackMap : null),
+        GeometryCalculator: GeometryCalculator,
+        
+        // 直接访问封装器（高级用法）
+        ArcWrapper: ArcWrapper,
+        PadWrapper: PadWrapper,
+        TrackWrapper: TrackWrapper,
+        ViaWrapper: ViaWrapper
+    };
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.PCBInterfaces = PCBInterfaces;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = PCBInterfaces;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.PCBInterfaces = PCBInterfaces;
+    }
+})();
+
+
+// File: src/modules/object-creator/core/PositionManager.js
+/**
+ * PositionManager - 位置管理器
+ * 
+ * 提供PCB对象位置管理功能，包括坐标系统、位置验证和冲突检测
+ * ES3/JScript 5.8 兼容
+ */
+
+var PositionManager = (function() {
+    
+    // -------------------------------------------------------------
+    // 1. 简化的日志系统（用于测试）
+    // -------------------------------------------------------------
+    
+    var SimpleLogger = {
+        debug: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[DEBUG] " + msg); 
+            }
+        },
+        info: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[INFO] " + msg); 
+            }
+        },
+        warn: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[WARN] " + msg); 
+            }
+        },
+        error: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[ERROR] " + msg); 
+            }
+        }
+    };
+    
+    var logger = SimpleLogger;
+    
+    // -------------------------------------------------------------
+    // 2. 私有变量
+    // -------------------------------------------------------------
+    
+    var _coordinateSystem = {
+        unit: "mil",        // AD默认单位
+        origin: {x: 0, y: 0}, // 原点位置
+        gridSize: 5,        // 网格大小
+        enableGridSnap: true // 是否启用网格对齐
+    };
+    
+    var _positionCache = {};   // 位置缓存
+    var _conflictThreshold = 10; // 冲突检测阈值
+    
+    // -------------------------------------------------------------
+    // 3. 私有函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 验证坐标值
+     * @param {number} value 坐标值
+     * @returns {boolean} 是否有效
+     */
+    function _isValidCoordinate(value) {
+        return typeof value === "number" && !isNaN(value) && isFinite(value);
+    }
+    
+    /**
+     * 对齐到网格
+     * @param {number} value 坐标值
+     * @param {number} gridSize 网格大小
+     * @returns {number} 对齐后的坐标值
+     */
+    function _snapToGrid(value, gridSize) {
+        if (!_isValidCoordinate(value) || !_isValidCoordinate(gridSize) || gridSize <= 0) {
+            return value;
+        }
+        
+        return Math.round(value / gridSize) * gridSize;
+    }
+    
+    /**
+     * 计算两点间距离
+     * @param {Object} point1 点1 {x, y}
+     * @param {Object} point2 点2 {x, y}
+     * @returns {number} 距离
+     */
+    function _calculateDistance(point1, point2) {
+        if (!_isValidCoordinate(point1.x) || !_isValidCoordinate(point1.y) ||
+            !_isValidCoordinate(point2.x) || !_isValidCoordinate(point2.y)) {
+            return Infinity;
+        }
+        
+        var dx = point1.x - point2.x;
+        var dy = point1.y - point2.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    
+    /**
+     * 检查位置是否在缓存中
+     * @param {Object} position 位置 {x, y}
+     * @returns {boolean} 是否存在
+     */
+    function _isPositionInCache(position) {
+        var key = _positionToKey(position);
+        return _positionCache.hasOwnProperty(key);
+    }
+    
+    /**
+     * 将位置转换为缓存键
+     * @param {Object} position 位置 {x, y}
+     * @returns {string} 缓存键
+     */
+    function _positionToKey(position) {
+        if (!position || typeof position !== "object") {
+            return "";
+        }
+        return Math.round(position.x) + "," + Math.round(position.y);
+    }
+    
+    /**
+     * 添加位置到缓存
+     * @param {Object} position 位置 {x, y}
+     * @param {Object} objectInfo 对象信息
+     */
+    function _addPositionToCache(position, objectInfo) {
+        var key = _positionToKey(position);
+        if (!_positionCache[key]) {
+            _positionCache[key] = [];
+        }
+        _positionCache[key].push(objectInfo);
+    }
+    
+    /**
+     * 从缓存中移除位置
+     * @param {Object} position 位置 {x, y}
+     * @param {string} objectId 对象ID
+     */
+    function _removePositionFromCache(position, objectId) {
+        var key = _positionToKey(position);
+        if (_positionCache[key]) {
+            var objects = _positionCache[key];
+            for (var i = objects.length - 1; i >= 0; i--) {
+                if (objects[i].id === objectId) {
+                    objects.splice(i, 1);
+                    break;
+                }
+            }
+            
+            // 如果该位置没有对象了，删除缓存项
+            if (objects.length === 0) {
+                delete _positionCache[key];
+            }
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 4. 公共API - 位置验证
+    // -------------------------------------------------------------
+    
+    /**
+     * 验证位置
+     * @param {Object} position 位置 {x, y}
+     * @returns {Object} 验证结果
+     */
+    function validatePosition(position) {
+        logger.debug("[PositionManager][validatePosition] START - params: " + JSON.stringify(position));
+        
+        var result = {
+            valid: true,
+            errors: [],
+            normalizedPosition: null
+        };
+        
+        try {
+            if (!position || typeof position !== "object") {
+                result.valid = false;
+                result.errors.push("Invalid position: must be an object");
+                return result;
+            }
+            
+            if (!_isValidCoordinate(position.x)) {
+                result.valid = false;
+                result.errors.push("Invalid X coordinate: must be a valid number");
+            }
+            
+            if (!_isValidCoordinate(position.y)) {
+                result.valid = false;
+                result.errors.push("Invalid Y coordinate: must be a valid number");
+            }
+            
+            // 如果位置有效，进行标准化处理
+            if (result.valid) {
+                result.normalizedPosition = normalizePosition(position);
+            }
+            
+        } catch (e) {
+            result.valid = false;
+            result.errors.push("Validation error: " + e.message);
+        }
+        
+        logger.debug("[PositionManager][validatePosition] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+    }
+    
+    /**
+     * 标准化位置
+     * @param {Object} position 位置 {x, y}
+     * @returns {Object} 标准化后的位置
+     */
+    function normalizePosition(position) {
+        logger.debug("[PositionManager][normalizePosition] START - params: " + JSON.stringify(position));
+        
+        try {
+            var normalized = {
+                x: position.x,
+                y: position.y
+            };
+            
+            // 网格对齐
+            if (_coordinateSystem.enableGridSnap) {
+                normalized.x = _snapToGrid(normalized.x, _coordinateSystem.gridSize);
+                normalized.y = _snapToGrid(normalized.y, _coordinateSystem.gridSize);
+            }
+            
+            logger.debug("[PositionManager][normalizePosition] SUCCESS - normalized: " + JSON.stringify(normalized));
+            return normalized;
+            
+        } catch (error) {
+            logger.error("[PositionManager][normalizePosition] ERROR - " + error.message);
+            return position; // 返回原始位置
+        }
+    }
+    
+    /**
+     * 检查位置冲突
+     * @param {Object} position 位置 {x, y}
+     * @param {Object} objectInfo 对象信息
+     * @returns {Object} 冲突检测结果
+     */
+    function checkPositionConflict(position, objectInfo) {
+        logger.debug("[PositionManager][checkPositionConflict] START - params: " + JSON.stringify({
+            position: position,
+            objectInfo: objectInfo
+        }));
+        
+        var result = {
+            hasConflict: false,
+            conflicts: [],
+            suggestions: []
+        };
+        
+        try {
+            // 检查缓存中的位置
+            var key = _positionToKey(position);
+            if (_positionCache[key]) {
+                var objects = _positionCache[key];
+                for (var i = 0; i < objects.length; i++) {
+                    var cachedObject = objects[i];
+                    
+                    // 检查是否是同一个对象
+                    if (objectInfo && cachedObject.id === objectInfo.id) {
+                        continue;
+                    }
+                    
+                    // 计算距离
+                    var distance = _calculateDistance(position, cachedObject.position);
+                    
+                    // 如果距离小于阈值，认为有冲突
+                    if (distance < _conflictThreshold) {
+                        result.hasConflict = true;
+                        result.conflicts.push({
+                            object: cachedObject,
+                            distance: distance
+                        });
+                    }
+                }
+            }
+            
+            // 如果有冲突，生成建议位置
+            if (result.hasConflict) {
+                result.suggestions = generateAlternativePositions(position, 5);
+            }
+            
+        } catch (error) {
+            logger.error("[PositionManager][checkPositionConflict] ERROR - " + error.message);
+        }
+        
+        logger.debug("[PositionManager][checkPositionConflict] SUCCESS - result: " + JSON.stringify(result));
+        return result;
+    }
+    
+    /**
+     * 生成替代位置
+     * @param {Object} originalPosition 原始位置 {x, y}
+     * @param {number} count 生成数量
+     * @returns {Array} 替代位置数组
+     */
+    function generateAlternativePositions(originalPosition, count) {
+        logger.debug("[PositionManager][generateAlternativePositions] START - params: " + JSON.stringify({
+            originalPosition: originalPosition,
+            count: count
+        }));
+        
+        var alternatives = [];
+        var step = _coordinateSystem.gridSize * 2; // 使用网格大小的2倍作为步长
+        
+        try {
+            // 生成周围的替代位置
+            var directions = [
+                {dx: step, dy: 0},     // 右
+                {dx: -step, dy: 0},    // 左
+                {dx: 0, dy: step},     // 上
+                {dx: 0, dy: -step},    // 下
+                {dx: step, dy: step},  // 右上
+                {dx: -step, dy: step}, // 左上
+                {dx: step, dy: -step}, // 右下
+                {dx: -step, dy: -step} // 左下
+            ];
+            
+            for (var i = 0; i < Math.min(count, directions.length); i++) {
+                var direction = directions[i];
+                var newPosition = {
+                    x: originalPosition.x + direction.dx,
+                    y: originalPosition.y + direction.dy
+                };
+                
+                // 标准化位置
+                newPosition = normalizePosition(newPosition);
+                
+                // 检查新位置是否有冲突
+                var conflictResult = checkPositionConflict(newPosition);
+                if (!conflictResult.hasConflict) {
+                    alternatives.push(newPosition);
+                }
+            }
+            
+        } catch (error) {
+            logger.error("[PositionManager][generateAlternativePositions] ERROR - " + error.message);
+        }
+        
+        logger.debug("[PositionManager][generateAlternativePositions] SUCCESS - alternatives: " + JSON.stringify(alternatives));
+        return alternatives;
+    }
+    
+    // -------------------------------------------------------------
+    // 5. 公共API - 位置管理
+    // -------------------------------------------------------------
+    
+    /**
+     * 注册对象位置
+     * @param {Object} position 位置 {x, y}
+     * @param {Object} objectInfo 对象信息
+     */
+    function registerPosition(position, objectInfo) {
+        logger.debug("[PositionManager][registerPosition] START - params: " + JSON.stringify({
+            position: position,
+            objectInfo: objectInfo
+        }));
+        
+        try {
+            if (!objectInfo || !objectInfo.id) {
+                throw new Error("Object info must contain id");
+            }
+            
+            // 标准化位置
+            var normalizedPosition = normalizePosition(position);
+            
+            // 添加到缓存
+            _addPositionToCache(normalizedPosition, {
+                id: objectInfo.id,
+                type: objectInfo.type || "unknown",
+                position: normalizedPosition,
+                timestamp: new Date().getTime()
+            });
+            
+            logger.info("[PositionManager][registerPosition] SUCCESS - position registered: " + JSON.stringify(normalizedPosition));
+            
+        } catch (error) {
+            logger.error("[PositionManager][registerPosition] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 注销对象位置
+     * @param {Object} position 位置 {x, y}
+     * @param {string} objectId 对象ID
+     */
+    function unregisterPosition(position, objectId) {
+        logger.debug("[PositionManager][unregisterPosition] START - params: " + JSON.stringify({
+            position: position,
+            objectId: objectId
+        }));
+        
+        try {
+            if (!objectId) {
+                throw new Error("Object ID is required");
+            }
+            
+            // 标准化位置
+            var normalizedPosition = normalizePosition(position);
+            
+            // 从缓存中移除
+            _removePositionFromCache(normalizedPosition, objectId);
+            
+            logger.info("[PositionManager][unregisterPosition] SUCCESS - position unregistered: " + JSON.stringify(normalizedPosition));
+            
+        } catch (error) {
+            logger.error("[PositionManager][unregisterPosition] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 获取原点位置
+     * @returns {Object} 原点位置 {x, y}
+     */
+    function getOrigin() {
+        return {
+            x: _coordinateSystem.origin.x,
+            y: _coordinateSystem.origin.y
+        };
+    }
+    
+    /**
+     * 设置原点位置
+     * @param {Object} origin 原点位置 {x, y}
+     */
+    function setOrigin(origin) {
+        logger.debug("[PositionManager][setOrigin] START - params: " + JSON.stringify(origin));
+        
+        try {
+            if (!origin || typeof origin !== "object") {
+                throw new Error("Invalid origin: must be an object");
+            }
+            
+            if (!_isValidCoordinate(origin.x) || !_isValidCoordinate(origin.y)) {
+                throw new Error("Invalid origin coordinates");
+            }
+            
+            _coordinateSystem.origin = {
+                x: origin.x,
+                y: origin.y
+            };
+            
+            logger.info("[PositionManager][setOrigin] SUCCESS - origin set: " + JSON.stringify(_coordinateSystem.origin));
+            
+        } catch (error) {
+            logger.error("[PositionManager][setOrigin] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 6. 公共API - 配置管理
+    // -------------------------------------------------------------
+    
+    /**
+     * 配置坐标系统
+     * @param {Object} config 配置选项
+     */
+    function configureCoordinateSystem(config) {
+        logger.debug("[PositionManager][configureCoordinateSystem] START - params: " + JSON.stringify(config));
+        
+        try {
+            if (config && typeof config === "object") {
+                if (config.unit && typeof config.unit === "string") {
+                    _coordinateSystem.unit = config.unit;
+                }
+                
+                if (config.gridSize && _isValidCoordinate(config.gridSize) && config.gridSize > 0) {
+                    _coordinateSystem.gridSize = config.gridSize;
+                }
+                
+                if (typeof config.enableGridSnap === "boolean") {
+                    _coordinateSystem.enableGridSnap = config.enableGridSnap;
+                }
+                
+                if (config.conflictThreshold && _isValidCoordinate(config.conflictThreshold) && config.conflictThreshold > 0) {
+                    _conflictThreshold = config.conflictThreshold;
+                }
+            }
+            
+            logger.info("[PositionManager][configureCoordinateSystem] SUCCESS - coordinate system configured");
+            
+        } catch (error) {
+            logger.error("[PositionManager][configureCoordinateSystem] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 获取坐标系统配置
+     * @returns {Object} 配置信息
+     */
+    function getCoordinateSystemConfig() {
+        return {
+            unit: _coordinateSystem.unit,
+            origin: {
+                x: _coordinateSystem.origin.x,
+                y: _coordinateSystem.origin.y
+            },
+            gridSize: _coordinateSystem.gridSize,
+            enableGridSnap: _coordinateSystem.enableGridSnap,
+            conflictThreshold: _conflictThreshold
+        };
+    }
+    
+    /**
+     * 清空位置缓存
+     */
+    function clearPositionCache() {
+        logger.debug("[PositionManager][clearPositionCache] START");
+        
+        try {
+            _positionCache = {};
+            logger.info("[PositionManager][clearPositionCache] SUCCESS - position cache cleared");
+            
+        } catch (error) {
+            logger.error("[PositionManager][clearPositionCache] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 获取位置统计信息
+     * @returns {Object} 统计信息
+     */
+    function getPositionStatistics() {
+        var cacheSize = 0;
+        for (var key in _positionCache) {
+            if (_positionCache.hasOwnProperty(key)) {
+                cacheSize += _positionCache[key].length;
+            }
+        }
+        
+        return {
+            cacheSize: cacheSize,
+            uniquePositions: Object.keys(_positionCache).length,
+            coordinateSystem: getCoordinateSystemConfig()
+        };
+    }
+    
+    // -------------------------------------------------------------
+    // 7. 返回模块接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 位置验证
+        validatePosition: validatePosition,
+        normalizePosition: normalizePosition,
+        checkPositionConflict: checkPositionConflict,
+        generateAlternativePositions: generateAlternativePositions,
+        
+        // 位置管理
+        registerPosition: registerPosition,
+        unregisterPosition: unregisterPosition,
+        getOrigin: getOrigin,
+        setOrigin: setOrigin,
+        
+        // 配置管理
+        configureCoordinateSystem: configureCoordinateSystem,
+        getCoordinateSystemConfig: getCoordinateSystemConfig,
+        clearPositionCache: clearPositionCache,
+        getPositionStatistics: getPositionStatistics
+    };
+    
+})();
+
+
+// File: src/modules/object-creator/core/ObjectCreator.js
+/**
+ * ObjectCreator - PCB对象创建器核心
+ * 
+ * 提供统一的PCB对象创建接口，支持多种对象类型和精确位置控制
+ * ES3/JScript 5.8 兼容
+ */
+
+var ObjectCreator = (function() {
+    
+    // -------------------------------------------------------------
+    // 1. 依赖引用（构建后自动可访问）
+    // -------------------------------------------------------------
+    // 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+    // BaseModule, PCBInterfaces
+    
+    // 简化的日志系统（用于测试）
+    var SimpleLogger = {
+        debug: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[DEBUG] " + msg); 
+            }
+        },
+        info: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[INFO] " + msg); 
+            }
+        },
+        warn: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[WARN] " + msg); 
+            }
+        },
+        error: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[ERROR] " + msg); 
+            }
+        }
+    };
+    
+    var logger = SimpleLogger;
+    
+    // -------------------------------------------------------------
+    // 2. 私有变量
+    // -------------------------------------------------------------
+    
+    var _supportedTypes = {
+        "Track": true,
+        "Pad": true,
+        "Via": true,
+        "Arc": true
+    };
+    
+    var _defaultParameters = {
+        "Track": {
+            width: 10,
+            layer: "Top Layer",
+            endX: 1000,
+            endY: 0
+        },
+        "Pad": {
+            size: 100,
+            shape: "Rectangular",
+            layer: "Top Layer",
+            designator: "1"
+        },
+        "Via": {
+            size: 50,
+            holeSize: 25,
+            startLayer: "Top Layer",
+            endLayer: "Bottom Layer"
+        },
+        "Arc": {
+            radius: 500,
+            startAngle: 0,
+            endAngle: 90,
+            layer: "Top Layer"
+        }
+    };
+    
+    // -------------------------------------------------------------
+    // 3. 私有函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 验证对象类型
+     * @param {string} objectType 对象类型
+     * @returns {boolean} 是否有效
+     */
+    function _validateObjectType(objectType) {
+        return _supportedTypes.hasOwnProperty(objectType);
+    }
+    
+    /**
+     * 获取默认参数
+     * @param {string} objectType 对象类型
+     * @returns {Object} 默认参数
+     */
+    function _getDefaultParameters(objectType) {
+        var defaults = _defaultParameters[objectType];
+        if (!defaults) {
+            return {};
+        }
+        
+        // 深拷贝默认参数
+        var result = {};
+        for (var key in defaults) {
+            if (defaults.hasOwnProperty(key)) {
+                result[key] = defaults[key];
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 合并参数
+     * @param {Object} defaults 默认参数
+     * @param {Object} userParams 用户参数
+     * @returns {Object} 合并后的参数
+     */
+    function _mergeParameters(defaults, userParams) {
+        var result = {};
+        
+        // 复制默认参数
+        for (var key in defaults) {
+            if (defaults.hasOwnProperty(key)) {
+                result[key] = defaults[key];
+            }
+        }
+        
+        // 覆盖用户参数
+        if (userParams) {
+            for (var key in userParams) {
+                if (userParams.hasOwnProperty(key)) {
+                    result[key] = userParams[key];
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 验证位置
+     * @param {Object} position 位置对象
+     * @returns {boolean} 是否有效
+     */
+    function _validatePosition(position) {
+        if (!position || typeof position !== "object") {
+            return false;
+        }
+        
+        if (typeof position.x !== "number" || typeof position.y !== "number") {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 创建原生PCB对象
+     * @param {string} objectType 对象类型
+     * @param {Object} parameters 参数
+     * @param {Object} position 位置
+     * @returns {Object} 原生对象
+     */
+    function _createNativeObject(objectType, parameters, position) {
+        logger.debug("[ObjectCreator][_createNativeObject] START - params: " + JSON.stringify({
+            objectType: objectType,
+            parameters: parameters,
+            position: position
+        }));
+        
+        try {
+            // 这里应该调用AD的API创建原生对象
+            // 由于我们在测试环境中，使用Mock对象
+            var mockObject = PCBInterfaces.createMock(objectType, {
+                X1: position.x,
+                Y1: position.y,
+                // 根据对象类型添加特定属性
+                Width: parameters.width,
+                Layer: parameters.layer,
+                EndX: parameters.endX,
+                EndY: parameters.endY
+            });
+            
+            logger.debug("[ObjectCreator][_createNativeObject] SUCCESS - mock object created");
+            return mockObject;
+            
+        } catch (error) {
+            logger.error("[ObjectCreator][_createNativeObject] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 创建封装对象
+     * @param {Object} nativeObject 原生对象
+     * @param {string} objectType 对象类型
+     * @returns {Object} 封装对象
+     */
+    function _createWrapperObject(nativeObject, objectType) {
+        logger.debug("[ObjectCreator][_createWrapperObject] START - params: " + JSON.stringify({
+            objectType: objectType,
+            hasNativeObject: !!nativeObject
+        }));
+        
+        try {
+            var wrapper = PCBInterfaces.createWrapper(objectType, {
+                nativeObject: nativeObject,
+                enableMock: true
+            });
+            
+            logger.debug("[ObjectCreator][_createWrapperObject] SUCCESS - wrapper created");
+            return wrapper;
+            
+        } catch (error) {
+            logger.error("[ObjectCreator][_createWrapperObject] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 4. 公共API - 对象创建
+    // -------------------------------------------------------------
+    
+    /**
+     * 创建PCB对象
+     * @param {Object} options 创建选项
+     * @param {string} options.type 对象类型
+     * @param {Object} options.position 位置 {x, y}
+     * @param {Object} options.parameters 参数
+     * @returns {Object} 创建的对象
+     */
+    function createObject(options) {
+        logger.debug("[ObjectCreator][createObject] START - params: " + JSON.stringify(options));
+        
+        try {
+            // 验证输入参数
+            if (!options || typeof options !== "object") {
+                throw new Error("Invalid options: must be an object");
+            }
+            
+            if (!options.type || typeof options.type !== "string") {
+                throw new Error("Invalid object type: must be a string");
+            }
+            
+            if (!_validateObjectType(options.type)) {
+                throw new Error("Unsupported object type: " + options.type);
+            }
+            
+            if (!_validatePosition(options.position)) {
+                throw new Error("Invalid position: must be {x: number, y: number}");
+            }
+            
+            // 获取默认参数并合并
+            var defaults = _getDefaultParameters(options.type);
+            var parameters = _mergeParameters(defaults, options.parameters);
+            
+            logger.debug("[ObjectCreator][createObject] CONTEXT - validated and merged parameters: " + JSON.stringify(parameters));
+            
+            // 创建原生对象
+            var nativeObject = _createNativeObject(options.type, parameters, options.position);
+            
+            // 创建封装对象
+            var wrapper = _createWrapperObject(nativeObject, options.type);
+            
+            logger.info("[ObjectCreator][createObject] SUCCESS - object created: " + options.type + " at (" + options.position.x + ", " + options.position.y + ")");
+            return wrapper;
+            
+        } catch (error) {
+            logger.error("[ObjectCreator][createObject] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 在原点(0,0)创建对象
+     * @param {string} objectType 对象类型
+     * @param {Object} parameters 参数
+     * @returns {Object} 创建的对象
+     */
+    function createAtOrigin(objectType, parameters) {
+        logger.debug("[ObjectCreator][createAtOrigin] START - params: " + JSON.stringify({
+            objectType: objectType,
+            parameters: parameters
+        }));
+        
+        try {
+            var options = {
+                type: objectType,
+                position: {x: 0, y: 0},
+                parameters: parameters
+            };
+            
+            var result = createObject(options);
+            
+            logger.info("[ObjectCreator][createAtOrigin] SUCCESS - object created at origin: " + objectType);
+            return result;
+            
+        } catch (error) {
+            logger.error("[ObjectCreator][createAtOrigin] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 批量创建对象
+     * @param {Array} objectList 对象列表
+     * @returns {Array} 创建的对象数组
+     */
+    function createBatch(objectList) {
+        logger.debug("[ObjectCreator][createBatch] START - params: " + JSON.stringify({
+            objectCount: objectList ? objectList.length : 0
+        }));
+        
+        try {
+            if (!objectList || !Array.isArray(objectList)) {
+                throw new Error("Invalid object list: must be an array");
+            }
+            
+            var results = [];
+            var errors = [];
+            
+            for (var i = 0; i < objectList.length; i++) {
+                try {
+                    var obj = createObject(objectList[i]);
+                    results.push(obj);
+                } catch (e) {
+                    errors.push({
+                        index: i,
+                        error: e.message,
+                        object: objectList[i]
+                    });
+                }
+            }
+            
+            logger.info("[ObjectCreator][createBatch] SUCCESS - created " + results.length + " objects, " + errors.length + " errors");
+            
+            return {
+                success: results,
+                errors: errors,
+                totalCount: objectList.length,
+                successCount: results.length,
+                errorCount: errors.length
+            };
+            
+        } catch (error) {
+            logger.error("[ObjectCreator][createBatch] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 5. 公共API - 验证和查询
+    // -------------------------------------------------------------
+    
+    /**
+     * 验证对象类型
+     * @param {string} objectType 对象类型
+     * @returns {boolean} 是否支持
+     */
+    function isSupportedType(objectType) {
+        return _validateObjectType(objectType);
+    }
+    
+    /**
+     * 获取支持的对象类型
+     * @returns {Array} 支持的类型数组
+     */
+    function getSupportedTypes() {
+        var types = [];
+        for (var type in _supportedTypes) {
+            if (_supportedTypes.hasOwnProperty(type)) {
+                types.push(type);
+            }
+        }
+        return types;
+    }
+    
+    /**
+     * 获取对象类型的默认参数
+     * @param {string} objectType 对象类型
+     * @returns {Object} 默认参数
+     */
+    function getDefaultParameters(objectType) {
+        if (!_validateObjectType(objectType)) {
+            throw new Error("Unsupported object type: " + objectType);
+        }
+        return _getDefaultParameters(objectType);
+    }
+    
+    /**
+     * 验证创建参数
+     * @param {Object} options 创建选项
+     * @returns {Object} 验证结果
+     */
+    function validateCreateOptions(options) {
+        var result = {
+            valid: true,
+            errors: []
+        };
+        
+        try {
+            if (!options || typeof options !== "object") {
+                result.valid = false;
+                result.errors.push("Invalid options: must be an object");
+                return result;
+            }
+            
+            if (!options.type || typeof options.type !== "string") {
+                result.valid = false;
+                result.errors.push("Invalid object type: must be a string");
+            }
+            
+            if (!_validateObjectType(options.type)) {
+                result.valid = false;
+                result.errors.push("Unsupported object type: " + options.type);
+            }
+            
+            if (!_validatePosition(options.position)) {
+                result.valid = false;
+                result.errors.push("Invalid position: must be {x: number, y: number}");
+            }
+            
+        } catch (e) {
+            result.valid = false;
+            result.errors.push("Validation error: " + e.message);
+        }
+        
+        return result;
+    }
+    
+    // -------------------------------------------------------------
+    // 6. 返回模块接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 对象创建方法
+        createObject: createObject,
+        createAtOrigin: createAtOrigin,
+        createBatch: createBatch,
+        
+        // 验证和查询方法
+        isSupportedType: isSupportedType,
+        getSupportedTypes: getSupportedTypes,
+        getDefaultParameters: getDefaultParameters,
+        validateCreateOptions: validateCreateOptions
+    };
+    
+})();
+
+
+// File: src/modules/object-creator/index.js
+/**
+ * ObjectCreatorModule - PCB对象创建模块主入口
+ * 
+ * 提供统一的PCB对象创建接口，支持在指定位置创建各种PCB对象
+ * ES3/JScript 5.8 兼容
+ * 
+ * IIFE模块架构说明
+ * 
+ * 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();
+ * 2. 构建后所有模块变量在同一作用域，可直接引用
+ * 3. 不处理模块间依赖，需构建到一个文件中使用
+ * 4. 通过window导出，确保AD环境可访问
+ * 5. 依赖的模块必须在当前模块之前加载（通过merge-order.json控制）
+ */
+
+var ObjectCreatorModule = (function() {
+    
+    // -------------------------------------------------------------
+    // 1. 依赖引用（构建后自动可访问）
+    // -------------------------------------------------------------
+    // 注意：在ES3环境中，这些依赖在构建后会自动成为全局变量
+    // BaseModule, ObjectCreator, PositionManager
+    
+    // 简化的日志系统（用于测试）
+    var SimpleLogger = {
+        debug: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[DEBUG] " + msg); 
+            }
+        },
+        info: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[INFO] " + msg); 
+            }
+        },
+        warn: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[WARN] " + msg); 
+            }
+        },
+        error: function(msg) { 
+            if (typeof console !== "undefined" && console.log) {
+                console.log("[ERROR] " + msg); 
+            }
+        }
+    };
+    
+    var logger = SimpleLogger;
+    
+    // -------------------------------------------------------------
+    // 2. 私有变量
+    // -------------------------------------------------------------
+    
+    var _instances = {};           // 存储模块实例
+    var _defaultInstance = null;    // 默认模块实例
+    var _moduleConfig = {           // 模块配置
+        enableLogging: true,
+        enableValidation: true,
+        enablePositionManagement: true,
+        autoRegisterPositions: true,
+        conflictDetection: true
+    };
+    
+    // -------------------------------------------------------------
+    // 3. 私有函数
+    // -------------------------------------------------------------
+    
+    /**
+     * 创建默认模块实例
+     * @returns {Object} 模块实例
+     */
+    function _createDefaultInstance() {
+        if (!_defaultInstance) {
+            var options = {
+                moduleName: "ObjectCreator",
+                autoInit: true,
+                enableLogging: _moduleConfig.enableLogging,
+                enableValidation: _moduleConfig.enableValidation,
+                enablePositionManagement: _moduleConfig.enablePositionManagement,
+                autoRegisterPositions: _moduleConfig.autoRegisterPositions,
+                conflictDetection: _moduleConfig.conflictDetection
+            };
+            
+            _defaultInstance = BaseModule.create(options);
+            
+            // 初始化实例
+            if (_defaultInstance && typeof _defaultInstance.init === "function") {
+                _defaultInstance.init();
+            }
+        }
+        
+        return _defaultInstance;
+    }
+    
+    /**
+     * 生成唯一对象ID
+     * @param {string} objectType 对象类型
+     * @returns {string} 唯一ID
+     */
+    function _generateObjectId(objectType) {
+        var timestamp = new Date().getTime();
+        var random = Math.floor(Math.random() * 10000);
+        return objectType + "_" + timestamp + "_" + random;
+    }
+    
+    /**
+     * 验证创建选项
+     * @param {Object} options 创建选项
+     * @returns {Object} 验证结果
+     */
+    function _validateCreateOptions(options) {
+        var result = {
+            valid: true,
+            errors: []
+        };
+        
+        try {
+            if (!options || typeof options !== "object") {
+                result.valid = false;
+                result.errors.push("Invalid options: must be an object");
+                return result;
+            }
+            
+            if (!options.type || typeof options.type !== "string") {
+                result.valid = false;
+                result.errors.push("Invalid object type: must be a string");
+            }
+            
+            if (!ObjectCreator.isSupportedType(options.type)) {
+                result.valid = false;
+                result.errors.push("Unsupported object type: " + options.type);
+            }
+            
+            if (!options.position || typeof options.position !== "object") {
+                result.valid = false;
+                result.errors.push("Invalid position: must be an object");
+            } else {
+                var positionValidation = PositionManager.validatePosition(options.position);
+                if (!positionValidation.valid) {
+                    result.valid = false;
+                    result.errors = result.errors.concat(positionValidation.errors);
+                }
+            }
+            
+        } catch (e) {
+            result.valid = false;
+            result.errors.push("Validation error: " + e.message);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 注册对象位置
+     * @param {Object} object 创建的对象
+     * @param {Object} options 创建选项
+     */
+    function _registerObjectPosition(object, options) {
+        try {
+            if (_moduleConfig.autoRegisterPositions && object && options.position) {
+                var objectId = _generateObjectId(options.type);
+                
+                PositionManager.registerPosition(options.position, {
+                    id: objectId,
+                    type: options.type,
+                    object: object
+                });
+                
+                // 将ID添加到对象中
+                if (object && typeof object === "object") {
+                    object._objectId = objectId;
+                }
+            }
+        } catch (e) {
+            logger.warn("[ObjectCreatorModule][_registerObjectPosition] Failed to register position: " + e.message);
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 4. 公共API - 模块生命周期
+    // -------------------------------------------------------------
+    
+    /**
+     * 创建模块实例
+     * @param {Object} options 配置选项
+     * @returns {Object} 模块实例
+     */
+    function create(options) {
+        logger.debug("[ObjectCreatorModule][create] START - params: " + JSON.stringify(options));
+        
+        try {
+            options = options || {};
+            
+            // 合并默认配置
+            var config = {};
+            for (var key in _moduleConfig) {
+                if (_moduleConfig.hasOwnProperty(key)) {
+                    config[key] = _moduleConfig[key];
+                }
+            }
+            for (var key in options) {
+                if (options.hasOwnProperty(key)) {
+                    config[key] = options[key];
+                }
+            }
+            
+            // 创建BaseModule实例
+            var instance = BaseModule.create({
+                moduleName: options.moduleName || "ObjectCreator",
+                autoInit: options.autoInit !== false,
+                enableLogging: config.enableLogging,
+                enableValidation: config.enableValidation
+            });
+            
+            logger.debug("[ObjectCreatorModule][create] SUCCESS - instance created");
+            return instance;
+            
+        } catch (error) {
+            logger.error("[ObjectCreatorModule][create] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 初始化模块实例
+     * @param {Object} instance 模块实例
+     * @returns {boolean} 是否成功
+     */
+    function init(instance) {
+        logger.debug("[ObjectCreatorModule][init] START");
+        
+        try {
+            if (!instance) {
+                return false;
+            }
+            
+            if (typeof instance.init === "function") {
+                var result = instance.init();
+                
+                // 初始化位置管理器
+                if (_moduleConfig.enablePositionManagement) {
+                    PositionManager.configureCoordinateSystem({
+                        unit: "mil",
+                        gridSize: 5,
+                        enableGridSnap: true,
+                        conflictThreshold: 10
+                    });
+                }
+                
+                logger.debug("[ObjectCreatorModule][init] SUCCESS - instance initialized");
+                return result;
+            }
+            
+            return false;
+            
+        } catch (error) {
+            logger.error("[ObjectCreatorModule][init] ERROR - " + error.message);
+            return false;
+        }
+    }
+    
+    /**
+     * 运行模块实例
+     * @param {Object} instance 模块实例
+     * @param {*} data 运行数据
+     * @returns {Object} 运行结果
+     */
+    function run(instance, data) {
+        logger.debug("[ObjectCreatorModule][run] START - params: " + JSON.stringify({
+            hasInstance: !!instance,
+            data: data
+        }));
+        
+        try {
+            if (!instance) {
+                return {success: false, message: "实例无效"};
+            }
+            
+            if (typeof instance.run === "function") {
+                var result = instance.run(data);
+                logger.debug("[ObjectCreatorModule][run] SUCCESS - instance run completed");
+                return result;
+            }
+            
+            return {success: false, message: "run方法不存在"};
+            
+        } catch (error) {
+            logger.error("[ObjectCreatorModule][run] ERROR - " + error.message);
+            return {success: false, message: "运行异常: " + error.message};
+        }
+    }
+    
+    /**
+     * 销毁模块实例
+     * @param {Object} instance 模块实例
+     * @returns {boolean} 是否成功
+     */
+    function destroy(instance) {
+        logger.debug("[ObjectCreatorModule][destroy] START");
+        
+        try {
+            if (!instance) {
+                return false;
+            }
+            
+            if (typeof instance.destroy === "function") {
+                var result = instance.destroy();
+                
+                // 清理位置缓存
+                if (_moduleConfig.enablePositionManagement) {
+                    PositionManager.clearPositionCache();
+                }
+                
+                logger.debug("[ObjectCreatorModule][destroy] SUCCESS - instance destroyed");
+                return result;
+            }
+            
+            return false;
+            
+        } catch (error) {
+            logger.error("[ObjectCreatorModule][destroy] ERROR - " + error.message);
+            return false;
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 5. 公共API - 对象创建
+    // -------------------------------------------------------------
+    
+    /**
+     * 创建PCB对象
+     * @param {Object} options 创建选项
+     * @returns {Object} 创建的对象
+     */
+    function createObject(options) {
+        logger.debug("[ObjectCreatorModule][createObject] START - params: " + JSON.stringify(options));
+        
+        try {
+            // 验证选项
+            if (_moduleConfig.enableValidation) {
+                var validation = _validateCreateOptions(options);
+                if (!validation.valid) {
+                    throw new Error("Validation failed: " + validation.errors.join(", "));
+                }
+            }
+            
+            // 冲突检测
+            if (_moduleConfig.conflictDetection && _moduleConfig.enablePositionManagement) {
+                var conflictResult = PositionManager.checkPositionConflict(options.position);
+                if (conflictResult.hasConflict) {
+                    logger.warn("[ObjectCreatorModule][createObject] Position conflict detected: " + JSON.stringify(conflictResult.conflicts));
+                    // 可以选择使用建议位置或抛出错误
+                    // 这里我们记录警告但继续创建
+                }
+            }
+            
+            // 创建对象
+            var object = ObjectCreator.createObject(options);
+            
+            // 注册位置
+            _registerObjectPosition(object, options);
+            
+            logger.info("[ObjectCreatorModule][createObject] SUCCESS - object created: " + options.type);
+            return object;
+            
+        } catch (error) {
+            logger.error("[ObjectCreatorModule][createObject] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 在原点(0,0)创建对象
+     * @param {string} objectType 对象类型
+     * @param {Object} parameters 参数
+     * @returns {Object} 创建的对象
+     */
+    function createAtOrigin(objectType, parameters) {
+        logger.debug("[ObjectCreatorModule][createAtOrigin] START - params: " + JSON.stringify({
+            objectType: objectType,
+            parameters: parameters
+        }));
+        
+        try {
+            var options = {
+                type: objectType,
+                position: PositionManager.getOrigin(),
+                parameters: parameters
+            };
+            
+            var result = createObject(options);
+            
+            logger.info("[ObjectCreatorModule][createAtOrigin] SUCCESS - object created at origin: " + objectType);
+            return result;
+            
+        } catch (error) {
+            logger.error("[ObjectCreatorModule][createAtOrigin] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * 批量创建对象
+     * @param {Array} objectList 对象列表
+     * @returns {Object} 创建结果
+     */
+    function createBatch(objectList) {
+        logger.debug("[ObjectCreatorModule][createBatch] START - params: " + JSON.stringify({
+            objectCount: objectList ? objectList.length : 0
+        }));
+        
+        try {
+            var result = ObjectCreator.createBatch(objectList);
+            
+            // 批量注册位置
+            if (_moduleConfig.autoRegisterPositions && result.success) {
+                for (var i = 0; i < result.success.length; i++) {
+                    var object = result.success[i];
+                    var options = objectList[i];
+                    _registerObjectPosition(object, options);
+                }
+            }
+            
+            logger.info("[ObjectCreatorModule][createBatch] SUCCESS - batch creation completed");
+            return result;
+            
+        } catch (error) {
+            logger.error("[ObjectCreatorModule][createBatch] ERROR - " + error.message);
+            throw error;
+        }
+    }
+    
+    // -------------------------------------------------------------
+    // 6. 公共API - 查询和验证
+    // -------------------------------------------------------------
+    
+    /**
+     * 获取支持的对象类型
+     * @returns {Array} 支持的类型数组
+     */
+    function getSupportedTypes() {
+        return ObjectCreator.getSupportedTypes();
+    }
+    
+    /**
+     * 验证创建选项
+     * @param {Object} options 创建选项
+     * @returns {Object} 验证结果
+     */
+    function validateCreateOptions(options) {
+        return _validateCreateOptions(options);
+    }
+    
+    /**
+     * 获取模块统计信息
+     * @returns {Object} 统计信息
+     */
+    function getStatistics() {
+        var stats = {
+            moduleConfig: _moduleConfig,
+            positionStats: null,
+            supportedTypes: getSupportedTypes()
+        };
+        
+        if (_moduleConfig.enablePositionManagement) {
+            stats.positionStats = PositionManager.getPositionStatistics();
+        }
+        
+        return stats;
+    }
+    
+    // -------------------------------------------------------------
+    // 7. 返回模块接口
+    // -------------------------------------------------------------
+    
+    return {
+        // 生命周期方法
+        create: create,
+        init: init,
+        run: run,
+        destroy: destroy,
+        
+        // 对象创建方法
+        createObject: createObject,
+        createAtOrigin: createAtOrigin,
+        createBatch: createBatch,
+        
+        // 查询和验证方法
+        getSupportedTypes: getSupportedTypes,
+        validateCreateOptions: validateCreateOptions,
+        getStatistics: getStatistics,
+        
+        // 直接访问核心组件
+        ObjectCreator: ObjectCreator,
+        PositionManager: PositionManager
+    };
+    
+})();
+
+// 统一的环境检测和导出
+(function() {
+    // AD环境导出
+    if (typeof window !== "undefined") {
+        window.ObjectCreatorModule = ObjectCreatorModule;
+    }
+    
+    // Node.js环境导出
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = ObjectCreatorModule;
+    }
+    
+    // 其他环境的全局导出（备用）
+    if (typeof global !== "undefined" && typeof window === "undefined") {
+        global.ObjectCreatorModule = ObjectCreatorModule;
+    }
+})();
+
+
+// File: ui/object-creator.js
+/**
+ * Object Creator Window - PCB对象创建窗口事件处理
+ * 重构为纯大IIFE模块，符合AD环境规范
+ */
+
+var ObjectCreatorWindow = (function(){
+    // 私有变量
+    var _initialized = false;
+    var _config = {};
+    
+    // 公共接口函数
+    function create(options) {
+        _config = options || {};
+        return {
+            config: _config,
+            initialized: _initialized
+        };
+    }
+    
+    function initialize() {
+        try {
+            if (typeof uiInfo === "function") {
+                uiInfo("=== 初始化对象创建窗口 ===", null, "object-creator.js", "initialize");
+            }
+            
+            // 使用新的模块结构
+            if (typeof UIModule !== "undefined") {
+                UIModule.initializeUI();
+            } else {
+                throw new Error("UIModule不可用");
+            }
+            
+            _initialized = true;
+            
+            if (typeof uiInfo === "function") {
+                uiInfo("对象创建窗口初始化完成", null, "object-creator.js", "initialize");
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("初始化对象创建窗口失败", {
+                    error: error.message,
+                    stack: error.stack
+                }, "object-creator.js", "initialize");
+            }
+            throw error;
+        }
+    }
+    
+    function show() {
+        try {
+            if (typeof uiInfo === "function") {
+                uiInfo("=== 显示对象创建窗口 ===", null, "object-creator.js", "show");
+            }
+            
+            // 确保已初始化
+            if (!_initialized) {
+                initialize();
+            }
+            
+            // 使用新的模块结构
+            if (typeof UIModule !== "undefined") {
+                UIModule.showObjectCreatorWindow();
+            } else {
+                throw new Error("UIModule不可用");
+            }
+            
+            if (typeof uiInfo === "function") {
+                uiInfo("对象创建窗口已显示", null, "object-creator.js", "show");
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("显示对象创建窗口失败", {
+                    error: error.message,
+                    stack: error.stack
+                }, "object-creator.js", "show");
+            }
+            throw error;
+        }
+    }
+    
+    function hide() {
+        try {
+            if (typeof uiDebug === "function") {
+                uiDebug("隐藏对象创建窗口", null, "object-creator.js", "hide");
+            }
+            
+            // 使用新的模块结构
+            if (typeof UIModule !== "undefined") {
+                UIModule.hideObjectCreatorWindow();
+            }
+            
+        } catch (error) {
+            if (typeof uiError === "function") {
+                uiError("隐藏对象创建窗口失败", {
+                    error: error.message
+                }, "object-creator.js", "hide");
+            }
+        }
+    }
+    
+    function isInitialized() {
+        return _initialized;
+    }
+    
+    function getStatus() {
+        return {
+            initialized: _initialized,
+            uiModuleAvailable: typeof UIModule !== "undefined",
+            uiModuleStatus: typeof UIModule !== "undefined" ? UIModule.getStatus() : null
+        };
+    }
+    
+    // 返回模块接口对象
+    return {
+        create: create,
+        initialize: initialize,
+        show: show,
+        hide: hide,
+        isInitialized: isInitialized,
+        getStatus: getStatus
+    };
+})();
+
+
+// File: src/core/global-events.js
+/**
+ * 全局事件处理函数 - DFM直接调用版本
+ * @description 此文件不使用IIFE包装，确保AD DFM文件可以直接调用
+ * 注意：此文件必须保持ES3兼容性，不能使用任何ES5+特性
+ * 
+ * 文件用途：提供AD DFM文件可直接调用的全局函数
+ * 特别说明：此文件不能使用IIFE包装，必须直接在全局作用域定义函数
+ */
+
+/**
+ * 工具函数：在UI中显示错误信息
+ * @param {string} functionName 函数名称
+ * @param {Error} error 错误对象
+ * @param {*} context 上下文信息
+ */
+function showErrorInUI(functionName, error, context) {
+    try {
+        var timestamp = new Date().toLocaleString();
+        
+        if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+            memLog.Lines.Add("=== 错误信息 ===");
+            memLog.Lines.Add("时间: " + timestamp);
+            memLog.Lines.Add("函数: " + functionName);
+            memLog.Lines.Add("错误: " + (error.message || "未知错误"));
+            
+            if (context) {
+                memLog.Lines.Add("上下文: " + JSON.stringify(context));
+            }
+            
+            if (error.stack) {
+                memLog.Lines.Add("堆栈: " + error.stack);
+            }
+            
+            memLog.Lines.Add("================");
+        } else {
+            // 如果memLog不可用，尝试使用alert
+            if (typeof alert !== "undefined") {
+                alert("错误 in " + functionName + ": " + (error.message || "未知错误"));
+            }
+        }
+    } catch (e) {
+        // 静默处理错误显示失败
+    }
+}
+
+/**
+ * 工具函数：在UI中显示成功信息
+ * @param {string} functionName 函数名称
+ * @param {string} message 成功消息
+ * @param {*} context 上下文信息
+ */
+function showSuccessInUI(functionName, message, context) {
+    try {
+        var timestamp = new Date().toLocaleString();
+        
+        if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+            memLog.Lines.Add("=== " + message + " ===");
+            memLog.Lines.Add("时间: " + timestamp);
+            memLog.Lines.Add("函数: " + functionName);
+            
+            if (context) {
+                memLog.Lines.Add("详情: " + JSON.stringify(context));
+            }
+            
+            memLog.Lines.Add("================");
+        }
+    } catch (e) {
+        // 静默处理成功信息显示失败
+    }
+}
+
+/**
+ * 工具函数：检查LoggerModule可用性
+ * @returns {Object} 检查结果
+ */
+function checkLoggerModuleAvailability() {
+    var result = {
+        available: false,
+        loggerModule: null,
+        loggerIndex: null,
+        uiLoggerModule: null,
+        logController: null,
+        defaultLogger: null,
+        errors: []
+    };
+    
+    try {
+        // 检查LoggerModule - 直接检查全局变量
+        if (typeof LoggerModule !== "undefined") {
+            result.loggerModule = LoggerModule;
+        } else {
+            result.errors.push("LoggerModule未找到");
+        }
+        
+        // 检查LoggerModuleIndex - 直接检查全局变量
+        if (typeof LoggerModuleIndex !== "undefined") {
+            result.loggerIndex = LoggerModuleIndex;
+        } else {
+            result.errors.push("LoggerModuleIndex未找到");
+        }
+        
+        // 检查UILoggerModule - 直接检查全局变量
+        if (typeof UILoggerModule !== "undefined") {
+            result.uiLoggerModule = UILoggerModule;
+        } else {
+            result.errors.push("UILoggerModule未找到");
+        }
+        
+        // 检查GlobalLogController - 直接检查全局变量
+        if (typeof GlobalLogController !== "undefined") {
+            result.logController = GlobalLogController;
+        } else {
+            result.errors.push("GlobalLogController未找到");
+        }
+        
+        // 检查默认实例
+        if (result.loggerIndex) {
+            try {
+                result.defaultLogger = result.loggerIndex.getDefaultLogger();
+                if (result.defaultLogger) {
+                    result.available = true;
+                } else {
+                    result.errors.push("无法获取默认Logger实例");
+                }
+            } catch (e) {
+                result.errors.push("获取默认Logger实例失败: " + e.message);
+            }
+        }
+        
+    } catch (e) {
+        result.errors.push("检查LoggerModule时发生异常: " + e.message);
+    }
+    
+    return result;
+}
+
+/**
+ * 全局btnOutputLogClick函数 - 输出日志按钮点击事件
+ * @description 将LoggerModule缓存中的日志输出到UI显示区域
+ * @param {Object} Sender 事件发送者
+ */
+function btnOutputLogClick(Sender) {
+    try {
+        // 检查LoggerModule可用性
+        var checkResult = checkLoggerModuleAvailability();
+        
+        if (!checkResult.available) {
+            showErrorInUI("btnOutputLogClick", new Error("LoggerModule不可用"), checkResult);
+            return;
+        }
+        
+        // 显示开始信息
+        showSuccessInUI("btnOutputLogClick", "开始输出日志", {
+            loggerAvailable: checkResult.available,
+            timestamp: new Date().toLocaleString()
+        });
+        
+        // 强制刷新日志缓存
+        var flushed = checkResult.loggerIndex.flush();
+        
+        if (flushed) {
+            // 获取统计信息
+            var stats = checkResult.loggerIndex.getStats();
+            var count = checkResult.loggerIndex.getCount();
+            
+            showSuccessInUI("btnOutputLogClick", "日志输出完成", {
+                flushed: flushed,
+                stats: stats,
+                cacheCount: count,
+                timestamp: new Date().toLocaleString()
+            });
+            
+            // 显示一些示例日志内容（如果有的话）
+            if (count > 0) {
+                memLog.Lines.Add("--- 缓存中有 " + count + " 条日志 ---");
+            } else {
+                memLog.Lines.Add("--- 缓存中没有日志 ---");
+            }
+            
+        } else {
+            showErrorInUI("btnOutputLogClick", new Error("日志输出失败"), {
+                flushed: flushed,
+                timestamp: new Date().toLocaleString()
+            });
+        }
+        
+    } catch (error) {
+        showErrorInUI("btnOutputLogClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 全局btnGenerateLogClick函数 - 生成日志按钮点击事件
+ * @description 生成各种级别的测试日志，包含详细的debug信息
+ * @param {Object} Sender 事件发送者
+ */
+function btnGenerateLogClick(Sender) {
+    try {
+        // 输出详细的开始信息
+        uiInfo("=== 开始日志生成测试 ===", {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        }, "global-events.js", "btnGenerateLogClick");
+        
+        // 检查LoggerModule可用性
+        var checkResult = checkLoggerModuleAvailability();
+        
+        // 输出详细的模块检查结果
+        uiInfo("模块可用性检查结果", {
+            available: checkResult.available,
+            loggerModule: !!checkResult.loggerModule,
+            loggerIndex: !!checkResult.loggerIndex,
+            uiLoggerModule: !!checkResult.uiLoggerModule,
+            logController: !!checkResult.logController,
+            defaultLogger: !!checkResult.defaultLogger,
+            errors: checkResult.errors
+        }, "global-events.js", "btnGenerateLogClick");
+        
+        if (!checkResult.available) {
+            // 输出详细的错误诊断信息
+            uiError("LoggerModule不可用", {
+                checkResult: checkResult,
+                globalVariables: {
+                    LoggerModule: typeof LoggerModule,
+                    LoggerModuleIndex: typeof LoggerModuleIndex,
+                    UILoggerModule: typeof UILoggerModule,
+                    GlobalLogController: typeof GlobalLogController
+                },
+                timestamp: new Date().toLocaleString()
+            }, "global-events.js", "btnGenerateLogClick");
+            
+            showErrorInUI("btnGenerateLogClick", new Error("LoggerModule不可用"), checkResult);
+            return;
+        }
+        
+        // 如果GlobalLogController可用，输出系统诊断信息
+        if (checkResult.logController) {
+            try {
+                uiInfo("输出GlobalLogController诊断信息", null, "global-events.js", "btnGenerateLogClick");
+                checkResult.logController.outputSystemDiagnostics();
+            } catch (e) {
+                uiWarn("输出诊断信息失败", {error: e.message}, "global-events.js", "btnGenerateLogClick");
+            }
+        }
+        
+        var logger = checkResult.defaultLogger;
+        var testResults = {
+            error: false,
+            warn: false,
+            info: false,
+            debug: false
+        };
+        
+        // 输出详细的测试开始信息
+        uiInfo("开始各级别日志测试", {
+            loggerType: typeof logger,
+            loggerHealthy: logger && typeof logger.isHealthy === "function" ? logger.isHealthy() : "unknown",
+            timestamp: new Date().toLocaleString()
+        }, "global-events.js", "btnGenerateLogClick");
+        
+        // 生成ERROR级别测试日志
+        try {
+            uiDebug("测试ERROR级别日志", null, "global-events.js", "btnGenerateLogClick");
+            logger.error("这是一个错误日志测试", {
+                test: true, 
+                level: "error",
+                timestamp: new Date().getTime(),
+                testId: "error_test_001"
+            }, "ui-test", "btnGenerateLogClick");
+            testResults.error = true;
+            uiInfo("ERROR级别测试成功", null, "global-events.js", "btnGenerateLogClick");
+        } catch (e) {
+            testResults.error = "失败: " + e.message;
+            uiError("ERROR级别测试失败", {
+                error: e.message,
+                stack: e.stack
+            }, "global-events.js", "btnGenerateLogClick");
+        }
+        
+        // 生成WARN级别测试日志
+        try {
+            uiDebug("测试WARN级别日志", null, "global-events.js", "btnGenerateLogClick");
+            logger.warn("这是一个警告日志测试", {
+                test: true, 
+                level: "warn",
+                timestamp: new Date().getTime(),
+                testId: "warn_test_001"
+            }, "ui-test", "btnGenerateLogClick");
+            testResults.warn = true;
+            uiInfo("WARN级别测试成功", null, "global-events.js", "btnGenerateLogClick");
+        } catch (e) {
+            testResults.warn = "失败: " + e.message;
+            uiError("WARN级别测试失败", {
+                error: e.message,
+                stack: e.stack
+            }, "global-events.js", "btnGenerateLogClick");
+        }
+        
+        // 生成INFO级别测试日志
+        try {
+            uiDebug("测试INFO级别日志", null, "global-events.js", "btnGenerateLogClick");
+            logger.info("这是一个信息日志测试", {
+                test: true, 
+                level: "info",
+                timestamp: new Date().getTime(),
+                testId: "info_test_001"
+            }, "ui-test", "btnGenerateLogClick");
+            testResults.info = true;
+            uiInfo("INFO级别测试成功", null, "global-events.js", "btnGenerateLogClick");
+        } catch (e) {
+            testResults.info = "失败: " + e.message;
+            uiError("INFO级别测试失败", {
+                error: e.message,
+                stack: e.stack
+            }, "global-events.js", "btnGenerateLogClick");
+        }
+        
+        // 生成DEBUG级别测试日志
+        try {
+            uiDebug("测试DEBUG级别日志", null, "global-events.js", "btnGenerateLogClick");
+            logger.debug("这是一个调试日志测试", {
+                test: true, 
+                level: "debug",
+                timestamp: new Date().getTime(),
+                testId: "debug_test_001",
+                detailedContext: {
+                    functionName: "btnGenerateLogClick",
+                    fileName: "global-events.js",
+                    lineNumber: "约200行",
+                    additionalInfo: "这是详细的debug上下文信息"
+                }
+            }, "ui-test", "btnGenerateLogClick");
+            testResults.debug = true;
+            uiInfo("DEBUG级别测试成功", null, "global-events.js", "btnGenerateLogClick");
+        } catch (e) {
+            testResults.debug = "失败: " + e.message;
+            uiError("DEBUG级别测试失败", {
+                error: e.message,
+                stack: e.stack
+            }, "global-events.js", "btnGenerateLogClick");
+        }
+        
+        // 输出详细的测试结果
+        uiInfo("=== 测试结果汇总 ===", {
+            results: testResults,
+            successCount: (testResults.error === true ? 1 : 0) + 
+                          (testResults.warn === true ? 1 : 0) + 
+                          (testResults.info === true ? 1 : 0) + 
+                          (testResults.debug === true ? 1 : 0),
+            failureCount: (testResults.error !== true ? 1 : 0) + 
+                          (testResults.warn !== true ? 1 : 0) + 
+                          (testResults.info !== true ? 1 : 0) + 
+                          (testResults.debug !== true ? 1 : 0),
+            timestamp: new Date().toLocaleString()
+        }, "global-events.js", "btnGenerateLogClick");
+        
+        // 如果GlobalLogController可用，输出统计信息
+        if (checkResult.logController) {
+            try {
+                var stats = checkResult.logController.getStats();
+                uiInfo("GlobalLogController统计信息", stats, "global-events.js", "btnGenerateLogClick");
+            } catch (e) {
+                uiWarn("获取统计信息失败", {error: e.message}, "global-events.js", "btnGenerateLogClick");
+            }
+        }
+        
+        // 显示生成结果
+        showSuccessInUI("btnGenerateLogClick", "测试日志生成完成", {
+            results: testResults,
+            timestamp: new Date().toLocaleString()
+        });
+        
+        uiInfo("=== 日志生成测试完成 ===", null, "global-events.js", "btnGenerateLogClick");
+        
+    } catch (error) {
+        uiError("btnGenerateLogClick发生异常", {
+            error: error.message,
+            stack: error.stack,
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        }, "global-events.js", "btnGenerateLogClick");
+        
+        showErrorInUI("btnGenerateLogClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 全局btnClearDisplayClick函数 - 清空显示按钮点击事件
+ * @description 清空UI显示区域
+ * @param {Object} Sender 事件发送者
+ */
+function btnClearDisplayClick(Sender) {
+    try {
+        if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+            memLog.Lines.Clear();
+            showSuccessInUI("btnClearDisplayClick", "显示区域已清空", {
+                timestamp: new Date().toLocaleString()
+            });
+        } else {
+            showErrorInUI("btnClearDisplayClick", new Error("memLog组件不可用"), {
+                memLogType: typeof memLog,
+                timestamp: new Date().toLocaleString()
+            });
+        }
+    } catch (error) {
+        showErrorInUI("btnClearDisplayClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 全局btnSaveLogClick函数 - 保存日志按钮点击事件
+ * @description 将当前显示的日志保存到文件
+ * @param {Object} Sender 事件发送者
+ */
+function btnSaveLogClick(Sender) {
+    try {
+        // 检查LoggerModule可用性
+        var checkResult = checkLoggerModuleAvailability();
+        
+        if (!checkResult.available) {
+            showErrorInUI("btnSaveLogClick", new Error("LoggerModule不可用"), checkResult);
+            return;
+        }
+        
+        // 设置目标路径 - 修复为正确路径
+        var targetPath = "D:\\!Work\\AD21_JS_Project\\logs";
+        
+        // 显示开始信息
+        showSuccessInUI("btnSaveLogClick", "开始保存日志", {
+            targetPath: targetPath,
+            timestamp: new Date().toLocaleString()
+        });
+        
+        // 强制刷新日志缓存
+        var flushed = checkResult.loggerIndex.flush();
+        
+        if (flushed) {
+            showSuccessInUI("btnSaveLogClick", "日志保存完成", {
+                targetPath: targetPath,
+                flushed: flushed,
+                timestamp: new Date().toLocaleString()
+            });
+        } else {
+            // 增强错误诊断信息
+            var errorDetails = {
+                flushed: flushed,
+                targetPath: targetPath,
+                timestamp: new Date().toLocaleString(),
+                additionalInfo: {
+                    loggerIndexAvailable: !!checkResult.loggerIndex,
+                    defaultLoggerAvailable: !!checkResult.defaultLogger,
+                    cacheCount: checkResult.loggerIndex ? checkResult.loggerIndex.getCount() : 0,
+                    errorCount: checkResult.defaultLogger && checkResult.defaultLogger.getStats ? 
+                               checkResult.defaultLogger.getStats().errorCount || 0 : 0
+                }
+            };
+            
+            showErrorInUI("btnSaveLogClick", new Error("日志保存失败"), errorDetails);
+        }
+        
+    } catch (error) {
+        showErrorInUI("btnSaveLogClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 全局btnDebugStatusClick函数 - 调试状态按钮点击事件
+ * @description 使用UI调试系统检查模块状态
+ * @param {Object} Sender 事件发送者
+ */
+function btnDebugStatusClick(Sender) {
+    try {
+        uiInfo("=== 开始调试状态检查 ===", {sender: Sender ? "有效" : "无效"}, "global-events.js", "btnDebugStatusClick");
+        
+        // 调用模块状态检查函数
+        debugModuleStatus();
+        
+        // 额外的UI调试系统测试
+        uiTrace("UI调试系统测试", {level: "TRACE"}, "global-events.js", "btnDebugStatusClick");
+        uiInfo("UI调试系统测试", {level: "INFO"}, "global-events.js", "btnDebugStatusClick");
+        uiWarn("UI调试系统测试", {level: "WARN"}, "global-events.js", "btnDebugStatusClick");
+        uiError("UI调试系统测试", {level: "ERROR"}, "global-events.js", "btnDebugStatusClick");
+        
+        uiInfo("=== 调试状态检查完成 ===", null, "global-events.js", "btnDebugStatusClick");
+        
+    } catch (error) {
+        uiFatal("调试状态检查异常", {
+            error: error.message,
+            stack: error.stack,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "btnDebugStatusClick");
+    }
+}
+
+/**
+ * 全局btnLogStatsClick函数 - 日志统计按钮点击事件
+ * @description 显示日志性能统计信息
+ * @param {Object} Sender 事件发送者
+ */
+function btnLogStatsClick(Sender) {
+    try {
+        // 检查GlobalLogController可用性
+        var checkResult = checkLoggerModuleAvailability();
+        
+        if (!checkResult.logController) {
+            showErrorInUI("btnLogStatsClick", new Error("GlobalLogController不可用"), checkResult);
+            return;
+        }
+        
+        uiInfo("=== 日志性能统计 ===", {sender: Sender ? "有效" : "无效"}, "global-events.js", "btnLogStatsClick");
+        
+        // 获取统计信息
+        var stats = checkResult.logController.getStats();
+        
+        if (stats.enabled) {
+            uiInfo("统计信息已启用", null, "global-events.js", "btnLogStatsClick");
+            
+            // 显示各级别统计
+            for (var level in stats.summary) {
+                if (stats.summary.hasOwnProperty(level)) {
+                    var levelStats = stats.summary[level];
+                    uiInfo(level.toUpperCase() + "级别统计", levelStats, "global-events.js", "btnLogStatsClick");
+                }
+            }
+            
+            // 显示开关状态
+            var genSwitches = checkResult.logController.getGenerationSwitches();
+            var dispSwitches = checkResult.logController.getDisplaySwitches();
+            
+            uiInfo("生成级开关状态", genSwitches, "global-events.js", "btnLogStatsClick");
+            uiInfo("显示级开关状态", dispSwitches, "global-events.js", "btnLogStatsClick");
+            
+        } else {
+            uiWarn("统计信息未启用", null, "global-events.js", "btnLogStatsClick");
+        }
+        
+        uiInfo("=== 日志统计完成 ===", null, "global-events.js", "btnLogStatsClick");
+        
+    } catch (error) {
+        showErrorInUI("btnLogStatsClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 显示对象创建窗口函数
+ * @description 显示PCB对象创建窗口，提供用户界面来创建各种PCB对象
+ */
+function showObjectCreatorWindow() {
+    try {
+        uiInfo("=== 启动对象创建窗口 ===", null, "global-events.js", "showObjectCreatorWindow");
+        
+        // 检查UILoggerModule是否可用（用于UI输出）
+        if (typeof UILoggerModule === "undefined") {
+            throw new Error("UILoggerModule不可用，请确保UI日志模块已正确加载");
+        }
+        
+        // 检查ObjectCreatorModule是否可用
+        if (typeof ObjectCreatorModule === "undefined") {
+            throw new Error("ObjectCreatorModule不可用，请确保对象创建模块已正确加载");
+        }
+        
+        // 使用UILoggerModule显示对象创建窗口信息
+        UILoggerModule.uiInfo("对象创建窗口启动", {
+            timestamp: new Date().toLocaleString()
+        }, "global-events.js", "showObjectCreatorWindow");
+        
+        uiInfo("=== 对象创建窗口已准备就绪 ===", null, "global-events.js", "showObjectCreatorWindow");
+        
+    } catch (error) {
+        uiError("显示对象创建窗口失败", {
+            error: error.message,
+            stack: error.stack
+        }, "global-events.js", "showObjectCreatorWindow");
+        throw error;
+    }
+}
+
+/**
+ * 全局btnCreateObjectClick函数 - 创建对象按钮点击事件
+ * @description 显示对象创建窗口
+ * @param {Object} Sender 事件发送者
+ */
+function btnCreateObjectClick(Sender) {
+    try {
+        uiInfo("=== 显示对象创建窗口 ===", {sender: Sender ? "有效" : "无效"}, "global-events.js", "btnCreateObjectClick");
+        
+        // 调用对象创建窗口函数
+        showObjectCreatorWindow();
+        
+        uiInfo("对象创建窗口已显示", null, "global-events.js", "btnCreateObjectClick");
+        
+    } catch (error) {
+        showErrorInUI("btnCreateObjectClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 全局btnRefreshStatusClick函数 - 刷新状态按钮点击事件
+ * @description 刷新所有模块状态
+ * @param {Object} Sender 事件发送者
+ */
+function btnRefreshStatusClick(Sender) {
+    try {
+        uiInfo("=== 刷新模块状态 ===", {sender: Sender ? "有效" : "无效"}, "global-events.js", "btnRefreshStatusClick");
+        
+        // 检查LoggerModule
+        var loggerCheck = checkLoggerModuleAvailability();
+        uiInfo("LoggerModule状态", {
+            available: loggerCheck.available,
+            hasDefaultLogger: !!loggerCheck.defaultLogger
+        }, "global-events.js", "btnRefreshStatusClick");
+        
+        // 检查ObjectCreatorModule
+        var objectCreatorAvailable = false;
+        if (typeof ObjectCreatorModule !== "undefined") {
+            objectCreatorAvailable = true;
+            try {
+                var stats = ObjectCreatorModule.getStatistics();
+                uiInfo("ObjectCreatorModule状态", {
+                    available: true,
+                    config: stats.moduleConfig,
+                    supportedTypes: stats.supportedTypes
+                }, "global-events.js", "btnRefreshStatusClick");
+            } catch (e) {
+                uiWarn("ObjectCreatorModule统计获取失败", {error: e.message}, "global-events.js", "btnRefreshStatusClick");
+            }
+        } else {
+            uiWarn("ObjectCreatorModule不可用", null, "global-events.js", "btnRefreshStatusClick");
+        }
+        
+        // 检查PCBInterfaces
+        var pcbInterfacesAvailable = false;
+        if (typeof PCBInterfaces !== "undefined") {
+            pcbInterfacesAvailable = true;
+            try {
+                var supportedTypes = PCBInterfaces.getSupportedTypes();
+                uiInfo("PCBInterfaces状态", {
+                    available: true,
+                    supportedTypes: supportedTypes
+                }, "global-events.js", "btnRefreshStatusClick");
+            } catch (e) {
+                uiWarn("PCBInterfaces状态获取失败", {error: e.message}, "global-events.js", "btnRefreshStatusClick");
+            }
+        } else {
+            uiWarn("PCBInterfaces不可用", null, "global-events.js", "btnRefreshStatusClick");
+        }
+        
+        uiInfo("=== 状态刷新完成 ===", null, "global-events.js", "btnRefreshStatusClick");
+        
+    } catch (error) {
+        showErrorInUI("btnRefreshStatusClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 全局btnObjectStatsClick函数 - 对象统计按钮点击事件
+ * @description 显示对象创建统计信息
+ * @param {Object} Sender 事件发送者
+ */
+function btnObjectStatsClick(Sender) {
+    try {
+        uiInfo("=== 对象创建统计 ===", {sender: Sender ? "有效" : "无效"}, "global-events.js", "btnObjectStatsClick");
+        
+        // 检查ObjectCreatorModule
+        if (typeof ObjectCreatorModule !== "undefined") {
+            try {
+                var stats = ObjectCreatorModule.getStatistics();
+                
+                uiInfo("模块配置", stats.moduleConfig, "global-events.js", "btnObjectStatsClick");
+                uiInfo("支持的对象类型", stats.supportedTypes, "global-events.js", "btnObjectStatsClick");
+                
+                if (stats.positionStats) {
+                    uiInfo("位置统计", stats.positionStats, "global-events.js", "btnObjectStatsClick");
+                }
+                
+            } catch (e) {
+                uiError("获取对象统计失败", {error: e.message}, "global-events.js", "btnObjectStatsClick");
+            }
+        } else {
+            uiWarn("ObjectCreatorModule不可用", null, "global-events.js", "btnObjectStatsClick");
+        }
+        
+        // 检查PCBInterfaces
+        if (typeof PCBInterfaces !== "undefined") {
+            try {
+                var pcbStats = PCBInterfaces.getStatistics();
+                uiInfo("PCB接口统计", pcbStats, "global-events.js", "btnObjectStatsClick");
+            } catch (e) {
+                uiWarn("获取PCB接口统计失败", {error: e.message}, "global-events.js", "btnObjectStatsClick");
+            }
+        }
+        
+        uiInfo("=== 对象统计完成 ===", null, "global-events.js", "btnObjectStatsClick");
+        
+    } catch (error) {
+        showErrorInUI("btnObjectStatsClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 全局btnClearCacheClick函数 - 清空缓存按钮点击事件
+ * @description 清空所有模块缓存
+ * @param {Object} Sender 事件发送者
+ */
+function btnClearCacheClick(Sender) {
+    try {
+        uiInfo("=== 清空模块缓存 ===", {sender: Sender ? "有效" : "无效"}, "global-events.js", "btnClearCacheClick");
+        
+        // 清空ObjectCreatorModule缓存
+        if (typeof ObjectCreatorModule !== "undefined") {
+            try {
+                if (ObjectCreatorModule.PositionManager && 
+                    typeof ObjectCreatorModule.PositionManager.clearPositionCache === "function") {
+                    ObjectCreatorModule.PositionManager.clearPositionCache();
+                    uiInfo("位置缓存已清空", null, "global-events.js", "btnClearCacheClick");
+                }
+            } catch (e) {
+                uiWarn("清空位置缓存失败", {error: e.message}, "global-events.js", "btnClearCacheClick");
+            }
+        }
+        
+        // 清空PCBInterfaces缓存
+        if (typeof PCBInterfaces !== "undefined") {
+            try {
+                if (typeof PCBInterfaces.cleanup === "function") {
+                    PCBInterfaces.cleanup();
+                    uiInfo("PCB接口缓存已清空", null, "global-events.js", "btnClearCacheClick");
+                }
+            } catch (e) {
+                uiWarn("清空PCB接口缓存失败", {error: e.message}, "global-events.js", "btnClearCacheClick");
+            }
+        }
+        
+        // 清空日志缓存
+        var loggerCheck = checkLoggerModuleAvailability();
+        if (loggerCheck.logController) {
+            try {
+                if (typeof loggerCheck.logController.clearAllCaches === "function") {
+                    loggerCheck.logController.clearAllCaches();
+                    uiInfo("日志缓存已清空", null, "global-events.js", "btnClearCacheClick");
+                }
+            } catch (e) {
+                uiWarn("清空日志缓存失败", {error: e.message}, "global-events.js", "btnClearCacheClick");
+            }
+        }
+        
+        uiInfo("=== 缓存清空完成 ===", null, "global-events.js", "btnClearCacheClick");
+        
+    } catch (error) {
+        showErrorInUI("btnClearCacheClick", error, {
+            sender: Sender ? "有效" : "无效",
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+// ============================================================
+// 日志级别控制事件处理函数
+// ============================================================
+
+/**
+ * 生成级DEBUG开关点击事件
+ */
+function chkGenDebugClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("chkGenDebugClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        var enabled = Sender.Checked;
+        checkResult.logController.setGenerationLevel("debug", enabled);
+        
+        uiInfo("生成级DEBUG开关", {
+            enabled: enabled,
+            action: enabled ? "开启" : "关闭"
+        }, "global-events.js", "chkGenDebugClick");
+        
+    } catch (error) {
+        showErrorInUI("chkGenDebugClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 生成级INFO开关点击事件
+ */
+function chkGenInfoClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("chkGenInfoClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        var enabled = Sender.Checked;
+        checkResult.logController.setGenerationLevel("info", enabled);
+        
+        uiInfo("生成级INFO开关", {
+            enabled: enabled,
+            action: enabled ? "开启" : "关闭"
+        }, "global-events.js", "chkGenInfoClick");
+        
+    } catch (error) {
+        showErrorInUI("chkGenInfoClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 生成级WARN开关点击事件
+ */
+function chkGenWarnClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("chkGenWarnClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        var enabled = Sender.Checked;
+        checkResult.logController.setGenerationLevel("warn", enabled);
+        
+        uiInfo("生成级WARN开关", {
+            enabled: enabled,
+            action: enabled ? "开启" : "关闭"
+        }, "global-events.js", "chkGenWarnClick");
+        
+    } catch (error) {
+        showErrorInUI("chkGenWarnClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 生成级ERROR开关点击事件
+ */
+function chkGenErrorClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("chkGenErrorClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        var enabled = Sender.Checked;
+        checkResult.logController.setGenerationLevel("error", enabled);
+        
+        uiInfo("生成级ERROR开关", {
+            enabled: enabled,
+            action: enabled ? "开启" : "关闭"
+        }, "global-events.js", "chkGenErrorClick");
+        
+    } catch (error) {
+        showErrorInUI("chkGenErrorClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 显示级DEBUG开关点击事件
+ */
+function chkUIDebugClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("chkUIDebugClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        var enabled = Sender.Checked;
+        checkResult.logController.setDisplayLevel("debug", enabled);
+        
+        uiInfo("显示级DEBUG开关", {
+            enabled: enabled,
+            action: enabled ? "开启" : "关闭"
+        }, "global-events.js", "chkUIDebugClick");
+        
+    } catch (error) {
+        showErrorInUI("chkUIDebugClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 显示级INFO开关点击事件
+ */
+function chkUIInfoClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("chkUIInfoClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        var enabled = Sender.Checked;
+        checkResult.logController.setDisplayLevel("info", enabled);
+        
+        uiInfo("显示级INFO开关", {
+            enabled: enabled,
+            action: enabled ? "开启" : "关闭"
+        }, "global-events.js", "chkUIInfoClick");
+        
+    } catch (error) {
+        showErrorInUI("chkUIInfoClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 显示级WARN开关点击事件
+ */
+function chkUIWarnClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("chkUIWarnClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        var enabled = Sender.Checked;
+        checkResult.logController.setDisplayLevel("warn", enabled);
+        
+        uiInfo("显示级WARN开关", {
+            enabled: enabled,
+            action: enabled ? "开启" : "关闭"
+        }, "global-events.js", "chkUIWarnClick");
+        
+    } catch (error) {
+        showErrorInUI("chkUIWarnClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 显示级ERROR开关点击事件
+ */
+function chkUIErrorClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("chkUIErrorClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        var enabled = Sender.Checked;
+        checkResult.logController.setDisplayLevel("error", enabled);
+        
+        uiInfo("显示级ERROR开关", {
+            enabled: enabled,
+            action: enabled ? "开启" : "关闭"
+        }, "global-events.js", "chkUIErrorClick");
+        
+    } catch (error) {
+        showErrorInUI("chkUIErrorClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+// ============================================================
+// 快捷模式按钮事件处理函数
+// ============================================================
+
+/**
+ * 开发模式按钮点击事件
+ */
+function btnDevModeClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("btnDevModeClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        checkResult.logController.enableAllLevels();
+        updateAllSwitches(true);
+        
+        uiInfo("切换到开发模式", {
+            mode: "DEVELOPMENT",
+            description: "所有日志级别已开启"
+        }, "global-events.js", "btnDevModeClick");
+        
+    } catch (error) {
+        showErrorInUI("btnDevModeClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 生产模式按钮点击事件
+ */
+function btnProdModeClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("btnProdModeClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        checkResult.logController.enableProductionMode();
+        updateProductionModeSwitches();
+        
+        uiInfo("切换到生产模式", {
+            mode: "PRODUCTION",
+            description: "仅ERROR级别开启"
+        }, "global-events.js", "btnProdModeClick");
+        
+    } catch (error) {
+        showErrorInUI("btnProdModeClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 调试模式按钮点击事件
+ */
+function btnDebugModeClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("btnDebugModeClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        checkResult.logController.enableDebugMode();
+        updateDebugModeSwitches();
+        
+        uiInfo("切换到调试模式", {
+            mode: "DEBUG",
+            description: "DEBUG + INFO + ERROR级别开启"
+        }, "global-events.js", "btnDebugModeClick");
+        
+    } catch (error) {
+        showErrorInUI("btnDebugModeClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 静默模式按钮点击事件
+ */
+function btnSilentModeClick(Sender) {
+    try {
+        var checkResult = checkLoggerModuleAvailability();
+        if (!checkResult.logController) {
+            showErrorInUI("btnSilentModeClick", new Error("GlobalLogController不可用"), null);
+            return;
+        }
+        
+        checkResult.logController.disableAllLevels();
+        updateAllSwitches(false);
+        
+        uiInfo("切换到静默模式", {
+            mode: "SILENT",
+            description: "所有日志级别已关闭"
+        }, "global-events.js", "btnSilentModeClick");
+        
+    } catch (error) {
+        showErrorInUI("btnSilentModeClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+// ============================================================
+// UI控件状态更新函数
+// ============================================================
+
+/**
+ * 更新所有开关控件状态
+ * @param {boolean} enabled 是否启用
+ */
+function updateAllSwitches(enabled) {
+    try {
+        // 更新生成级开关
+        if (typeof chkGenDebug !== "undefined") {
+            chkGenDebug.Checked = enabled;
+        }
+        if (typeof chkGenInfo !== "undefined") {
+            chkGenInfo.Checked = enabled;
+        }
+        if (typeof chkGenWarn !== "undefined") {
+            chkGenWarn.Checked = enabled;
+        }
+        if (typeof chkGenError !== "undefined") {
+            chkGenError.Checked = enabled;
+        }
+        
+        // 更新显示级开关
+        if (typeof chkUIDebug !== "undefined") {
+            chkUIDebug.Checked = enabled;
+        }
+        if (typeof chkUIInfo !== "undefined") {
+            chkUIInfo.Checked = enabled;
+        }
+        if (typeof chkUIWarn !== "undefined") {
+            chkUIWarn.Checked = enabled;
+        }
+        if (typeof chkUIError !== "undefined") {
+            chkUIError.Checked = enabled;
+        }
+        
+    } catch (e) {
+        // 静默处理UI更新错误
+    }
+}
+
+/**
+ * 更新生产模式开关状态
+ */
+function updateProductionModeSwitches() {
+    try {
+        // 生成级：仅ERROR开启
+        if (typeof chkGenDebug !== "undefined") {
+            chkGenDebug.Checked = false;
+        }
+        if (typeof chkGenInfo !== "undefined") {
+            chkGenInfo.Checked = false;
+        }
+        if (typeof chkGenWarn !== "undefined") {
+            chkGenWarn.Checked = false;
+        }
+        if (typeof chkGenError !== "undefined") {
+            chkGenError.Checked = true;
+        }
+        
+        // 显示级：仅ERROR开启
+        if (typeof chkUIDebug !== "undefined") {
+            chkUIDebug.Checked = false;
+        }
+        if (typeof chkUIInfo !== "undefined") {
+            chkUIInfo.Checked = false;
+        }
+        if (typeof chkUIWarn !== "undefined") {
+            chkUIWarn.Checked = false;
+        }
+        if (typeof chkUIError !== "undefined") {
+            chkUIError.Checked = true;
+        }
+        
+    } catch (e) {
+        // 静默处理UI更新错误
+    }
+}
+
+/**
+ * 更新调试模式开关状态
+ */
+function updateDebugModeSwitches() {
+    try {
+        // 生成级：DEBUG + INFO + ERROR开启，WARN关闭
+        if (typeof chkGenDebug !== "undefined") {
+            chkGenDebug.Checked = true;
+        }
+        if (typeof chkGenInfo !== "undefined") {
+            chkGenInfo.Checked = true;
+        }
+        if (typeof chkGenWarn !== "undefined") {
+            chkGenWarn.Checked = false;
+        }
+        if (typeof chkGenError !== "undefined") {
+            chkGenError.Checked = true;
+        }
+        
+        // 显示级：DEBUG + INFO + ERROR开启，WARN关闭
+        if (typeof chkUIDebug !== "undefined") {
+            chkUIDebug.Checked = true;
+        }
+        if (typeof chkUIInfo !== "undefined") {
+            chkUIInfo.Checked = true;
+        }
+        if (typeof chkUIWarn !== "undefined") {
+            chkUIWarn.Checked = false;
+        }
+        if (typeof chkUIError !== "undefined") {
+            chkUIError.Checked = true;
+        }
+        
+    } catch (e) {
+        // 静默处理UI更新错误
+    }
+}
+
+/**
+ * 全局初始化函数（可选）
+ * @description 用于初始化全局事件系统
+ */
+function initializeGlobalEvents() {
+    try {
+        if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+            memLog.Lines.Add("=== 全局事件系统初始化 ===");
+            memLog.Lines.Add("时间: " + new Date().toLocaleString());
+            memLog.Lines.Add("状态: 成功");
+            memLog.Lines.Add("========================");
+        }
+    } catch (e) {
+        // 静默处理初始化错误
+    }
+}
+
+/**
+ * UI调试系统 - 核心输出函数
+ * @description 基于现有的memLog.Lines.Add()机制
+ */
+function uiWrite(message) {
+    try {
+        if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+            memLog.Lines.Add(message);
+            
+            // 自动滚动到底部
+            try {
+                if (memLog.Perform && typeof memLog.Perform === "function") {
+                    memLog.Perform(EM_SCROLLCARET, 0);
+                }
+            } catch (e) {
+                // 忽略滚动错误
+            }
+        }
+    } catch (e) {
+        // 静默处理输出错误
+    }
+}
+
+/**
+ * UI调试系统 - 基础调试函数
+ * @description 基于现有格式风格的调试输出
+ */
+function uiDebug(level, message, context, fileName, functionName) {
+    // 性能优化：检查GlobalLogController显示级开关
+    var globalController = null;
+    if (typeof GlobalLogController !== "undefined") {
+        globalController = GlobalLogController;
+    }
+    
+    if (globalController && typeof globalController.isDisplayEnabled === "function") {
+        var levelLower = level.toLowerCase();
+        if (!globalController.isDisplayEnabled(levelLower)) {
+            return;  // 早期返回，避免UI输出
+        }
+    }
+    
+    var timestamp = new Date().toLocaleString();
+    var parts = [];
+    
+    // 使用现有的格式风格
+    parts.push("[" + timestamp + "]");
+    parts.push("[" + level + "]");
+    
+    if (functionName) {
+        parts.push("[函数: " + functionName + "]");
+    }
+    
+    if (fileName) {
+        parts.push("[文件: " + fileName + "]");
+    }
+    
+    parts.push(message);
+    
+    if (context) {
+        try {
+            parts.push("上下文: " + JSON.stringify(context));
+        } catch (e) {
+            parts.push("上下文: [无法序列化]");
+        }
+    }
+    
+    uiWrite(parts.join(" "));
+}
+
+/**
+ * UI调试系统 - TRACE级别
+ */
+function uiTrace(message, context, fileName, functionName) {
+    uiDebug("TRACE", message, context, fileName, functionName);
+}
+
+/**
+ * UI调试系统 - INFO级别
+ */
+function uiInfo(message, context, fileName, functionName) {
+    uiDebug("INFO", message, context, fileName, functionName);
+}
+
+/**
+ * UI调试系统 - WARN级别
+ */
+function uiWarn(message, context, fileName, functionName) {
+    uiDebug("WARN", message, context, fileName, functionName);
+}
+
+/**
+ * UI调试系统 - ERROR级别
+ */
+function uiError(message, context, fileName, functionName) {
+    uiDebug("ERROR", message, context, fileName, functionName);
+}
+
+/**
+ * UI调试系统 - FATAL级别
+ */
+function uiFatal(message, context, fileName, functionName) {
+    uiDebug("FATAL", message, context, fileName, functionName);
+}
+
+/**
+ * 环境探测入口（安全模式默认）
+ */
+function 测试_运行环境探测() {
+    try {
+        if (typeof EnvironmentProbeModule === "undefined" || !EnvironmentProbeModule || !EnvironmentProbeModule.runAll) {
+            showErrorInUI("测试_运行环境探测", new Error("EnvironmentProbeModule 未加载"), {
+                EnvironmentProbeModule: typeof EnvironmentProbeModule
+            });
+            return;
+        }
+
+        var allowRisky = false;
+        var includeMaybe = true;
+        var cleanupRisky = false;
+        try {
+            if (typeof cmbProbeScope !== "undefined" && cmbProbeScope) {
+                var idx = -1;
+                try { idx = cmbProbeScope.ItemIndex; } catch (e1) {}
+                if (idx === 0) {
+                    includeMaybe = false;
+                    allowRisky = false;
+                    cleanupRisky = false;
+                } else if (idx === 1) {
+                    includeMaybe = true;
+                    allowRisky = false;
+                    cleanupRisky = false;
+                } else if (idx === 2) {
+                    includeMaybe = true;
+                    allowRisky = true;
+                    cleanupRisky = true;
+                }
+            }
+        } catch (e2) {}
+
+        EnvironmentProbeModule.runAll({
+            safeMode: true,
+            allowRiskyProbes: allowRisky,
+            includeMaybeProbes: includeMaybe,
+            cleanupRisky: cleanupRisky,
+            progIdCandidatesPath: "config\\ActiveX-ProgID-超级候选清单.v3.json",
+            httpBaseUrl: "http://127.0.0.1:8080",
+            enableUploadReport: true
+        });
+    } catch (error) {
+        showErrorInUI("测试_运行环境探测", error, {
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 最小通信测试入口（M0/M1）
+ *
+ * 前置：先启动本地Mock Server：
+ * - node AD21_JS_Project/web-mock/mock-server-es3.js
+ *
+ * 在 AD 中直接运行：测试_最小通信流程()
+ */
+function 测试_AD_XMLHTTP_最小验证() {
+        var baseUrl = "http://127.0.0.1:8080";
+    
+    try {
+        uiInfo("=== 开始最小通信流程(AD<->Node) ===", { baseUrl: baseUrl }, "global-events.js", "测试_AD_XMLHTTP_最小验证");
+        
+        var client = null;
+        if (typeof HTTPClientModule !== "undefined") {
+            client = HTTPClientModule;
+        } else if (typeof HTTP客户端 !== "undefined") {
+            client = HTTP客户端;
+        }
+        
+        if (!client) {
+            showErrorInUI("测试_AD_XMLHTTP_最小验证", new Error("HTTPClientModule 未加载"), {
+                HTTPClientModule: typeof HTTPClientModule,
+                HTTP客户端: typeof HTTP客户端
+            });
+            return;
+        }
+        
+        if (client.setBaseUrl) {
+            try { client.setBaseUrl(baseUrl); } catch (e0) {}
+        }
+        
+        var ok = false;
+        if (client.ping) {
+            ok = client.ping(baseUrl);
+        }
+        if (!ok) {
+            uiWarn("=== 最小通信流程失败：ping ===", { baseUrl: baseUrl }, "global-events.js", "测试_AD_XMLHTTP_最小验证");
+            return;
+        }
+        
+        var r1 = null;
+        var r2 = null;
+        var r3 = null;
+        
+        if (client.command) {
+            r1 = client.command("mock.echo", { from: "AD", a: 1 });
+            r2 = client.command("mock.board.summary", { from: "AD" });
+            r3 = client.command("mock.unknown", { from: "AD" });
+        } else if (client.sendCommand) {
+            r1 = client.sendCommand(baseUrl, "mock.echo", { from: "AD", a: 1 });
+            r2 = client.sendCommand(baseUrl, "mock.board.summary", { from: "AD" });
+            r3 = client.sendCommand(baseUrl, "mock.unknown", { from: "AD" });
+        }
+        
+        var latest = null;
+        if (client.latestReport) {
+            latest = client.latestReport(0, baseUrl);
+        }
+        
+        try {
+            uiInfo("=== 最小通信流程完成 ===", {
+                echoOk: r1 && r1.ok,
+                summaryOk: r2 && r2.ok,
+                unknownOkFalse: r3 && (r3.ok === false),
+                latestType: latest && latest.meta ? latest.meta.type : (latest && latest.type ? latest.type : null)
+            }, "global-events.js", "测试_AD_XMLHTTP_最小验证");
+        } catch (e1) {}
+        
+    } catch (error) {
+        showErrorInUI("测试_AD_XMLHTTP_最小验证", error, {
+            baseUrl: baseUrl,
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * 最小通信测试入口（M0/M1）
+ *
+ * 前置：先启动本地Mock Server：
+ * - node AD21_JS_Project/web-mock/mock-server-es3.js
+ *
+ * 在 AD 中直接运行：测试_最小通信流程()
+ */
+function 测试_最小通信流程() {
+    var baseUrl = "http://127.0.0.1:8080";
+    
+    try {
+        if (typeof 测试_AD_XMLHTTP_最小验证 === "function") {
+            测试_AD_XMLHTTP_最小验证();
+            return;
+        }
+        
+        uiInfo("=== 开始最小通信流程(AD?Node) ===", { baseUrl: baseUrl }, "global-events.js", "测试_最小通信流程");
+        
+        var client = null;
+        if (typeof HTTPClientModule !== "undefined") {
+            client = HTTPClientModule;
+        } else if (typeof HTTP客户端 !== "undefined") {
+            client = HTTP客户端;
+        }
+        
+        if (!client || !client.ping || !client.sendCommand) {
+            showErrorInUI("测试_最小通信流程", new Error("HTTPClientModule 未加载"), {
+                HTTPClientModule: typeof HTTPClientModule,
+                HTTP客户端: typeof HTTP客户端
+            });
+            return;
+        }
+        
+        var ok = client.ping(baseUrl);
+        if (!ok) {
+            client.ui("[TEST] ping failed");
+            uiWarn("=== 最小通信流程失败：ping ===", { baseUrl: baseUrl }, "global-events.js", "测试_最小通信流程");
+            return;
+        }
+        
+        var resp = client.sendCommand(baseUrl, "mock.board.summary", { from: "AD" });
+        try {
+            client.ui("[TEST] board.summary=" + JSON.stringify(resp));
+        } catch (e1) {
+            client.ui("[TEST] board.summary (stringify failed)");
+        }
+        
+        if (resp && resp.ok) {
+            uiInfo("=== 最小通信流程完成：OK ===", null, "global-events.js", "测试_最小通信流程");
+        } else {
+            uiWarn("=== 最小通信流程完成：命令返回失败 ===", resp, "global-events.js", "测试_最小通信流程");
+        }
+        
+    } catch (error) {
+        showErrorInUI("测试_最小通信流程", error, {
+            baseUrl: baseUrl,
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * Spec v0.1 一键验证入口
+ * 在 AD 中直接运行：测试_AD_Spec_0_1_一键验证()
+ */
+function 测试_AD_Spec_0_1_一键验证() {
+    var baseUrl = "http://127.0.0.1:8080";
+
+    function _safeJson(obj) {
+        try {
+            if (typeof JsonUtil !== "undefined" && JsonUtil && JsonUtil.stringify) return JsonUtil.stringify(obj);
+        } catch (e0) {}
+        try { if (typeof JSON !== "undefined" && JSON && JSON.stringify) return JSON.stringify(obj); } catch (e1) {}
+        return "";
+    }
+
+    function _resolveBoardRef() {
+        var pcbServer = null;
+        var diag = {
+            hasBridge: false,
+            hasHostEval: false,
+            pcbServerType: "undefined",
+            bridgeGetType: "undefined",
+            hasGetCurrentPCBBoard: false,
+            getCurrentType: "undefined",
+            getCurrentError: "",
+            resolve: "",
+            resolveErrors: ""
+        };
+        try {
+            if (typeof 全局符号桥 !== "undefined" && 全局符号桥 && 全局符号桥.get) {
+                diag.hasBridge = true;
+                pcbServer = 全局符号桥.get("PCBServer");
+                diag.bridgeGetType = typeof pcbServer;
+            }
+        } catch (e0) {}
+        try { diag.hasHostEval = (typeof __adGetHostGlobal === "function"); } catch (e1) {}
+        if (!pcbServer && typeof PCBServer !== "undefined") {
+            pcbServer = PCBServer;
+        }
+        try { diag.pcbServerType = typeof pcbServer; } catch (e2) {}
+        try {
+            if (pcbServer) {
+                var tmp = pcbServer.GetCurrentPCBBoard;
+                diag.hasGetCurrentPCBBoard = (typeof tmp !== "undefined");
+                diag.getCurrentType = typeof tmp;
+            }
+        } catch (e3) {
+            try { diag.getCurrentError = String(e3); } catch (e4) {}
+        }
+
+        function _tryResolve(label, fn) {
+            try {
+                var r = fn();
+                if (r) {
+                    diag.resolve = label;
+                    return r;
+                }
+            } catch (e9) {
+                diag.resolveErrors += label + ": " + String(e9) + "; ";
+            }
+            return null;
+        }
+
+        function _isBoardLike(obj) {
+            try {
+                if (!obj) return false;
+                if (obj.BoardOutline && obj.BoardIterator_Create) return true;
+            } catch (e0) {}
+            return false;
+        }
+
+        var board = null;
+        if (pcbServer) {
+            board = _tryResolve("pcbServer()", function () {
+                if (typeof pcbServer === "function") {
+                    var svr = pcbServer();
+                    if (svr && svr.GetCurrentPCBBoard) {
+                        return (typeof svr.GetCurrentPCBBoard === "function") ? svr.GetCurrentPCBBoard() : svr.GetCurrentPCBBoard;
+                    }
+                }
+                return null;
+            });
+            if (!board) {
+                board = _tryResolve("pcbServer.GetCurrentPCBBoard", function () {
+                    if (!pcbServer || typeof pcbServer.GetCurrentPCBBoard === "undefined") return null;
+                    if (typeof pcbServer.GetCurrentPCBBoard === "function") return pcbServer.GetCurrentPCBBoard();
+                    return pcbServer.GetCurrentPCBBoard;
+                });
+            }
+            if (!board && _isBoardLike(pcbServer)) {
+                diag.resolve = "pcbServer(board-like)";
+                board = pcbServer;
+            }
+        }
+
+        if (!board) {
+            board = _tryResolve("PCBServer()", function () {
+                if (typeof PCBServer === "function") {
+                    var svr2 = PCBServer();
+                    if (svr2 && svr2.GetCurrentPCBBoard) {
+                        return (typeof svr2.GetCurrentPCBBoard === "function") ? svr2.GetCurrentPCBBoard() : svr2.GetCurrentPCBBoard;
+                    }
+                }
+                return null;
+            });
+        }
+        if (!board) {
+            board = _tryResolve("PCBServer.GetCurrentPCBBoard", function () {
+                if (typeof PCBServer === "undefined") return null;
+                if (typeof PCBServer.GetCurrentPCBBoard === "function") return PCBServer.GetCurrentPCBBoard();
+                return PCBServer.GetCurrentPCBBoard;
+            });
+        }
+        if (!board && typeof PCBServer !== "undefined" && _isBoardLike(PCBServer)) {
+            diag.resolve = "PCBServer(board-like)";
+            board = PCBServer;
+        }
+
+        var note = "";
+        if (!board) {
+            if (pcbServer && diag.hasGetCurrentPCBBoard) {
+                note = "GetCurrentPCBBoard 返回空，可能未打开 PCB 文档(未确认: 参考示例/1.接口文档(处理后版本)/Scripting API/14-PCB_API_System_Interfaces/02-a_id_PCB_System_Interfaces_a_PCB_System_Interfaces/01-a_id_IPCB_ServerInterface_a_IPCB_ServerInterface.md)";
+            } else {
+                note = "PCBServer 未可用(未确认: 参考示例/1.接口文档(处理后版本)/Scripting API/14-PCB_API_System_Interfaces/02-a_id_PCB_System_Interfaces_a_PCB_System_Interfaces/01-a_id_IPCB_ServerInterface_a_IPCB_ServerInterface.md)";
+            }
+        }
+
+        return { board: board, diag: diag, note: note };
+    }
+
+    function _getBoardSummary() {
+        var summary = {
+            name: "unknown",
+            unitsRaw: null,
+            units: "unknown",
+            bounds: null,
+            counts: { track: 0, via: 0, pad: 0, total: 0 }
+        };
+
+        function _normalizeUnits(raw, unitText) {
+            if (typeof eImperial !== "undefined" && raw === eImperial) return "mil";
+            if (typeof eMetric !== "undefined" && raw === eMetric) return "mm";
+            if (unitText) {
+                var t = String(unitText);
+                if (t.indexOf("Imperial") >= 0 || t.indexOf("mil") >= 0) return "mil";
+                if (t.indexOf("Metric") >= 0 || t.indexOf("mm") >= 0) return "mm";
+            }
+            return "unknown";
+        }
+
+        function _buildSummaryFromBoard(board) {
+            try { if (board.FileName) summary.name = board.FileName; } catch (e1) {}
+
+            try {
+                if (board.DisplayUnit !== undefined) {
+                    var raw = null;
+                    var unitText = "";
+                    try { raw = board.DisplayUnit; } catch (e2a) {}
+                    try {
+                        if (typeof UnitToString === "function") {
+                            unitText = UnitToString(raw);
+                        }
+                    } catch (e2b) {}
+                    summary.unitsRaw = raw;
+                    summary.units = _normalizeUnits(raw, unitText);
+                    if (summary.units === "unknown") {
+                        try {
+                            uiWarn("BOARD_SUMMARY_UNITS_DIAG", {
+                                unitsRaw: raw,
+                                unitText: unitText,
+                                doc: "参考示例/1.接口文档(处理后版本)/Scripting API/14-PCB_API_System_Interfaces/02-a_id_PCB_System_Interfaces_a_PCB_System_Interfaces/02-a_id_IPCB_Board_a_IPCB_Board.md"
+                            }, "global-events.js", "_buildSummaryFromBoard");
+                        } catch (e2c) {}
+                    }
+                }
+            } catch (e2) {}
+
+            try {
+                if (board.BoardOutline && board.BoardOutline.BoundingRectangle) {
+                    var br = board.BoardOutline.BoundingRectangle;
+                    summary.bounds = {
+                        x1: br.Left,
+                        y1: br.Bottom,
+                        x2: br.Right,
+                        y2: br.Top
+                    };
+                }
+            } catch (e3) {}
+
+            try {
+                if (typeof StackMap !== "undefined" && StackMap && StackMap.initFromBoard) {
+                    StackMap.initFromBoard(board);
+                }
+            } catch (e4) {}
+
+            try {
+                function _getCounter() {
+                    try {
+                        if (board.PrimitiveCounter) return board.PrimitiveCounter;
+                    } catch (e0) {}
+                    try {
+                        if (board.GetPrimitiveCounter && typeof board.GetPrimitiveCounter === "function") {
+                            return board.GetPrimitiveCounter();
+                        }
+                    } catch (e1) {}
+                    return null;
+                }
+
+                function _countByCounter(counter, objConst, label) {
+                    var err = "";
+                    var v = null;
+                    try {
+                        if (typeof counter.GetObjectCount !== "undefined") {
+                            v = counter.GetObjectCount(objConst);
+                        } else if (typeof counter.GetCount !== "undefined" && typeof MkSet === "function") {
+                            v = counter.GetCount(MkSet(objConst));
+                        } else {
+                            err = "PrimitiveCounter methods missing";
+                        }
+                    } catch (e2) {
+                        var msg = "";
+                        try { if (e2 && e2.message) msg = String(e2.message); } catch (x1) {}
+                        try { if (!msg && e2 && e2.description) msg = String(e2.description); } catch (x2) {}
+                        try { if (!msg && e2 && typeof e2.number !== "undefined") msg = "number=" + e2.number; } catch (x3) {}
+                        err = "PrimitiveCounter error: " + (msg || String(e2));
+                    }
+                    return { ok: err === "" && v !== null && typeof v !== "undefined", count: Number(v || 0), error: err, label: label };
+                }
+
+                function _countByBoard(objConst, label) {
+                    var err = "";
+                    var v = null;
+                    try {
+                        if (typeof board.GetPrimitiveCount !== "undefined") {
+                            if (typeof MkSet === "function" && typeof AllLayers !== "undefined" && typeof eProcessAll !== "undefined") {
+                                v = board.GetPrimitiveCount(MkSet(objConst), AllLayers, eProcessAll);
+                            } else {
+                                err = "MkSet/AllLayers/eProcessAll missing";
+                            }
+                        } else {
+                            err = "GetPrimitiveCount missing";
+                        }
+                    } catch (e3) {
+                        var msg = "";
+                        try { if (e3 && e3.message) msg = String(e3.message); } catch (x4) {}
+                        try { if (!msg && e3 && e3.description) msg = String(e3.description); } catch (x5) {}
+                        try { if (!msg && e3 && typeof e3.number !== "undefined") msg = "number=" + e3.number; } catch (x6) {}
+                        err = "GetPrimitiveCount error: " + (msg || String(e3));
+                    }
+                    return { ok: err === "" && v !== null && typeof v !== "undefined", count: Number(v || 0), error: err, label: label };
+                }
+
+                function _countByIterator(objConst, label) {
+                    var err = "";
+                    var v = 0;
+                    var it = null;
+                    try {
+                        if (typeof board.BoardIterator_Create !== "undefined") {
+                            if (typeof MkSet === "function" && typeof AllLayers !== "undefined" && typeof eProcessAll !== "undefined") {
+                                it = board.BoardIterator_Create();
+                                if (!it) {
+                                    err = "BoardIterator_Create returned null";
+                                } else {
+                                    if (typeof it.AddFilter_ObjectSet !== "undefined") {
+                                        it.AddFilter_ObjectSet(MkSet(objConst));
+                                    } else {
+                                        err = "Iterator AddFilter_ObjectSet missing";
+                                    }
+                                    if (!err) {
+                                        if (typeof it.AddFilter_LayerSet !== "undefined") {
+                                            it.AddFilter_LayerSet(AllLayers);
+                                        } else {
+                                            err = "Iterator AddFilter_LayerSet missing";
+                                        }
+                                    }
+                                    if (!err) {
+                                        if (typeof it.AddFilter_Method !== "undefined") {
+                                            it.AddFilter_Method(eProcessAll);
+                                        } else {
+                                            err = "Iterator AddFilter_Method missing";
+                                        }
+                                    }
+                                    if (!err) {
+                                        if (typeof it.FirstPCBObject !== "undefined" && typeof it.NextPCBObject !== "undefined") {
+                                            var obj = it.FirstPCBObject();
+                                            while (obj) {
+                                                v++;
+                                                obj = it.NextPCBObject();
+                                            }
+                                        } else {
+                                            err = "Iterator First/Next missing";
+                                        }
+                                    }
+                                }
+                            } else {
+                                err = "MkSet/AllLayers/eProcessAll missing";
+                            }
+                        } else {
+                            err = "BoardIterator_Create missing";
+                        }
+                    } catch (e4) {
+                        var msg = "";
+                        try { if (e4 && e4.message) msg = String(e4.message); } catch (x7) {}
+                        try { if (!msg && e4 && e4.description) msg = String(e4.description); } catch (x8) {}
+                        try { if (!msg && e4 && typeof e4.number !== "undefined") msg = "number=" + e4.number; } catch (x9) {}
+                        err = "BoardIterator error: " + (msg || String(e4));
+                    } finally {
+                        try {
+                            if (it && typeof board.BoardIterator_Destroy !== "undefined") {
+                                board.BoardIterator_Destroy(it);
+                            }
+                        } catch (e5) {}
+                    }
+                    return { ok: err === "" && v !== null && typeof v !== "undefined", count: Number(v || 0), error: err, label: label };
+                }
+
+                if (typeof eTrackObject !== "undefined" && typeof eViaObject !== "undefined" && typeof ePadObject !== "undefined") {
+                    var counter = _getCounter();
+                    var rTrack = null;
+                    var rVia = null;
+                    var rPad = null;
+                    if (counter) {
+                        rTrack = _countByCounter(counter, eTrackObject, "track");
+                        rVia = _countByCounter(counter, eViaObject, "via");
+                        rPad = _countByCounter(counter, ePadObject, "pad");
+                        if (!rTrack.ok) rTrack = _countByBoard(eTrackObject, "track");
+                        if (!rVia.ok) rVia = _countByBoard(eViaObject, "via");
+                        if (!rPad.ok) rPad = _countByBoard(ePadObject, "pad");
+                        if (!rTrack.ok) rTrack = _countByIterator(eTrackObject, "track");
+                        if (!rVia.ok) rVia = _countByIterator(eViaObject, "via");
+                        if (!rPad.ok) rPad = _countByIterator(ePadObject, "pad");
+                    } else {
+                        rTrack = _countByBoard(eTrackObject, "track");
+                        rVia = _countByBoard(eViaObject, "via");
+                        rPad = _countByBoard(ePadObject, "pad");
+                        if (!rTrack.ok) rTrack = _countByIterator(eTrackObject, "track");
+                        if (!rVia.ok) rVia = _countByIterator(eViaObject, "via");
+                        if (!rPad.ok) rPad = _countByIterator(ePadObject, "pad");
+                    }
+
+                    if (rTrack && rTrack.ok) summary.counts.track = rTrack.count;
+                    if (rVia && rVia.ok) summary.counts.via = rVia.count;
+                    if (rPad && rPad.ok) summary.counts.pad = rPad.count;
+                    summary.counts.total = summary.counts.track + summary.counts.via + summary.counts.pad;
+                    if (!rTrack || !rVia || !rPad || !rTrack.ok || !rVia.ok || !rPad.ok) {
+                        summary.note = "PrimitiveCounter/GetPrimitiveCount 统计失败: " +
+                            (rTrack ? rTrack.error : "track missing") + " | " +
+                            (rVia ? rVia.error : "via missing") + " | " +
+                            (rPad ? rPad.error : "pad missing");
+                        try {
+                            uiWarn("BOARD_SUMMARY_COUNT_DIAG", {
+                                track: rTrack,
+                                via: rVia,
+                                pad: rPad,
+                                hasCounter: !!counter
+                            }, "global-events.js", "_buildSummaryFromBoard");
+                        } catch (e6) {}
+                    }
+                } else {
+                    summary.note = "计数常量缺失(未确认: 参考示例/1.接口文档(处理后版本)/Scripting API/14-PCB_API_System_Interfaces/README.md)";
+                }
+            } catch (e5) {
+                summary.note = "BoardIterator 统计失败";
+            }
+
+            return summary;
+        }
+
+        try {
+            var resolved = _resolveBoardRef();
+            if (!resolved.board) {
+                summary.note = resolved.note;
+                try { uiWarn("BOARD_SUMMARY_DIAG", resolved.diag, "global-events.js", "_getBoardSummary"); } catch (e10) {}
+                try {
+                    if (typeof ShowMessage === "function") {
+                        ShowMessage("未检测到 PCB 文档，请先打开 PcbDoc 后再点击一键验证。");
+                    }
+                } catch (e11) {}
+                return summary;
+            }
+            return _buildSummaryFromBoard(resolved.board);
+        } catch (e6) {
+            summary.note = "BoardSummary 异常: " + (e6 && e6.message ? e6.message : String(e6));
+            return summary;
+        }
+    }
+
+    function _adObjectGet(params) {
+        var poolId = params && params.poolId;
+        var handle = params && params.handle;
+        if ((poolId === undefined || poolId === null) && (handle === undefined || handle === null)) {
+            return { ok: false, error: { code: "BAD_INPUT", message: "handle or poolId required" } };
+        }
+        if (typeof PCBObjectPool === "undefined" || !PCBObjectPool || !PCBObjectPool.getByHandle) {
+            return { ok: false, error: { code: "NO_POOL", message: "PCBObjectPool not available" } };
+        }
+        var wrapper = null;
+        if (poolId !== undefined && poolId !== null && PCBObjectPool.getByPoolId) {
+            try { wrapper = PCBObjectPool.getByPoolId(poolId); } catch (ePool) {}
+        }
+        if (!wrapper && handle !== undefined && handle !== null) {
+            try { wrapper = PCBObjectPool.getByHandle(handle); } catch (e1) {}
+        }
+        if (!wrapper) {
+            return { ok: false, error: { code: "NOT_IN_POOL", message: "handle not in pool" } };
+        }
+        if (wrapper.toSpec) {
+            try { return { ok: true, data: wrapper.toSpec() }; } catch (e2) {}
+        }
+        return { ok: false, error: { code: "NO_TOSPEC", message: "wrapper.toSpec not available" } };
+    }
+
+    function _isDefined(v) {
+        return (v !== null && v !== undefined);
+    }
+
+    function _tryObjectGet(wrapper, resolvedBoard) {
+        var objGet = null;
+        try {
+            uiInfo("OBJECT_GET_DIAG", {
+                hasWrapper: !!wrapper,
+                hasPoolModule: (typeof PCBObjectPool !== "undefined" && PCBObjectPool) ? true : false,
+                poolId: wrapper ? wrapper.poolId : null,
+                handle: wrapper ? wrapper.handle : null,
+                handleType: wrapper ? (typeof wrapper.handle) : null,
+                hasNativeObject: wrapper ? (wrapper.nativeObject ? true : false) : false
+            }, "global-events.js", "_tryObjectGet");
+        } catch (eDiag) {}
+
+        if (wrapper && _isDefined(wrapper.poolId)) {
+            objGet = _adObjectGet({ poolId: wrapper.poolId });
+            uiInfo("OBJECT_GET_SUMMARY", {
+                ok: objGet && objGet.ok,
+                code: objGet && objGet.error ? objGet.error.code : null,
+                keyType: "poolId",
+                poolId: wrapper.poolId
+            }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+            return objGet;
+        }
+
+        if (wrapper && _isDefined(wrapper.handle) && typeof wrapper.handle === "number") {
+            objGet = _adObjectGet({ handle: wrapper.handle });
+            uiInfo("OBJECT_GET_SUMMARY", {
+                ok: objGet && objGet.ok,
+                code: objGet && objGet.error ? objGet.error.code : null,
+                keyType: "handle",
+                handle: wrapper.handle
+            }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+            return objGet;
+        }
+
+        objGet = { ok: false, error: { code: "SKIPPED_NO_KEY", message: "no poolId and no numeric handle" } };
+        uiWarn("OBJECT_GET_SUMMARY", {
+            ok: false,
+            code: "SKIPPED_NO_KEY",
+            poolId: wrapper ? wrapper.poolId : null,
+            handle: wrapper ? wrapper.handle : null,
+            handleType: wrapper ? (typeof wrapper.handle) : null
+        }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+        return objGet;
+    }
+
+    function _createWrapperFromBoard(board) {
+        // === WRAP_DIAG_ITER ===
+        // 目的：确认是否在最早的 guard（board/BoardIterator_Create）处提前 return。
+        try {
+            uiInfo("WRAP_DIAG_ITER", {
+                hasBoard: !!board,
+                hasIteratorFn: (!!board && (typeof board.BoardIterator_Create !== "undefined")),
+                boardType: (board === null) ? "null" : typeof board
+            }, "global-events.js", "_createWrapperFromBoard");
+        } catch (eWrapDiagIter) {}
+
+        if (!board) return null;
+        if (typeof board.BoardIterator_Create === "undefined") return null;
+        function _pickFirstNonNull(a, b, c, d) {
+            if (a !== null && a !== undefined) return a;
+            if (b !== null && b !== undefined) return b;
+            if (c !== null && c !== undefined) return c;
+            if (d !== null && d !== undefined) return d;
+            return null;
+        }
+        function _normalizeHandleToNumber(v) {
+            var diag = { rawType: typeof v, rawString: null };
+            if (v === null || v === undefined) return { ok: false, num: 0, diag: diag };
+            if (typeof v === "number") {
+                if (v !== 0 && isFinite(v)) return { ok: true, num: v, diag: diag };
+                return { ok: false, num: 0, diag: diag };
+            }
+            try {
+                var s = String(v);
+                diag.rawString = s;
+                var n = (s.indexOf("0x") === 0 || s.indexOf("0X") === 0) ? parseInt(s, 16) : parseInt(s, 10);
+                if (!isNaN(n) && n !== 0) return { ok: true, num: n, diag: diag };
+            } catch (e1) {}
+            try {
+                var n2 = Number(v);
+                if (!isNaN(n2) && n2 !== 0) return { ok: true, num: n2, diag: diag };
+            } catch (e2) {}
+            return { ok: false, num: 0, diag: diag };
+        }
+        function _tryString(obj, prop) {
+            try {
+                if (!obj) return "";
+                var value = obj[prop];
+                if (value === undefined || value === null) return "";
+                var s = String(value);
+                if (!s || s === "undefined") return "";
+                return s;
+            } catch (e) {
+                return "";
+            }
+        }
+        function _readObjectIdInfo(obj) {
+            var oid = null;
+            var oidStr = "";
+            if (!obj) return { oid: null, oidStr: "" };
+            try { oid = obj.ObjectId; } catch (eObjId) {}
+            oidStr = _tryString(obj, "ObjectIDString");
+            if (!oidStr) {
+                oidStr = _tryString(obj, "ObjectIdString");
+            }
+            return { oid: oid, oidStr: oidStr };
+        }
+        function _iterFirst(it) {
+            var p = null;
+            try {
+                if (typeof it.FirstPCBObject !== "undefined") {
+                    p = it.FirstPCBObject();
+                } else if (typeof it.First !== "undefined") {
+                    try {
+                        p = (typeof it.First === "function") ? it.First() : it.First;
+                    } catch (eFirstProp) {
+                        p = it.First;
+                    }
+                }
+            } catch (eIterFirst) {
+                p = null;
+            }
+            return p || null;
+        }
+        function _iterNext(it) {
+            var p = null;
+            try {
+                if (typeof it.NextPCBObject !== "undefined") {
+                    p = it.NextPCBObject();
+                } else if (typeof it.Next !== "undefined") {
+                    try {
+                        p = (typeof it.Next === "function") ? it.Next() : it.Next;
+                    } catch (eNextProp) {
+                        p = it.Next;
+                    }
+                }
+            } catch (eIterNext) {
+                p = null;
+            }
+            return p || null;
+        }
+
+        var it = null;
+        var nativeObj = null;
+        var padCandidate = null;
+        var diag = {
+            hasBoard: !!board,
+            hasIterator: (typeof board.BoardIterator_Create !== "undefined"),
+            hasMkSet: (typeof MkSet === "function"),
+            hasTrackConst: (typeof eTrackObject !== "undefined"),
+            hasViaConst: (typeof eViaObject !== "undefined"),
+            hasPadConst: (typeof ePadObject !== "undefined"),
+            hasTrackWrapper: (typeof TrackWrapper !== "undefined"),
+            hasViaWrapper: (typeof ViaWrapper !== "undefined"),
+            hasPadWrapper: (typeof PadWrapper !== "undefined"),
+            hasAllLayers: (typeof AllLayers !== "undefined"),
+            hasProcessAll: (typeof eProcessAll !== "undefined"),
+            trackConst: (typeof eTrackObject !== "undefined") ? eTrackObject : null,
+            viaConst: (typeof eViaObject !== "undefined") ? eViaObject : null,
+            padConst: (typeof ePadObject !== "undefined") ? ePadObject : null,
+            loopCount: 0,
+            padCandidateUsed: false,
+            fallbackTrack: false
+        };
+        try {
+            it = board.BoardIterator_Create();
+            if (!it) {
+                // === WRAP_DIAG_FIRST ===
+                // 目的：迭代器都没创建出来时，明确打点。
+                try {
+                    uiInfo("WRAP_DIAG_FIRST", {
+                        hasIterator: false,
+                        hasFirstFn: false,
+                        gotObj: false
+                    }, "global-events.js", "_createWrapperFromBoard");
+                } catch (eWrapDiagFirst0) {}
+                return null;
+            }
+
+            if (typeof it.AddFilter_ObjectSet !== "undefined") {
+                if (typeof MkSet === "function" && typeof eTrackObject !== "undefined" && typeof eViaObject !== "undefined") {
+                    it.AddFilter_ObjectSet(MkSet(eTrackObject, eViaObject));
+                } else if (typeof MkSet === "function" && typeof eTrackObject !== "undefined") {
+                    it.AddFilter_ObjectSet(MkSet(eTrackObject));
+                } else if (typeof MkSet === "function" && typeof eViaObject !== "undefined") {
+                    it.AddFilter_ObjectSet(MkSet(eViaObject));
+                } else {
+                    // MkSet/常量缺失时跳过对象过滤，直接取第一个对象
+                }
+            }
+
+            if (typeof it.AddFilter_LayerSet !== "undefined" && typeof AllLayers !== "undefined") {
+                it.AddFilter_LayerSet(AllLayers);
+            }
+            if (typeof it.AddFilter_Method !== "undefined" && typeof eProcessAll !== "undefined") {
+                it.AddFilter_Method(eProcessAll);
+            }
+
+            var maxLoop = 50;
+            var scanCount = 0;
+            var cursor = _iterFirst(it);
+            try {
+                uiInfo("WRAP_DIAG_FIRST", {
+                    hasIterator: !!it,
+                    hasFirstFn: (typeof it.FirstPCBObject !== "undefined" || typeof it.First !== "undefined"),
+                    gotObj: !!cursor
+                }, "global-events.js", "_createWrapperFromBoard");
+            } catch (eWrapDiagFirst1) {}
+
+            if (cursor) {
+                try {
+                    var firstOidInfo = _readObjectIdInfo(cursor);
+                    uiInfo("WRAP_DIAG_OBJID", {
+                        hasObjectId: (firstOidInfo.oid !== null && firstOidInfo.oid !== undefined),
+                        hasObjectIdString: !!firstOidInfo.oidStr,
+                        hasObjectIDString: !!_tryString(cursor, "ObjectIDString"),
+                        objectId: firstOidInfo.oid,
+                        objectIdString: firstOidInfo.oidStr
+                    }, "global-events.js", "_createWrapperFromBoard");
+                } catch (eObjDiag) {}
+            }
+
+            while (cursor && scanCount < maxLoop) {
+                scanCount += 1;
+                diag.loopCount = scanCount;
+
+                var oidInfo = _readObjectIdInfo(cursor);
+                var oid = oidInfo.oid;
+                var oidStr = oidInfo.oidStr;
+
+                if (
+                    (typeof eTrackObject !== "undefined" && oid === eTrackObject) ||
+                    (typeof eViaObject !== "undefined" && oid === eViaObject) ||
+                    oidStr === "Track" || oidStr === "Via"
+                ) {
+                    nativeObj = cursor;
+                    try {
+                        uiInfo("WRAP_DIAG_FOUND", {
+                            objectId: oid,
+                            objectIdString: oidStr
+                        }, "global-events.js", "_createWrapperFromBoard");
+                    } catch (eWrapDiagFound1) {}
+                    break;
+                }
+
+                if (
+                    (typeof ePadObject !== "undefined" && oid === ePadObject) ||
+                    oidStr === "Pad"
+                ) {
+                    if (!padCandidate) {
+                        padCandidate = cursor;
+                    }
+                }
+
+                cursor = _iterNext(it);
+            }
+        } catch (e3) {
+            // === WRAP_DIAG_EX ===
+            // 目的：异常不再静默吞掉，输出具体错误信息。
+            try {
+                var ex = {
+                    message: (e3 && e3.message) ? String(e3.message) : "",
+                    description: (e3 && e3.description) ? String(e3.description) : "",
+                    number: (e3 && e3.number !== undefined) ? e3.number : null,
+                    toString: (e3) ? String(e3) : ""
+                };
+
+                if (typeof uiWarn !== "undefined") {
+                    uiWarn("WRAP_DIAG_EX", ex, "global-events.js", "_createWrapperFromBoard");
+                } else {
+                    uiInfo("WRAP_DIAG_EX", ex, "global-events.js", "_createWrapperFromBoard");
+                }
+            } catch (eIgnore) {}
+            return null;
+        } finally {
+            try {
+                if (it && typeof board.BoardIterator_Destroy !== "undefined") {
+                    board.BoardIterator_Destroy(it);
+                }
+            } catch (e4) {}
+        }
+
+        if (!nativeObj && padCandidate) {
+            nativeObj = padCandidate;
+            diag.padCandidateUsed = true;
+
+            // === WRAP_DIAG_FOUND ===
+            // 目的：Track/Via 未命中，最终 fallback 到 Pad 候选时也明确打点。
+            try {
+                var _padOid = null;
+                var _padOidStr = "";
+                try { _padOid = nativeObj.ObjectId; } catch (ePadObjId) {}
+                try { if (nativeObj.ObjectIDString !== undefined) _padOidStr = String(nativeObj.ObjectIDString); } catch (ePadObjStr) {}
+                uiInfo("WRAP_DIAG_FOUND", {
+                    objectId: _padOid,
+                    objectIdString: _padOidStr || "Pad",
+                    padCandidateUsed: true
+                }, "global-events.js", "_createWrapperFromBoard");
+            } catch (eWrapDiagFound2) {}
+        }
+        if (!nativeObj) return null;
+
+        // 额外诊断：单独验证 I_ObjectAddress 返回值（不依赖 wrapper）
+        try {
+            function _describeValue(v) {
+                var t = typeof v;
+                if (v === null) return { type: "null", value: null };
+                if (v === undefined) return { type: "undefined", value: null };
+                if (t === "number" || t === "string" || t === "boolean") return { type: t, value: v };
+                var s = "";
+                try { s = String(v); } catch (eDesc) { s = "[unprintable]"; }
+                return { type: t, value: s };
+            }
+            var addrDiag = {
+                hasIObjectAddress: (nativeObj.I_ObjectAddress !== undefined && nativeObj.I_ObjectAddress !== null),
+                iObjectAddressType: (nativeObj.I_ObjectAddress !== undefined && nativeObj.I_ObjectAddress !== null) ? typeof nativeObj.I_ObjectAddress : ""
+            };
+            if (addrDiag.hasIObjectAddress) {
+                try { addrDiag.iObjectAddressProp = nativeObj.I_ObjectAddress; } catch (eAddrProp) { addrDiag.iObjectAddressPropError = String(eAddrProp); }
+                addrDiag.iObjectAddressPropInfo = _describeValue(addrDiag.iObjectAddressProp);
+                if (typeof addrDiag.iObjectAddressProp === "function") {
+                    try { addrDiag.iObjectAddressPropCall = addrDiag.iObjectAddressProp(); } catch (eAddrPropCall) { addrDiag.iObjectAddressPropCallError = String(eAddrPropCall); }
+                    addrDiag.iObjectAddressPropCallInfo = _describeValue(addrDiag.iObjectAddressPropCall);
+                }
+                if (addrDiag.iObjectAddressType === "function" || addrDiag.iObjectAddressType === "unknown") {
+                    try { addrDiag.iObjectAddressCall = nativeObj.I_ObjectAddress(); } catch (eAddrCall) { addrDiag.iObjectAddressCallError = String(eAddrCall); }
+                    addrDiag.iObjectAddressCallInfo = _describeValue(addrDiag.iObjectAddressCall);
+                }
+            }
+            try { uiDebug("DEBUG", "I_OBJECTADDRESS_DIAG", addrDiag, "global-events.js", "_createWrapperFromBoard"); } catch (eAddrLog) {}
+        } catch (eAddrOuter) {}
+
+        var objectId = null;
+        try { objectId = nativeObj.ObjectId; } catch (e5) {}
+        diag.objectId = objectId;
+        var objectIdString = "";
+        try {
+            if (nativeObj.ObjectIDString !== undefined) {
+                objectIdString = String(nativeObj.ObjectIDString);
+            }
+        } catch (e6a) {}
+        diag.objectIdString = objectIdString;
+        var rawAddrFromNative = null;
+        var rawAddrFromNativeProp = null;
+        var rawAddrFromNativeCall = null;
+        var rawAddrType = "";
+        var rawAddrPropType = "";
+        var rawAddrReadError = "";
+        var rawAddrCallError = "";
+        var rawAddrError = "";
+        try {
+            if (nativeObj.I_ObjectAddress !== undefined && nativeObj.I_ObjectAddress !== null) {
+                rawAddrType = typeof nativeObj.I_ObjectAddress;
+                // 先尝试当作属性读
+                try { rawAddrFromNativeProp = nativeObj.I_ObjectAddress; } catch (eAddr1) { rawAddrReadError = String(eAddr1); }
+                rawAddrPropType = (rawAddrFromNativeProp !== null && rawAddrFromNativeProp !== undefined) ? typeof rawAddrFromNativeProp : "";
+                if (rawAddrPropType === "function") {
+                    try { rawAddrFromNativeCall = rawAddrFromNativeProp(); } catch (eAddr2) { rawAddrCallError = String(eAddr2); }
+                    if (rawAddrFromNativeCall !== null && rawAddrFromNativeCall !== undefined && rawAddrFromNativeCall !== 0) {
+                        rawAddrFromNative = rawAddrFromNativeCall;
+                    }
+                } else if (rawAddrFromNativeProp !== null && rawAddrFromNativeProp !== undefined && rawAddrFromNativeProp !== 0) {
+                    rawAddrFromNative = rawAddrFromNativeProp;
+                } else if (rawAddrType === "function" || rawAddrType === "unknown") {
+                    try { rawAddrFromNativeCall = nativeObj.I_ObjectAddress(); } catch (eAddr3) { rawAddrCallError = String(eAddr3); }
+                    if (rawAddrFromNativeCall !== null && rawAddrFromNativeCall !== undefined && rawAddrFromNativeCall !== 0) {
+                        rawAddrFromNative = rawAddrFromNativeCall;
+                    }
+                }
+            } else if (nativeObj.ObjectAddress !== undefined && nativeObj.ObjectAddress !== null) {
+                rawAddrType = typeof nativeObj.ObjectAddress;
+                rawAddrFromNative = nativeObj.ObjectAddress;
+            }
+        } catch (e6b) {
+            rawAddrError = (e6b && e6b.message) ? String(e6b.message) : String(e6b);
+        }
+        if (rawAddrFromNative !== null && rawAddrFromNative !== undefined) {
+            diag.rawAddrFromNative = rawAddrFromNative;
+        }
+        if (rawAddrFromNativeProp !== undefined) {
+            diag.rawAddrFromNativeProp = rawAddrFromNativeProp;
+        }
+        if (rawAddrFromNativeCall !== undefined) {
+            diag.rawAddrFromNativeCall = rawAddrFromNativeCall;
+        }
+        if (rawAddrType) {
+            diag.rawAddrType = rawAddrType;
+        }
+        if (rawAddrPropType) {
+            diag.rawAddrPropType = rawAddrPropType;
+        }
+        if (rawAddrReadError) {
+            diag.rawAddrReadError = rawAddrReadError;
+        }
+        if (rawAddrCallError) {
+            diag.rawAddrCallError = rawAddrCallError;
+        }
+        if (rawAddrError) {
+            diag.rawAddrError = rawAddrError;
+        }
+
+        function _findTrackObject(boardRef) {
+            var it2 = null;
+            var obj2 = null;
+            try {
+                it2 = boardRef.BoardIterator_Create();
+                if (!it2) return null;
+                if (typeof it2.AddFilter_LayerSet !== "undefined" && typeof AllLayers !== "undefined") {
+                    it2.AddFilter_LayerSet(AllLayers);
+                }
+                if (typeof it2.AddFilter_Method !== "undefined" && typeof eProcessAll !== "undefined") {
+                    it2.AddFilter_Method(eProcessAll);
+                }
+                var j = 0;
+                for (j = 0; j < 60; j++) {
+                    if (!obj2) {
+                        if (j === 0) {
+                            if (typeof it2.FirstPCBObject !== "undefined") obj2 = it2.FirstPCBObject();
+                            else if (typeof it2.First !== "undefined") obj2 = it2.First;
+                        } else {
+                            if (typeof it2.NextPCBObject !== "undefined") obj2 = it2.NextPCBObject();
+                            else if (typeof it2.Next !== "undefined") obj2 = it2.Next;
+                        }
+                    }
+                    if (!obj2) break;
+                    var oid2 = null;
+                    var oidStr2 = "";
+                    try { oid2 = obj2.ObjectId; } catch (eOid2) {}
+                    try { if (obj2.ObjectIDString !== undefined) oidStr2 = String(obj2.ObjectIDString); } catch (eOidStr2) {}
+                    if ((typeof eTrackObject !== "undefined" && oid2 === eTrackObject) || oidStr2 === "Track") {
+                        return obj2;
+                    }
+                    obj2 = null;
+                }
+            } catch (eFind) {
+                return null;
+            } finally {
+                try { if (it2 && boardRef && boardRef.BoardIterator_Destroy) boardRef.BoardIterator_Destroy(it2); } catch (eDestroy2) {}
+            }
+            return null;
+        }
+
+        function _createLiteWrapper(nativeObj, type) {
+            if (!nativeObj) return null;
+            var w = {
+                objectType: type || "Unknown",
+                nativeObject: nativeObj,
+                handle: null,
+                address: null,
+                toSpec: function() {
+                    var obj = nativeObj;
+                    var t = type;
+                    if (!t) {
+                        try {
+                            if (obj.ObjectIDString !== undefined) t = String(obj.ObjectIDString);
+                        } catch (e0) {}
+                    }
+                    t = t || "Unknown";
+                    if (t === "Track") {
+                        var x1 = null, y1 = null, x2 = null, y2 = null, width = null, layerId = null;
+                        try { x1 = obj.X1; } catch (e1) {}
+                        try { y1 = obj.Y1; } catch (e2) {}
+                        try { x2 = obj.X2; } catch (e3) {}
+                        try { y2 = obj.Y2; } catch (e4) {}
+                        try { width = obj.Width; } catch (e5) {}
+                        try { layerId = obj.Layer; } catch (e6) {}
+                        var layerName = null;
+                        try {
+                            if (typeof StackMap !== "undefined" && StackMap && StackMap.getNormalizedLayerName) {
+                                layerName = StackMap.getNormalizedLayerName(layerId);
+                            }
+                        } catch (e7) {}
+                        return {
+                            schema: "spec/0.1",
+                            type: "track",
+                            handle: w.handle || null,
+                            address: w.address || null,
+                            payload: {
+                                common: {
+                                    x1: x1, y1: y1, x2: x2, y2: y2,
+                                    width: width,
+                                    layer: layerName || null,
+                                    net: null
+                                }
+                            }
+                        };
+                    }
+                    if (t === "Via") {
+                        var vx = null, vy = null, hole = null, size = null;
+                        try { vx = obj.X; } catch (e8) {}
+                        try { vy = obj.Y; } catch (e9) {}
+                        try { hole = obj.HoleSize; } catch (e10) {}
+                        try { size = obj.Size; } catch (e11) {}
+                        return {
+                            schema: "spec/0.1",
+                            type: "via",
+                            handle: w.handle || null,
+                            address: w.address || null,
+                            payload: {
+                                common: {
+                                    x: vx, y: vy,
+                                    net: null,
+                                    hole: { diameter: hole },
+                                    size: { xSize: size, ySize: size },
+                                    isPlated: null
+                                },
+                                layerMode: "multilayer",
+                                layerSpan: null
+                            }
+                        };
+                    }
+                    if (t === "Pad") {
+                        var px = null, py = null, sx = null, sy = null, hole2 = null;
+                        try { px = obj.X; } catch (e12) {}
+                        try { py = obj.Y; } catch (e13) {}
+                        try { sx = obj.SizeX; } catch (e14) {}
+                        try { sy = obj.SizeY; } catch (e15) {}
+                        try { hole2 = obj.HoleSize; } catch (e16) {}
+                        return {
+                            schema: "spec/0.1",
+                            type: "pad",
+                            handle: w.handle || null,
+                            address: w.address || null,
+                            payload: {
+                                common: {
+                                    x: px, y: py, net: null,
+                                    hole: { diameter: hole2 }
+                                },
+                                layerMode: "multilayer",
+                                layerTable: {
+                                    MultiLayer: { shape: null, xSize: sx, ySize: sy }
+                                }
+                            }
+                        };
+                    }
+                    return { schema: "spec/0.1", type: "unknown", payload: {} };
+                }
+            };
+
+            try {
+                var cand = null;
+                var cand2 = null;
+                var cand3 = null;
+                try { cand = nativeObj.I_ObjectAddress; } catch (eAddrProp) {}
+                try {
+                    var t = typeof nativeObj.I_ObjectAddress;
+                    if (t === "function" || t === "unknown") cand2 = nativeObj.I_ObjectAddress();
+                } catch (eAddrCall) {}
+                try { cand3 = nativeObj.ObjectAddress; } catch (eObjAddr) {}
+                var r1 = _normalizeHandleToNumber(cand);
+                var r2 = _normalizeHandleToNumber(cand2);
+                var r3 = _normalizeHandleToNumber(cand3);
+                var best = r1.ok ? r1 : (r2.ok ? r2 : (r3.ok ? r3 : null));
+                w._handleDiag = { r1: r1.diag, r2: r2.diag, r3: r3.diag };
+                if (best) {
+                    w.handle = best.num;
+                    w.address = best.num;
+                } else {
+                    w.handle = null;
+                    w.address = null;
+                }
+            } catch (e17) {}
+
+            return w;
+        }
+
+        var wrapper = null;
+        var wrapperError = "";
+        var wrapperStage = "";
+        var wrapperErrDetail = null;
+        try {
+            if (typeof eTrackObject !== "undefined" && objectId === eTrackObject && typeof TrackWrapper !== "undefined") {
+                wrapperStage = "TrackWrapper.create";
+                wrapper = TrackWrapper.create ? TrackWrapper.create({ nativeObject: nativeObj }) : TrackWrapper({ nativeObject: nativeObj });
+            } else if (typeof eViaObject !== "undefined" && objectId === eViaObject && typeof ViaWrapper !== "undefined") {
+                wrapperStage = "ViaWrapper.create";
+                wrapper = ViaWrapper.create ? ViaWrapper.create({ nativeObject: nativeObj }) : ViaWrapper({ nativeObject: nativeObj });
+            } else if (typeof ePadObject !== "undefined" && objectId === ePadObject && typeof PadWrapper !== "undefined") {
+                wrapperStage = "PadWrapper.create";
+                wrapper = PadWrapper.create ? PadWrapper.create({ nativeObject: nativeObj }) : PadWrapper({ nativeObject: nativeObj });
+            } else if (objectIdString) {
+                if (objectIdString === "Track" && typeof TrackWrapper !== "undefined") {
+                    wrapperStage = "TrackWrapper.create:ObjectIDString";
+                    wrapper = TrackWrapper.create ? TrackWrapper.create({ nativeObject: nativeObj }) : TrackWrapper({ nativeObject: nativeObj });
+                } else if (objectIdString === "Via" && typeof ViaWrapper !== "undefined") {
+                    wrapperStage = "ViaWrapper.create:ObjectIDString";
+                    wrapper = ViaWrapper.create ? ViaWrapper.create({ nativeObject: nativeObj }) : ViaWrapper({ nativeObject: nativeObj });
+                } else if (objectIdString === "Pad" && typeof PadWrapper !== "undefined") {
+                    wrapperStage = "PadWrapper.create:ObjectIDString";
+                    wrapper = PadWrapper.create ? PadWrapper.create({ nativeObject: nativeObj }) : PadWrapper({ nativeObject: nativeObj });
+                }
+            } else if (typeof PCBObjectFactory !== "undefined" && PCBObjectFactory && PCBObjectFactory.createWrapper) {
+                wrapperStage = "PCBObjectFactory.createWrapper";
+                wrapper = PCBObjectFactory.createWrapper(nativeObj, {});
+            }
+        } catch (e6) {
+            wrapperError = e6 && e6.message ? String(e6.message) : String(e6);
+            wrapperErrDetail = {
+                message: wrapperError,
+                description: (e6 && e6.description) ? String(e6.description) : "",
+                number: (e6 && e6.number !== undefined) ? e6.number : null
+            };
+        }
+
+        if (!wrapper && wrapperError && board) {
+            var trackObj = _findTrackObject(board);
+            if (trackObj && typeof TrackWrapper !== "undefined") {
+                try {
+                    diag.fallbackTrack = true;
+                    wrapperStage = "TrackWrapper.create:fallback";
+                    wrapper = TrackWrapper.create ? TrackWrapper.create({ nativeObject: trackObj }) : TrackWrapper({ nativeObject: trackObj });
+                    wrapperError = "";
+                    wrapperErrDetail = null;
+                } catch (e7f) {
+                    wrapperError = e7f && e7f.message ? String(e7f.message) : String(e7f);
+                    wrapperErrDetail = {
+                        message: wrapperError,
+                        description: (e7f && e7f.description) ? String(e7f.description) : "",
+                        number: (e7f && e7f.number !== undefined) ? e7f.number : null
+                    };
+                }
+            }
+        }
+
+        if (!wrapper && nativeObj) {
+            var tLite = objectIdString || null;
+            if (typeof eTrackObject !== "undefined" && objectId === eTrackObject) tLite = "Track";
+            if (typeof eViaObject !== "undefined" && objectId === eViaObject) tLite = "Via";
+            if (typeof ePadObject !== "undefined" && objectId === ePadObject) tLite = "Pad";
+            wrapper = _createLiteWrapper(nativeObj, tLite);
+            if (wrapper) {
+                diag.liteWrapper = true;
+            }
+        }
+        if (!wrapper && nativeObj) {
+            // 兜底：仍然创建一个未知类型的 lite wrapper，并用原生对象作为 handle
+            wrapper = _createLiteWrapper(nativeObj, objectIdString || "Unknown");
+            if (wrapper) {
+                diag.liteWrapper = true;
+                diag.fallbackUnknown = true;
+            }
+        }
+
+        if (wrapper) {
+            if (wrapper.initFromNative) {
+                try { wrapper.initFromNative(nativeObj); } catch (e7b) {}
+            }
+            if (!wrapper.handle && !wrapper.address && nativeObj) {
+                var addr = null;
+                try {
+                    if (nativeObj.I_ObjectAddress !== undefined && nativeObj.I_ObjectAddress !== null) {
+                        var tAddr = typeof nativeObj.I_ObjectAddress;
+                        try { addr = nativeObj.I_ObjectAddress; } catch (e7a1) {}
+                        if (addr === null || addr === undefined || addr === 0) {
+                            if (tAddr === "function" || tAddr === "unknown") {
+                                addr = nativeObj.I_ObjectAddress();
+                            }
+                        }
+                    }
+                } catch (e7a) {}
+                if (addr !== null && addr !== undefined) {
+                    wrapper.handle = addr;
+                    wrapper.address = addr;
+                }
+            }
+            if (!wrapper.handle && !wrapper.address && rawAddrFromNative !== null && rawAddrFromNative !== undefined && rawAddrFromNative !== 0) {
+                wrapper.handle = rawAddrFromNative;
+                wrapper.address = rawAddrFromNative;
+            }
+            if (!wrapper.handle && !wrapper.address && nativeObj) {
+                wrapper.handle = nativeObj;
+                wrapper.address = nativeObj;
+            }
+            if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+                try { PCBObjectPool.register(wrapper); } catch (e7) {}
+            }
+        }
+
+        diag.wrapperType = wrapper && wrapper.objectType ? wrapper.objectType : (wrapper ? "unknown" : "none");
+        diag.wrapperHandle = wrapper ? (wrapper.handle || wrapper.address || null) : null;
+        if (wrapper && wrapper._rawAddr !== undefined) {
+            diag.wrapperRawAddr = wrapper._rawAddr;
+        }
+        if (wrapperError) {
+            diag.wrapperError = wrapperError;
+            diag.wrapperStage = wrapperStage;
+            if (wrapperErrDetail) {
+                diag.wrapperErrorDetail = wrapperErrDetail;
+            }
+        }
+        try { uiInfo("OBJECT_GET_DIAG", diag, "global-events.js", "_createWrapperFromBoard"); } catch (e8) {}
+        try {
+            if (typeof ShowMessage === "function") {
+                var msg = "OBJ_DIAG type=" + (diag.wrapperType || "none") +
+                    " handle=" + (diag.wrapperHandle === null ? "null" : (diag.wrapperHandle === undefined ? "undef" : typeof diag.wrapperHandle)) +
+                    " rawType=" + (diag.rawAddrType || "") +
+                    " propType=" + (diag.rawAddrPropType || "") +
+                    " objId=" + (diag.objectIdString || diag.objectId || "");
+                ShowMessage(msg);
+            }
+        } catch (e8a) {}
+
+        try {
+            if (wrapper) {
+                if (typeof PCBObjectPool !== "undefined" && PCBObjectPool && PCBObjectPool.register) {
+                    if (wrapper.poolId === null || wrapper.poolId === undefined) {
+                        PCBObjectPool.register(wrapper);
+                    }
+                } else {
+                    uiWarn("OBJECT_POOL_MISSING", { hasPool: false }, "global-events.js", "_createWrapperFromBoard");
+                }
+            }
+        } catch (eReg) {
+            uiWarn("OBJECT_POOL_REGISTER_FAIL", { msg: String(eReg) }, "global-events.js", "_createWrapperFromBoard");
+        }
+
+        return wrapper || null;
+    }
+
+    try {
+        var client = null;
+        if (typeof HTTPClientModule !== "undefined") {
+            client = HTTPClientModule;
+        } else if (typeof HTTP客户端 !== "undefined") {
+            client = HTTP客户端;
+        }
+
+        if (!client) {
+            showErrorInUI("测试_AD_Spec_0_1_一键验证", new Error("HTTPClientModule 未加载"), {
+                HTTPClientModule: typeof HTTPClientModule,
+                HTTP客户端: typeof HTTP客户端
+            });
+            return;
+        }
+
+        if (client.setBaseUrl) {
+            try { client.setBaseUrl(baseUrl); } catch (e7) {}
+        }
+
+        var pingOk = false;
+        if (client.ping) {
+            pingOk = client.ping(baseUrl);
+        }
+        uiInfo("PING", { ok: pingOk, baseUrl: baseUrl }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+
+        var r1 = null;
+        var r2 = null;
+        var r3 = null;
+        if (client.command) {
+            r1 = client.command("mock.echo", { from: "AD" });
+            r2 = client.command("mock.board.summary", { from: "AD" });
+            r3 = client.command("mock.unknown", { from: "AD" });
+        } else if (client.sendCommand) {
+            r1 = client.sendCommand(baseUrl, "mock.echo", { from: "AD" });
+            r2 = client.sendCommand(baseUrl, "mock.board.summary", { from: "AD" });
+            r3 = client.sendCommand(baseUrl, "mock.unknown", { from: "AD" });
+        }
+
+        uiInfo("COMMAND", {
+            echoOk: r1 && r1.ok,
+            summaryOk: r2 && r2.ok,
+            unknownOkFalse: r3 && (r3.ok === false)
+        }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+
+        var boardSummary = _getBoardSummary();
+        uiInfo("BOARD_SUMMARY", boardSummary, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+
+        var resolved = _resolveBoardRef();
+        var wrapper = _createWrapperFromBoard(resolved.board);
+        var objGet = _tryObjectGet(wrapper, resolved.board);
+
+        var reportId = "ad.board.summary-" + String(new Date().getTime());
+        var report = {
+            schema: "spec/0.1",
+            type: "ad.board.summary",
+            id: reportId,
+            payload: boardSummary,
+            meta: {
+                ts: new Date().getTime(),
+                source: "AD",
+                rev: 0.1,
+                detail: { schema: "spec/0.1", build: "ad21-js" }
+            }
+        };
+
+        var uploadOk = false;
+        if (client.request) {
+            var body = _safeJson(report);
+            var resp = client.request("POST", baseUrl + "/api/upload-report", body, { "Content-Type": "application/json" });
+            uploadOk = resp && resp.ok;
+            uiInfo("UPLOAD_REPORT", { ok: uploadOk, status: resp ? resp.status : 0 }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+        } else {
+            try { if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) { memLog.Lines.Add(_safeJson(report)); } } catch (e8) {}
+            uiWarn("UPLOAD_REPORT", { ok: false, reason: "request not available" }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+        }
+
+        uiInfo("FINAL_SUMMARY", {
+            echoOk: r1 && r1.ok,
+            summaryOk: r2 && r2.ok,
+            unknownOkFalse: r3 && (r3.ok === false),
+            hasBoardSummary: !!boardSummary,
+            uploadOk: uploadOk,
+            objectGetOk: objGet && objGet.ok
+        }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+    } catch (error) {
+        showErrorInUI("测试_AD_Spec_0_1_一键验证", error, {
+            baseUrl: baseUrl,
+            timestamp: new Date().toLocaleString()
+        });
+    }
+}
+
+/**
+ * UI调试系统 - 模块状态检查
+ */
+function debugModuleStatus() {
+    uiInfo("=== 开始模块状态检查 ===", null, "debug-tools", "debugModuleStatus");
+    
+    // 检查LoggerModule - 直接检查全局变量
+    var loggerModule = null;
+    if (typeof LoggerModule !== "undefined") {
+        loggerModule = LoggerModule;
+        uiInfo("LoggerModule: 可用", {type: typeof LoggerModule}, "debug-tools", "debugModuleStatus");
+    } else {
+        uiError("LoggerModule: 不可用", {global: typeof LoggerModule}, "debug-tools", "debugModuleStatus");
+    }
+    
+    // 检查LoggerModuleIndex - 直接检查全局变量
+    var loggerIndex = null;
+    if (typeof LoggerModuleIndex !== "undefined") {
+        loggerIndex = LoggerModuleIndex;
+        uiInfo("LoggerModuleIndex: 可用", {type: typeof LoggerModuleIndex}, "debug-tools", "debugModuleStatus");
+    } else {
+        uiError("LoggerModuleIndex: 不可用", {global: typeof LoggerModuleIndex}, "debug-tools", "debugModuleStatus");
+    }
+    
+    // 检查UILoggerModule - 直接检查全局变量
+    var uiLoggerModule = null;
+    if (typeof UILoggerModule !== "undefined") {
+        uiLoggerModule = UILoggerModule;
+        uiInfo("UILoggerModule: 可用", {type: typeof UILoggerModule}, "debug-tools", "debugModuleStatus");
+    } else {
+        uiError("UILoggerModule: 不可用", {global: typeof UILoggerModule}, "debug-tools", "debugModuleStatus");
+    }
+    
+    // 检查默认实例
+    try {
+        var defaultLogger = null;
+        if (loggerIndex && typeof loggerIndex.getDefaultLogger === "function") {
+            defaultLogger = loggerIndex.getDefaultLogger();
+            if (defaultLogger) {
+                uiInfo("默认Logger实例: 可用", {
+                    type: typeof defaultLogger,
+                    initialized: defaultLogger.state ? defaultLogger.state.initialized : "unknown"
+                }, "debug-tools", "debugModuleStatus");
+            } else {
+                uiError("默认Logger实例: 不可用", {reason: "getDefaultLogger返回null"}, "debug-tools", "debugModuleStatus");
+            }
+        } else {
+            uiError("获取默认Logger实例失败", {
+                loggerIndex: loggerIndex ? "exists" : "null",
+                getDefaultLogger: loggerIndex && typeof loggerIndex.getDefaultLogger === "function" ? "exists" : "missing"
+            }, "debug-tools", "debugModuleStatus");
+        }
+    } catch (e) {
+        uiError("获取默认Logger实例异常", {error: e.message}, "debug-tools", "debugModuleStatus");
+    }
+    
+    // 检查环境信息
+    uiInfo("环境信息", {
+        window: typeof window,
+        global: typeof global,
+        LoggerModule: typeof LoggerModule,
+        LoggerModuleIndex: typeof LoggerModuleIndex,
+        UILoggerModule: typeof UILoggerModule
+    }, "debug-tools", "debugModuleStatus");
+    
+    uiInfo("=== 模块状态检查完成 ===", null, "debug-tools", "debugModuleStatus");
+}
+
+/**
+ * UI调试系统 - 函数调用跟踪
+ */
+function debugFunctionCall(functionName, args, fileName) {
+    uiTrace("函数调用: " + functionName, {
+        args: args,
+        argsCount: args ? args.length : 0
+    }, fileName || "unknown", functionName);
+}
+
+/**
+ * UI调试系统 - 函数返回跟踪
+ */
+function debugFunctionReturn(functionName, result, fileName) {
+    uiTrace("函数返回: " + functionName, {
+        result: result,
+        resultType: typeof result
+    }, fileName || "unknown", functionName);
+}
+
+/**
+ * UI调试系统 - 函数异常跟踪
+ */
+function debugFunctionError(functionName, error, fileName) {
+    uiError("函数异常: " + functionName, {
+        error: error.message,
+        stack: error.stack
+    }, fileName || "unknown", functionName);
+}
+
+// ============================================================
+// ObjectCreatorForm DFM事件处理函数
+// ============================================================
+
+/**
+ * 对象类型选择变化事件 - ObjectCreatorForm
+ */
+function cmbObjectTypeChange(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleObjectTypeChange(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "cmbObjectTypeChange"
+            }, "global-events.js", "cmbObjectTypeChange");
+        }
+    } catch (error) {
+        uiError("对象类型选择变化事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "cmbObjectTypeChange");
+    }
+}
+
+/**
+ * 设为原点按钮点击事件 - ObjectCreatorForm
+ */
+function btnSetOriginClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleSetOriginClick(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "btnSetOriginClick"
+            }, "global-events.js", "btnSetOriginClick");
+        }
+    } catch (error) {
+        uiError("设为原点按钮点击事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "btnSetOriginClick");
+    }
+}
+
+/**
+ * 验证参数按钮点击事件 - ObjectCreatorForm
+ */
+function btnValidateClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleValidateClick(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "btnValidateClick"
+            }, "global-events.js", "btnValidateClick");
+        }
+    } catch (error) {
+        uiError("验证参数按钮点击事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "btnValidateClick");
+    }
+}
+
+/**
+ * 创建对象按钮点击事件 - ObjectCreatorForm
+ */
+function btnCreateClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleCreateClick(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "btnCreateClick"
+            }, "global-events.js", "btnCreateClick");
+        }
+    } catch (error) {
+        uiError("创建对象按钮点击事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "btnCreateClick");
+    }
+}
+
+/**
+ * 在原点创建按钮点击事件 - ObjectCreatorForm
+ */
+function btnCreateAtOriginClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleCreateAtOriginClick(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "btnCreateAtOriginClick"
+            }, "global-events.js", "btnCreateAtOriginClick");
+        }
+    } catch (error) {
+        uiError("在原点创建按钮点击事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "btnCreateAtOriginClick");
+    }
+}
+
+/**
+ * 重置按钮点击事件 - ObjectCreatorForm
+ */
+function btnResetClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleResetClick(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "btnResetClick"
+            }, "global-events.js", "btnResetClick");
+        }
+    } catch (error) {
+        uiError("重置按钮点击事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "btnResetClick");
+    }
+}
+
+/**
+ * 组件测试按钮点击事件
+ * @description 执行模块可用性检查与运行环境探测
+ * @param {Object} Sender 事件发送者
+ */
+function btnComponentTestClick(Sender) {
+    try {
+        uiInfo("=== 开始组件测试 ===", { sender: Sender ? "有效" : "无效" }, "global-events.js", "btnComponentTestClick");
+        
+        if (typeof debugModuleStatus === "function") {
+            debugModuleStatus();
+        } else {
+            uiWarn("debugModuleStatus 不可用", { fn: typeof debugModuleStatus }, "global-events.js", "btnComponentTestClick");
+        }
+        
+        if (typeof 测试_运行环境探测 === "function") {
+            测试_运行环境探测();
+        } else {
+            uiWarn("测试_运行环境探测 不可用", { fn: typeof 测试_运行环境探测 }, "global-events.js", "btnComponentTestClick");
+        }
+        
+        uiInfo("=== 组件测试完成 ===", null, "global-events.js", "btnComponentTestClick");
+        
+    } catch (error) {
+        showErrorInUI("btnComponentTestClick", error, {
+            sender: Sender ? "有效" : "无效"
+        });
+    }
+}
+
+/**
+ * 最小通信测试（HTTP）按钮点击事件 - ObjectCreatorForm
+ */
+function btnHttpSmokeTestClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined" && UIEventManager && UIEventManager.handleHttpSmokeTestClick) {
+            UIEventManager.handleHttpSmokeTestClick(Sender);
+            return;
+        }
+        
+        // fallback：不依赖UIEventManager
+        if (typeof 测试_AD_Spec_0_1_一键验证 === "function") {
+            测试_AD_Spec_0_1_一键验证();
+            return;
+        }
+        if (typeof 测试_AD_XMLHTTP_最小验证 === "function") {
+            测试_AD_XMLHTTP_最小验证();
+            return;
+        }
+        if (typeof 测试_最小通信流程 === "function") {
+            测试_最小通信流程();
+            return;
+        }
+        
+        uiError("最小通信测试入口不可用", {
+            UIEventManager: typeof UIEventManager,
+            hasHandler: !!(UIEventManager && UIEventManager.handleHttpSmokeTestClick),
+            testFnSpec: typeof 测试_AD_Spec_0_1_一键验证,
+            testFn: typeof 测试_AD_XMLHTTP_最小验证,
+            testFnLegacy: typeof 测试_最小通信流程
+        }, "global-events.js", "btnHttpSmokeTestClick");
+        
+    } catch (error) {
+        try {
+            if (typeof UILoggerModule !== "undefined" && UILoggerModule && UILoggerModule.uiError) {
+                UILoggerModule.uiError("最小通信测试按钮处理失败", { error: error.message }, "global-events.js", "btnHttpSmokeTestClick");
+                return;
+            }
+        } catch (e1) {}
+        
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) {
+                memLog.Lines.Add("[ERROR] btnHttpSmokeTestClick failed: " + (error && error.message ? error.message : String(error)));
+            }
+        } catch (e2) {}
+    }
+}
+
+/**
+ * 环境探测按钮点击事件 - MainForm
+ */
+function btnEnvironmentProbeClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined" && UIEventManager && UIEventManager.handleEnvironmentProbeClick) {
+            UIEventManager.handleEnvironmentProbeClick(Sender);
+            return;
+        }
+
+        // fallback：不依赖UIEventManager
+        if (typeof 测试_运行环境探测 === "function") {
+            测试_运行环境探测();
+            return;
+        }
+
+        uiError("环境探测入口不可用", {
+            UIEventManager: typeof UIEventManager,
+            hasHandler: !!(UIEventManager && UIEventManager.handleEnvironmentProbeClick),
+            testFn: typeof 测试_运行环境探测
+        }, "global-events.js", "btnEnvironmentProbeClick");
+
+    } catch (error) {
+        try {
+            if (typeof UILoggerModule !== "undefined" && UILoggerModule && UILoggerModule.uiError) {
+                UILoggerModule.uiError("环境探测按钮处理失败", { error: error.message }, "global-events.js", "btnEnvironmentProbeClick");
+                return;
+            }
+        } catch (e1) {}
+
+        try {
+            if (typeof memLog !== "undefined" && memLog && memLog.Lines && memLog.Lines.Add) {
+                memLog.Lines.Add("[ERROR] btnEnvironmentProbeClick failed: " + (error && error.message ? error.message : String(error)));
+            }
+        } catch (e2) {}
+    }
+}
+
+/**
+ * 取消按钮点击事件 - ObjectCreatorForm
+ */
+function btnCancelClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleCancelClick(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "btnCancelClick"
+            }, "global-events.js", "btnCancelClick");
+        }
+    } catch (error) {
+        uiError("取消按钮点击事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "btnCancelClick");
+    }
+}
+
+/**
+ * 网格对齐复选框变化事件 - ObjectCreatorForm
+ */
+function chkGridSnapClick(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleGridSnapClick(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "chkGridSnapClick"
+            }, "global-events.js", "chkGridSnapClick");
+        }
+    } catch (error) {
+        uiError("网格对齐复选框变化事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "chkGridSnapClick");
+    }
+}
+
+/**
+ * 网格大小编辑框变化事件 - ObjectCreatorForm
+ */
+function edtGridSizeChange(Sender) {
+    try {
+        if (typeof UIEventManager !== "undefined") {
+            UIEventManager.handleGridSizeChange(Sender);
+        } else {
+            uiError("UIEventManager不可用", {
+                event: "edtGridSizeChange"
+            }, "global-events.js", "edtGridSizeChange");
+        }
+    } catch (error) {
+        uiError("网格大小编辑框变化事件处理失败", {
+            error: error.message,
+            sender: Sender ? "有效" : "无效"
+        }, "global-events.js", "edtGridSizeChange");
+    }
+}
+
+/**
+ * 全局清理函数（可选）
+ * @description 用于清理全局事件系统
+ */
+function cleanupGlobalEvents() {
+    try {
+        if (typeof memLog !== "undefined" && memLog && memLog.Lines) {
+            memLog.Lines.Add("=== 全局事件系统清理 ===");
+            memLog.Lines.Add("时间: " + new Date().toLocaleString());
+            memLog.Lines.Add("状态: 完成");
+            memLog.Lines.Add("======================");
+        }
+    } catch (e) {
+        // 静默处理清理错误
+    }
+}
+
+
+
+
+
+

@@ -1,0 +1,36 @@
+# 文档索引
+
+本文档由 Scripting API.docx 自动拆分生成
+
+## 文件结构
+
+- [System API Client\-Server Interfaces](01-System_API_Client_-Server_Interfaces.md/README.md)
+- [System API System Interfaces](02-System_API_System_Interfaces.md/README.md)
+- [System API Types and Constants](03-System_API_Types_and_Constants.md/README.md)
+- [System API Low\-level Routines](04-System_API_Low_-level_Routines.md/README.md)
+- [System API Server Processes](05-System_API_Server_Processes.md/README.md)
+- [Technical Reference \- Schematic API](06-Technical_Reference_-_Schematic_API.md/README.md)
+- [Schematic API System Interfaces](07-Schematic_API_System_Interfaces.md/README.md)
+- [Schematic API Component Mapping](08-Schematic_API_Component_Mapping.md/README.md)
+- [Schematic API Design Objects Interfaces](09-Schematic_API_Design_Objects_Interfaces.md/README.md)
+- [Schematic API Constants](10-Schematic_API_Constants.md/README.md)
+- [Schematic API Types](11-Schematic_API_Types.md/README.md)
+- [Schematic API Functions](12-Schematic_API_Functions.md/README.md)
+- [Technical Reference \- PCB API](13-Technical_Reference_-_PCB_API.md/README.md)
+- [PCB API System Interfaces](14-PCB_API_System_Interfaces.md/README.md)
+- [PCB API Layer Stack Interfaces](15-PCB_API_Layer_Stack_Interfaces.md/README.md)
+- [PCB API Layer Interfaces](16-PCB_API_Layer_Interfaces.md/README.md)
+- [PCB API Types](17-PCB_API_Types.md/README.md)
+- [PCB API Constants and Functions](18-PCB_API_Constants_and_Functions.md/README.md)
+- [Updates](19-Updates.md/README.md)
+- [Technical Reference \- Workspace Manager API](20-Technical_Reference_-_Workspace_Manager_API.md/README.md)
+- [WSM API Document Interface](21-WSM_API_Document_Interface.md/README.md)
+- [WSM API Project Interfaces](22-WSM_API_Project_Interfaces.md/README.md)
+- [WSM API System Interfaces](23-WSM_API_System_Interfaces.md/README.md)
+- [WSM API Design Objects](24-WSM_API_Design_Objects.md/README.md)
+- [WSM API Types and Constants](25-WSM_API_Types_and_Constants.md/README.md)
+- [Technical Reference \- Integrated Library API](26-Technical_Reference_-_Integrated_Library_API.md/README.md)
+- [IntLib API Manager Interfaces](27-IntLib_API_Manager_Interfaces.md/README.md)
+- [IntLib API Datafile Interfaces](28-IntLib_API_Datafile_Interfaces.md/README.md)
+- [IntLib API IModel Interfaces](29-IntLib_API_IModel_Interfaces.md/README.md)
+- [[Home](https://www.altium.com/)Documentation](30-Home_https_www_altium_com_Documentation.md/README.md)

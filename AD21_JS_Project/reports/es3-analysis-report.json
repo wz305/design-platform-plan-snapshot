@@ -1,0 +1,288 @@
+{
+  "timestamp": "2025-12-15T12:34:47.721Z",
+  "summary": {
+    "totalFiles": 34,
+    "successfulFiles": 34,
+    "failedFiles": 0,
+    "totalSize": 669436,
+    "totalModules": 32,
+    "totalFunctions": 1,
+    "successRate": 100,
+    "moduleRate": 94.1
+  },
+  "files": [
+    {
+      "filePath": "src/json2.js",
+      "size": 19401,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": false,
+      "hasIIFEModules": false
+    },
+    {
+      "filePath": "src/core/module-accessor.js",
+      "size": 11099,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/base/index.js",
+      "size": 11374,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/core/core.js",
+      "size": 6857,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/log-controller/index.js",
+      "size": 30836,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/logger/types.js",
+      "size": 9061,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/logger/tools.js",
+      "size": 13048,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/logger/steps/step_format.js",
+      "size": 13442,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/logger/steps/step_write.js",
+      "size": 24038,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/logger/core.js",
+      "size": 28913,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/logger/index.js",
+      "size": 17269,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/ui-logger/index.js",
+      "size": 11613,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-module/core/ObjectFactory.js",
+      "size": 12269,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-module/core/ObjectManager.js",
+      "size": 16932,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-module/core/MockSystem.js",
+      "size": 18109,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-module/wrappers/PCBObjectWrapper.js",
+      "size": 18619,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-module/wrappers/GeometryWrapper.js",
+      "size": 23024,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-module/index.js",
+      "size": 27131,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/core/BasePCBWrapper.js",
+      "size": 36752,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/core/PCBMockSystem.js",
+      "size": 20560,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/core/PCBObjectFactory.js",
+      "size": 20842,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/core/PCBObjectManager.js",
+      "size": 17628,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/core/PCBObjectPool.js",
+      "size": 23099,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/calculators/GeometryCalculator.js",
+      "size": 27997,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/wrappers/ArcWrapper.js",
+      "size": 18241,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/wrappers/PadWrapper.js",
+      "size": 29974,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/wrappers/TrackWrapper.js",
+      "size": 20789,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/wrappers/ViaWrapper.js",
+      "size": 22410,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/pcb-interfaces/index.js",
+      "size": 12231,
+      "topLevelNodes": 4,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-creator/core/PositionManager.js",
+      "size": 18931,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-creator/core/ObjectCreator.js",
+      "size": 13997,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/modules/object-creator/index.js",
+      "size": 16749,
+      "topLevelNodes": 2,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "ui/object-creator.js",
+      "size": 3508,
+      "topLevelNodes": 1,
+      "hasTopLevelFunctions": false,
+      "hasTopLevelVars": true,
+      "hasIIFEModules": true
+    },
+    {
+      "filePath": "src/core/global-events.js",
+      "size": 52693,
+      "topLevelNodes": 51,
+      "hasTopLevelFunctions": true,
+      "hasTopLevelVars": false,
+      "hasIIFEModules": false
+    }
+  ],
+  "failedFiles": []
+}

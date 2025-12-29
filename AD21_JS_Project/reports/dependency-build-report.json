@@ -1,0 +1,237 @@
+{
+  "timestamp": "2025-12-29T13:07:26.993Z",
+  "summary": {
+    "totalModules": 42,
+    "validDependencies": true,
+    "errors": 0,
+    "warnings": 0,
+    "missingDependencies": 0,
+    "circularDependencies": 0
+  },
+  "modules": {
+    "src/json2.js": {
+      "name": "json2",
+      "dependencies": [],
+      "size": 15986
+    },
+    "src/core/__adGetHostGlobal.js": {
+      "name": "__adGetHostGlobal",
+      "dependencies": [],
+      "size": 456
+    },
+    "src/core/__adJsonParse.js": {
+      "name": "__adJsonParse",
+      "dependencies": [],
+      "size": 1268
+    },
+    "src/core/JsonUtil.js": {
+      "name": "JsonUtil",
+      "dependencies": [],
+      "size": 880
+    },
+    "src/core/全局符号桥.js": {
+      "name": "全局符号桥",
+      "dependencies": [],
+      "size": 2068
+    },
+    "src/core/module-accessor.js": {
+      "name": "ModuleAccessor",
+      "dependencies": [],
+      "size": 13247
+    },
+    "src/modules/base/index.js": {
+      "name": "BaseModule",
+      "dependencies": [],
+      "size": 11374
+    },
+    "src/core/core.js": {
+      "name": "Core",
+      "dependencies": [],
+      "size": 6857
+    },
+    "src/modules/log-controller/index.js": {
+      "name": "ModuleName",
+      "dependencies": [],
+      "size": 30836
+    },
+    "src/modules/logger/types.js": {
+      "name": "LoggerTypes",
+      "dependencies": [],
+      "size": 9061
+    },
+    "src/modules/logger/tools.js": {
+      "name": "LoggerTools",
+      "dependencies": [],
+      "size": 13048
+    },
+    "src/modules/logger/steps/step_format.js": {
+      "name": "StepFormat",
+      "dependencies": [],
+      "size": 13442
+    },
+    "src/modules/logger/steps/step_write.js": {
+      "name": "StepWrite",
+      "dependencies": [],
+      "size": 24278
+    },
+    "src/modules/logger/core.js": {
+      "name": "LoggerModule",
+      "dependencies": [],
+      "size": 33325
+    },
+    "src/modules/logger/index.js": {
+      "name": "LoggerModule",
+      "dependencies": [],
+      "size": 21218
+    },
+    "src/modules/ui-logger/index.js": {
+      "name": "ModuleName",
+      "dependencies": [],
+      "size": 11613
+    },
+    "src/modules/http-client/index.js": {
+      "name": "HTTPClientModule",
+      "dependencies": [],
+      "size": 6238
+    },
+    "src/环境探测/EnvironmentProbeModule.js": {
+      "name": "EnvironmentProbeModule",
+      "dependencies": [],
+      "size": 27272
+    },
+    "ui/core/UIEventManager.js": {
+      "name": "UIEventManager",
+      "dependencies": [],
+      "size": 16173
+    },
+    "src/modules/object-module/core/ObjectFactory.js": {
+      "name": "ObjectFactory",
+      "dependencies": [],
+      "size": 12269
+    },
+    "src/modules/object-module/core/ObjectManager.js": {
+      "name": "ObjectManager",
+      "dependencies": [],
+      "size": 16932
+    },
+    "src/modules/object-module/core/MockSystem.js": {
+      "name": "MockSystem",
+      "dependencies": [],
+      "size": 18109
+    },
+    "src/modules/object-module/wrappers/PCBObjectWrapper.js": {
+      "name": "PCBObjectWrapper",
+      "dependencies": [],
+      "size": 18619
+    },
+    "src/modules/object-module/wrappers/GeometryWrapper.js": {
+      "name": "GeometryWrapper",
+      "dependencies": [],
+      "size": 23024
+    },
+    "src/modules/object-module/index.js": {
+      "name": "ModuleName",
+      "dependencies": [],
+      "size": 26948
+    },
+    "src/modules/pcb-interfaces/core/BasePCBWrapper.js": {
+      "name": "BasePCBWrapper",
+      "dependencies": [],
+      "size": 36752
+    },
+    "src/modules/pcb-interfaces/core/PCBMockSystem.js": {
+      "name": "PCBMockSystem",
+      "dependencies": [],
+      "size": 20560
+    },
+    "src/modules/pcb-interfaces/core/PCBObjectFactory.js": {
+      "name": "PCBObjectFactory",
+      "dependencies": [],
+      "size": 20842
+    },
+    "src/modules/pcb-interfaces/core/PCBObjectManager.js": {
+      "name": "PCBObjectManager",
+      "dependencies": [],
+      "size": 17628
+    },
+    "src/modules/pcb-interfaces/core/PCBObjectPool.js": {
+      "name": "PCBObjectPool",
+      "dependencies": [],
+      "size": 16510
+    },
+    "src/modules/pcb-interfaces/core/StackMap.js": {
+      "name": "StackMap",
+      "dependencies": [],
+      "size": 6299
+    },
+    "src/modules/pcb-interfaces/calculators/GeometryCalculator.js": {
+      "name": "GeometryCalculator",
+      "dependencies": [],
+      "size": 27997
+    },
+    "src/modules/pcb-interfaces/wrappers/ArcWrapper.js": {
+      "name": "ArcWrapper",
+      "dependencies": [
+        "GeometryCalculator"
+      ],
+      "size": 18241
+    },
+    "src/modules/pcb-interfaces/wrappers/PadWrapper.js": {
+      "name": "PadWrapper",
+      "dependencies": [
+        "GeometryCalculator"
+      ],
+      "size": 43127
+    },
+    "src/modules/pcb-interfaces/wrappers/TrackWrapper.js": {
+      "name": "TrackWrapper",
+      "dependencies": [
+        "GeometryCalculator"
+      ],
+      "size": 28066
+    },
+    "src/modules/pcb-interfaces/wrappers/ViaWrapper.js": {
+      "name": "ViaWrapper",
+      "dependencies": [
+        "GeometryCalculator"
+      ],
+      "size": 31265
+    },
+    "src/modules/pcb-interfaces/index.js": {
+      "name": "ModuleName",
+      "dependencies": [],
+      "size": 12299
+    },
+    "src/modules/object-creator/core/PositionManager.js": {
+      "name": "PositionManager",
+      "dependencies": [],
+      "size": 18931
+    },
+    "src/modules/object-creator/core/ObjectCreator.js": {
+      "name": "ObjectCreator",
+      "dependencies": [],
+      "size": 13997
+    },
+    "src/modules/object-creator/index.js": {
+      "name": "ModuleName",
+      "dependencies": [],
+      "size": 16749
+    },
+    "ui/object-creator.js": {
+      "name": "ObjectCreatorWindow",
+      "dependencies": [],
+      "size": 3508
+    },
+    "src/core/global-events.js": {
+      "name": "global-events",
+      "dependencies": [],
+      "size": 120480
+    }
+  },
+  "dependencies": {
+    "missing": [],
+    "circular": []
+  },
+  "errors": [],
+  "warnings": []
+}

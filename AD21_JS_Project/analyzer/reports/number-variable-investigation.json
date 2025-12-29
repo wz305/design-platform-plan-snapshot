@@ -1,0 +1,4311 @@
+{
+  "meta": {
+    "generatedAt": "2025-12-16T17:20:46.782Z",
+    "description": "数字变量深度调查报告"
+  },
+  "summary": {
+    "totalLines": 21577,
+    "numberReferences": 0,
+    "arrayAccessPatterns": 6,
+    "objectAccessPatterns": 113,
+    "suspiciousPatterns": 276,
+    "varDeclarations": 0,
+    "arrayElements": 1,
+    "objectProperties": 0,
+    "forLoops": 35,
+    "parsingErrors": 0
+  },
+  "findings": {
+    "builtFileInvestigation": {
+      "filePath": "dist/main_utf8.js",
+      "totalLines": 21577,
+      "numberReferences": [],
+      "arrayAccessPatterns": [
+        {
+          "line": 156,
+          "pattern": "a[1]",
+          "number": "1",
+          "fullLine": "//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]"
+        },
+        {
+          "line": 156,
+          "pattern": "a[2]",
+          "number": "2",
+          "fullLine": "//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]"
+        },
+        {
+          "line": 156,
+          "pattern": "a[3]",
+          "number": "3",
+          "fullLine": "//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]"
+        },
+        {
+          "line": 156,
+          "pattern": "a[4]",
+          "number": "4",
+          "fullLine": "//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]"
+        },
+        {
+          "line": 156,
+          "pattern": "a[5]",
+          "number": "5",
+          "fullLine": "//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]"
+        },
+        {
+          "line": 156,
+          "pattern": "a[6]",
+          "number": "6",
+          "fullLine": "//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]"
+        }
+      ],
+      "objectAccessPatterns": [
+        {
+          "line": 584,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 978,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* 100% 兼容 JScript 5.8 (ES3)"
+        },
+        {
+          "line": 984,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 1339,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* 100% 兼容 JScript 5.8 (ES3)"
+        },
+        {
+          "line": 1348,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 1563,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 1577,
+          "pattern": "1.1",
+          "number": "1",
+          "fullLine": "// 1.1 私有变量"
+        },
+        {
+          "line": 1636,
+          "pattern": "1.2",
+          "number": "2",
+          "fullLine": "// 1.2 私有函数"
+        },
+        {
+          "line": 1859,
+          "pattern": "1.3",
+          "number": "3",
+          "fullLine": "// 1.3 公共API - 生成级控制"
+        },
+        {
+          "line": 1940,
+          "pattern": "1.4",
+          "number": "4",
+          "fullLine": "// 1.4 公共API - 显示级控制"
+        },
+        {
+          "line": 2014,
+          "pattern": "1.5",
+          "number": "5",
+          "fullLine": "// 1.5 公共API - 批量操作"
+        },
+        {
+          "line": 2172,
+          "pattern": "1.6",
+          "number": "6",
+          "fullLine": "// 1.6 公共API - 统计和监控"
+        },
+        {
+          "line": 2322,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "version: \"1.0.0\""
+        },
+        {
+          "line": 2440,
+          "pattern": "1.7",
+          "number": "7",
+          "fullLine": "// 1.7 导出接口"
+        },
+        {
+          "line": 2484,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 2829,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 3322,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 3776,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 4340,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "return Math.random() > 0.1; // 90%成功率"
+        },
+        {
+          "line": 4374,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "return Math.random() > 0.1; // 90%成功率"
+        },
+        {
+          "line": 4592,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 4636,
+          "pattern": "2.2",
+          "number": "2",
+          "fullLine": "// 2.2 私有工具函数"
+        },
+        {
+          "line": 4857,
+          "pattern": "2.3",
+          "number": "3",
+          "fullLine": "// 2.3 重写BaseModule的内部方法"
+        },
+        {
+          "line": 4970,
+          "pattern": "2.4",
+          "number": "4",
+          "fullLine": "// 2.4 公共API实现"
+        },
+        {
+          "line": 5346,
+          "pattern": "2.5",
+          "number": "5",
+          "fullLine": "// 2.5 创建Logger实例"
+        },
+        {
+          "line": 5460,
+          "pattern": "2.6",
+          "number": "6",
+          "fullLine": "// 2.6 导出接口"
+        },
+        {
+          "line": 5490,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 6085,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "version: \"1.0.0\","
+        },
+        {
+          "line": 6128,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 6542,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 6952,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 7545,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 8186,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 8760,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 9010,
+          "pattern": "0.0001",
+          "number": "0001",
+          "fullLine": "if (Math.abs(denom) < 0.0001) {"
+        },
+        {
+          "line": 9523,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 10352,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* 100% 兼容 JScript 5.8 (ES3)"
+        },
+        {
+          "line": 10358,
+          "pattern": "2.0",
+          "number": "0",
+          "fullLine": "var _moduleVersion = \"2.0.0\";"
+        },
+        {
+          "line": 11357,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* 100% 兼容 JScript 5.8 (ES3)"
+        },
+        {
+          "line": 11363,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 11573,
+          "pattern": "4.5",
+          "number": "5",
+          "fullLine": "DielectricConstant: 4.5,"
+        },
+        {
+          "line": 11970,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* 100% 兼容 JScript 5.8 (ES3)"
+        },
+        {
+          "line": 11976,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 12531,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* 100% 兼容 JScript 5.8 (ES3)"
+        },
+        {
+          "line": 12537,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 13075,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* 100% 兼容 JScript 5.8 (ES3)"
+        },
+        {
+          "line": 13081,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 13732,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 14084,
+          "pattern": "0.828",
+          "number": "828",
+          "fullLine": "// 八边形面积近似为矩形面积的0.828倍"
+        },
+        {
+          "line": 14085,
+          "pattern": "0.828",
+          "number": "828",
+          "fullLine": "area = sizeX * sizeY * 0.828;"
+        },
+        {
+          "line": 14088,
+          "pattern": "0.95",
+          "number": "95",
+          "fullLine": "// 圆角矩形面积近似为矩形面积的0.95倍"
+        },
+        {
+          "line": 14089,
+          "pattern": "0.95",
+          "number": "95",
+          "fullLine": "area = sizeX * sizeY * 0.95;"
+        },
+        {
+          "line": 14298,
+          "pattern": "0.924",
+          "number": "924",
+          "fullLine": "var inscribedRadius = Math.min(sizeX, sizeY) / 2 * 0.924;"
+        },
+        {
+          "line": 14436,
+          "pattern": "0.0175",
+          "number": "0175",
+          "fullLine": "// 铜的电阻率：0.0175 Ω·mm²/m"
+        },
+        {
+          "line": 14437,
+          "pattern": "0.0175",
+          "number": "0175",
+          "fullLine": "var resistivity = 0.0175;"
+        },
+        {
+          "line": 14466,
+          "pattern": "4.5",
+          "number": "5",
+          "fullLine": "var dielectricConstant = 4.5; // FR4的介电常数"
+        },
+        {
+          "line": 14467,
+          "pattern": "0.2",
+          "number": "2",
+          "fullLine": "var capacitancePerMm = 0.2; // pF/mm 经验值"
+        },
+        {
+          "line": 14496,
+          "pattern": "0.2",
+          "number": "2",
+          "fullLine": "if (width > 0.2) {"
+        },
+        {
+          "line": 14498,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "} else if (width < 0.1) {"
+        },
+        {
+          "line": 14530,
+          "pattern": "0.001",
+          "number": "001",
+          "fullLine": "var resistance = 0.001; // 典型过孔电阻约1mΩ"
+        },
+        {
+          "line": 14559,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "var capacitance = 0.5; // 典型过孔电容约0.5pF"
+        },
+        {
+          "line": 14559,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "var capacitance = 0.5; // 典型过孔电容约0.5pF"
+        },
+        {
+          "line": 14588,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "var inductance = 1.0; // 典型过孔电感约1nH"
+        },
+        {
+          "line": 14640,
+          "pattern": "1.6",
+          "number": "6",
+          "fullLine": "var layerDistance = 1.6; // 标准FR4板厚1.6mm"
+        },
+        {
+          "line": 14640,
+          "pattern": "1.6",
+          "number": "6",
+          "fullLine": "var layerDistance = 1.6; // 标准FR4板厚1.6mm"
+        },
+        {
+          "line": 14665,
+          "pattern": "v2.0",
+          "number": "0",
+          "fullLine": "* ArcWrapper - 圆弧对象封装 (v2.0.0)"
+        },
+        {
+          "line": 14670,
+          "pattern": "2.0",
+          "number": "0",
+          "fullLine": "* @version 2.0.0"
+        },
+        {
+          "line": 14896,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "return baseInst.getMockData().lineWidth || 0.1;"
+        },
+        {
+          "line": 15107,
+          "pattern": "0.01",
+          "number": "01",
+          "fullLine": "tolerance = tolerance || 0.01;"
+        },
+        {
+          "line": 15195,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "lineWidth: 0.1,"
+        },
+        {
+          "line": 15253,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "lineWidth: 0.1,"
+        },
+        {
+          "line": 15285,
+          "pattern": "v2.0",
+          "number": "0",
+          "fullLine": "* PadWrapper - 焊盘对象封装 (v2.0.0)"
+        },
+        {
+          "line": 15290,
+          "pattern": "2.0",
+          "number": "0",
+          "fullLine": "* @version 2.0.0"
+        },
+        {
+          "line": 16173,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "holeSize: 0.5,"
+        },
+        {
+          "line": 16186,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "slotSize: 0.5,"
+        },
+        {
+          "line": 16187,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "slotXSize: 0.5,"
+        },
+        {
+          "line": 16188,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "slotYSize: 0.5"
+        },
+        {
+          "line": 16270,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "holeSize: 0.5,"
+        },
+        {
+          "line": 16283,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "slotSize: 0.5,"
+        },
+        {
+          "line": 16284,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "slotXSize: 0.5,"
+        },
+        {
+          "line": 16285,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "slotYSize: 0.5"
+        },
+        {
+          "line": 16322,
+          "pattern": "2.0",
+          "number": "0",
+          "fullLine": "* @version 2.0.0"
+        },
+        {
+          "line": 16845,
+          "pattern": "0.035",
+          "number": "035",
+          "fullLine": "var thickness = 0.035; // 默认铜厚35um"
+        },
+        {
+          "line": 16851,
+          "pattern": "0.0175",
+          "number": "0175",
+          "fullLine": "return 0.0175 * length / (width * thickness); // 铜电阻率"
+        },
+        {
+          "line": 16867,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "return 0.1 * length * width; // 简化估算"
+        },
+        {
+          "line": 16879,
+          "pattern": "0.035",
+          "number": "035",
+          "fullLine": "return GeometryCalculator.calculateTrackImpedance(width, 0.035, getLayer());"
+        },
+        {
+          "line": 16957,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "Width: 0.1,"
+        },
+        {
+          "line": 17039,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "Width: 0.1,"
+        },
+        {
+          "line": 17077,
+          "pattern": "v2.0",
+          "number": "0",
+          "fullLine": "* ViaWrapper - 过孔对象封装 (v2.0.0)"
+        },
+        {
+          "line": 17082,
+          "pattern": "2.0",
+          "number": "0",
+          "fullLine": "* @version 2.0.0"
+        },
+        {
+          "line": 17227,
+          "pattern": "0.2",
+          "number": "2",
+          "fullLine": "return baseInst.getMockData().holeSize || 0.2;"
+        },
+        {
+          "line": 17250,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "return baseInst.getMockData().size || 0.5;"
+        },
+        {
+          "line": 17583,
+          "pattern": "0.001",
+          "number": "001",
+          "fullLine": "return 0.001; // 1mΩ 典型值"
+        },
+        {
+          "line": 17601,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "return 0.1; // 0.1pF 典型值"
+        },
+        {
+          "line": 17601,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "return 0.1; // 0.1pF 典型值"
+        },
+        {
+          "line": 17619,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "return 1.0; // 1nH 典型值"
+        },
+        {
+          "line": 17666,
+          "pattern": "8.0",
+          "number": "0",
+          "fullLine": "return 8.0; // 8:1 典型值"
+        },
+        {
+          "line": 17675,
+          "pattern": "0.05",
+          "number": "05",
+          "fullLine": "return baseInst.getMockData().drillTolerance || 0.05;"
+        },
+        {
+          "line": 17687,
+          "pattern": "0.05",
+          "number": "05",
+          "fullLine": "return 0.05; // 默认值"
+        },
+        {
+          "line": 17713,
+          "pattern": "0.05",
+          "number": "05",
+          "fullLine": "minAnnularRingOK: minAnnularRing >= 0.05, // 最小环宽0.05mm"
+        },
+        {
+          "line": 17713,
+          "pattern": "0.05",
+          "number": "05",
+          "fullLine": "minAnnularRingOK: minAnnularRing >= 0.05, // 最小环宽0.05mm"
+        },
+        {
+          "line": 17714,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "drillSizeOK: getHoleSize() >= 0.1, // 最小钻孔0.1mm"
+        },
+        {
+          "line": 17714,
+          "pattern": "0.1",
+          "number": "1",
+          "fullLine": "drillSizeOK: getHoleSize() >= 0.1, // 最小钻孔0.1mm"
+        },
+        {
+          "line": 17766,
+          "pattern": "0.2",
+          "number": "2",
+          "fullLine": "holeSize: 0.2,"
+        },
+        {
+          "line": 17767,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "size: 0.5,"
+        },
+        {
+          "line": 17773,
+          "pattern": "0.05",
+          "number": "05",
+          "fullLine": "drillTolerance: 0.05"
+        },
+        {
+          "line": 17840,
+          "pattern": "0.2",
+          "number": "2",
+          "fullLine": "holeSize: 0.2,"
+        },
+        {
+          "line": 17841,
+          "pattern": "0.5",
+          "number": "5",
+          "fullLine": "size: 0.5,"
+        },
+        {
+          "line": 17847,
+          "pattern": "0.05",
+          "number": "05",
+          "fullLine": "drillTolerance: 0.05"
+        },
+        {
+          "line": 17892,
+          "pattern": "1.0",
+          "number": "0",
+          "fullLine": "* @version 1.0.0"
+        },
+        {
+          "line": 18272,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 18842,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        },
+        {
+          "line": 19295,
+          "pattern": "5.8",
+          "number": "8",
+          "fullLine": "* ES3/JScript 5.8 兼容"
+        }
+      ],
+      "suspiciousPatterns": [
+        {
+          "line": 34,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < globalVars.length; i++) {"
+        },
+        {
+          "line": 207,
+          "type": "var_declaration",
+          "content": "var rx_two = /\\\\(?:[\"\\\\\\/bfnrt]|u[0-9a-fA-F]{4})/g;"
+        },
+        {
+          "line": 210,
+          "type": "var_declaration",
+          "content": "var rx_escapable = /[\\\\\"\\u0000-\\u001f\\u007f-\\u009f\\u00ad\\u0600-\\u0604\\u070f\\u17b4\\u17b5\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufeff\\ufff0-\\uffff]/g;"
+        },
+        {
+          "line": 211,
+          "type": "var_declaration",
+          "content": "var rx_dangerous = /[\\u0000\\u00ad\\u0600-\\u0604\\u070f\\u17b4\\u17b5\\u200c-\\u200f\\u2028-\\u202f\\u2060-\\u206f\\ufeff\\ufff0-\\uffff]/g;"
+        },
+        {
+          "line": 902,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < commonModules.length; i++) {"
+        },
+        {
+          "line": 968,
+          "type": "var_declaration",
+          "content": "* 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();"
+        },
+        {
+          "line": 984,
+          "type": "var_declaration",
+          "content": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 1348,
+          "type": "var_declaration",
+          "content": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 1567,
+          "type": "var_declaration",
+          "content": "* 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();"
+        },
+        {
+          "line": 1620,
+          "type": "var_declaration",
+          "content": "var _logIdCounter = 0;     // 日志ID计数器"
+        },
+        {
+          "line": 1631,
+          "type": "var_declaration",
+          "content": "var _lastOptimizationTime = 0;"
+        },
+        {
+          "line": 1632,
+          "type": "var_declaration",
+          "content": "var _debugCountInSecond = 0;"
+        },
+        {
+          "line": 1745,
+          "type": "var_declaration",
+          "content": "var hash = 0;"
+        },
+        {
+          "line": 1748,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < content.length; i++) {"
+        },
+        {
+          "line": 1784,
+          "type": "var_declaration",
+          "content": "var deleteCount = Math.floor(keys.length / 2);"
+        },
+        {
+          "line": 1785,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < deleteCount; i++) {"
+        },
+        {
+          "line": 2342,
+          "type": "var_declaration",
+          "content": "var count = 0;"
+        },
+        {
+          "line": 2404,
+          "type": "var_declaration",
+          "content": "var deleteCount = Math.floor(keys.length / 2);"
+        },
+        {
+          "line": 2405,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < deleteCount; i++) {"
+        },
+        {
+          "line": 2954,
+          "type": "var_declaration",
+          "content": "var month = padString(String(date.getMonth() + 1), 2, \"0\");"
+        },
+        {
+          "line": 2955,
+          "type": "var_declaration",
+          "content": "var day = padString(String(date.getDate()), 2, \"0\");"
+        },
+        {
+          "line": 2956,
+          "type": "var_declaration",
+          "content": "var hours = padString(String(date.getHours()), 2, \"0\");"
+        },
+        {
+          "line": 2957,
+          "type": "var_declaration",
+          "content": "var minutes = padString(String(date.getMinutes()), 2, \"0\");"
+        },
+        {
+          "line": 2958,
+          "type": "var_declaration",
+          "content": "var seconds = padString(String(date.getSeconds()), 2, \"0\");"
+        },
+        {
+          "line": 3123,
+          "type": "var_declaration",
+          "content": "var size = 0;"
+        },
+        {
+          "line": 3530,
+          "type": "var_declaration",
+          "content": "var timeStr = padString(String(time.getHours()), 2, \"0\") + \":\" +"
+        },
+        {
+          "line": 3610,
+          "type": "var_declaration",
+          "content": "var month = padString(String(date.getMonth() + 1), 2, \"0\");"
+        },
+        {
+          "line": 3611,
+          "type": "var_declaration",
+          "content": "var day = padString(String(date.getDate()), 2, \"0\");"
+        },
+        {
+          "line": 3612,
+          "type": "var_declaration",
+          "content": "var hours = padString(String(date.getHours()), 2, \"0\");"
+        },
+        {
+          "line": 3613,
+          "type": "var_declaration",
+          "content": "var minutes = padString(String(date.getMinutes()), 2, \"0\");"
+        },
+        {
+          "line": 3614,
+          "type": "var_declaration",
+          "content": "var seconds = padString(String(date.getSeconds()), 2, \"0\");"
+        },
+        {
+          "line": 4080,
+          "type": "var_declaration",
+          "content": "var baseName = filePath.substring(0, filePath.lastIndexOf(\".\"));"
+        },
+        {
+          "line": 4084,
+          "type": "var_declaration",
+          "content": "for (var i = config.maxFileCount - 1; i > 0; i--) {"
+        },
+        {
+          "line": 4086,
+          "type": "var_declaration",
+          "content": "var newFile = baseName + \".\" + (i + 1) + extension;"
+        },
+        {
+          "line": 4097,
+          "type": "var_declaration",
+          "content": "var firstBackup = baseName + \".1\" + extension;"
+        },
+        {
+          "line": 4232,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < pathParts.length - 1; i++) {"
+        },
+        {
+          "line": 4475,
+          "type": "var_declaration",
+          "content": "var month = padString(String(date.getMonth() + 1), 2, \"0\");"
+        },
+        {
+          "line": 4476,
+          "type": "var_declaration",
+          "content": "var day = padString(String(date.getDate()), 2, \"0\");"
+        },
+        {
+          "line": 4477,
+          "type": "var_declaration",
+          "content": "var hours = padString(String(date.getHours()), 2, \"0\");"
+        },
+        {
+          "line": 4478,
+          "type": "var_declaration",
+          "content": "var minutes = padString(String(date.getMinutes()), 2, \"0\");"
+        },
+        {
+          "line": 4479,
+          "type": "var_declaration",
+          "content": "var seconds = padString(String(date.getSeconds()), 2, \"0\");"
+        },
+        {
+          "line": 4581,
+          "type": "var_declaration",
+          "content": "* 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();"
+        },
+        {
+          "line": 4797,
+          "type": "var_declaration",
+          "content": "var totalSize = 0;"
+        },
+        {
+          "line": 4845,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < logsToWrite.length; i++) {"
+        },
+        {
+          "line": 5011,
+          "type": "var_declaration",
+          "content": "var logEntry = _createLogEntry(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.ERROR : 1, message, context, fileName, functionName);"
+        },
+        {
+          "line": 5062,
+          "type": "var_declaration",
+          "content": "var logEntry = _createLogEntry(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.WARN : 2, message, context, fileName, functionName);"
+        },
+        {
+          "line": 5113,
+          "type": "var_declaration",
+          "content": "var logEntry = _createLogEntry(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.INFO : 4, message, context, fileName, functionName);"
+        },
+        {
+          "line": 5164,
+          "type": "var_declaration",
+          "content": "var logEntry = _createLogEntry(inst, LoggerTypes && LoggerTypes.LOG_LEVELS ? LoggerTypes.LOG_LEVELS.DEBUG : 8, message, context, fileName, functionName);"
+        },
+        {
+          "line": 5479,
+          "type": "var_declaration",
+          "content": "* 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();"
+        },
+        {
+          "line": 6117,
+          "type": "var_declaration",
+          "content": "* 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();"
+        },
+        {
+          "line": 6593,
+          "type": "var_declaration",
+          "content": "var random = Math.floor(Math.random() * 10000);"
+        },
+        {
+          "line": 6755,
+          "type": "var_declaration",
+          "content": "var count = 0;"
+        },
+        {
+          "line": 6756,
+          "type": "var_declaration",
+          "content": "var maxCount = options.maxCount || 1000; // 防止无限循环"
+        },
+        {
+          "line": 6826,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objectList.length; i++) {"
+        },
+        {
+          "line": 6995,
+          "type": "var_declaration",
+          "content": "var x = Math.round(position.x || 0);"
+        },
+        {
+          "line": 6996,
+          "type": "var_declaration",
+          "content": "var y = Math.round(position.y || 0);"
+        },
+        {
+          "line": 7019,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objectsAtPosition.length; i++) {"
+        },
+        {
+          "line": 7080,
+          "type": "var_declaration",
+          "content": "var dx = (pos1.x || 0) - (pos2.x || 0);"
+        },
+        {
+          "line": 7081,
+          "type": "var_declaration",
+          "content": "var dy = (pos1.y || 0) - (pos2.y || 0);"
+        },
+        {
+          "line": 7120,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < typeArray.length; i++) {"
+        },
+        {
+          "line": 7133,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < positionArray.length; i++) {"
+        },
+        {
+          "line": 7184,
+          "type": "var_declaration",
+          "content": "var maxAge = 30 * 60 * 1000; // 30分钟"
+        },
+        {
+          "line": 7196,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < toRemove.length; i++) {"
+        },
+        {
+          "line": 7341,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objectIds.length; i++) {"
+        },
+        {
+          "line": 7370,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objectIds.length; i++) {"
+        },
+        {
+          "line": 7585,
+          "type": "var_declaration",
+          "content": "var random = Math.floor(Math.random() * 10000);"
+        },
+        {
+          "line": 7885,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < mockList.length; i++) {"
+        },
+        {
+          "line": 8264,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < commonProperties.length; i++) {"
+        },
+        {
+          "line": 8515,
+          "type": "var_declaration",
+          "content": "var args = Array.prototype.slice.call(arguments, 1);"
+        },
+        {
+          "line": 8577,
+          "type": "var_declaration",
+          "content": "var x = 0, y = 0, layer = \"\";"
+        },
+        {
+          "line": 8613,
+          "type": "var_declaration",
+          "content": "var dx = position.x - ((this.getProperty(\"X1\") + this.getProperty(\"X2\")) / 2);"
+        },
+        {
+          "line": 8614,
+          "type": "var_declaration",
+          "content": "var dy = position.y - ((this.getProperty(\"Y1\") + this.getProperty(\"Y2\")) / 2);"
+        },
+        {
+          "line": 8642,
+          "type": "var_declaration",
+          "content": "var left = 0, top = 0, right = 0, bottom = 0;"
+        },
+        {
+          "line": 8653,
+          "type": "var_declaration",
+          "content": "var centerX = this.getProperty(\"X1\");"
+        },
+        {
+          "line": 8654,
+          "type": "var_declaration",
+          "content": "var centerY = this.getProperty(\"Y1\");"
+        },
+        {
+          "line": 8677,
+          "type": "var_declaration",
+          "content": "var x = this.getProperty(\"X\") || 0;"
+        },
+        {
+          "line": 8678,
+          "type": "var_declaration",
+          "content": "var y = this.getProperty(\"Y\") || 0;"
+        },
+        {
+          "line": 8823,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < args.length; i++) {"
+        },
+        {
+          "line": 8898,
+          "type": "var_declaration",
+          "content": "var factor = Math.pow(10, _config.precision);"
+        },
+        {
+          "line": 8942,
+          "type": "var_declaration",
+          "content": "var dx = point2.x - point1.x;"
+        },
+        {
+          "line": 8943,
+          "type": "var_declaration",
+          "content": "var dy = point2.y - point1.y;"
+        },
+        {
+          "line": 9003,
+          "type": "var_declaration",
+          "content": "var x1 = line1.start.x, y1 = line1.start.y;"
+        },
+        {
+          "line": 9004,
+          "type": "var_declaration",
+          "content": "var x2 = line1.end.x, y2 = line1.end.y;"
+        },
+        {
+          "line": 9005,
+          "type": "var_declaration",
+          "content": "var x3 = line2.start.x, y3 = line2.start.y;"
+        },
+        {
+          "line": 9006,
+          "type": "var_declaration",
+          "content": "var x4 = line2.end.x, y4 = line2.end.y;"
+        },
+        {
+          "line": 9008,
+          "type": "var_declaration",
+          "content": "var denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);"
+        },
+        {
+          "line": 9014,
+          "type": "var_declaration",
+          "content": "var t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;"
+        },
+        {
+          "line": 9015,
+          "type": "var_declaration",
+          "content": "var u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;"
+        },
+        {
+          "line": 9037,
+          "type": "var_declaration",
+          "content": "var startAngle = arc.StartAngle || 0;"
+        },
+        {
+          "line": 9038,
+          "type": "var_declaration",
+          "content": "var endAngle = arc.EndAngle || 0;"
+        },
+        {
+          "line": 9050,
+          "type": "var_declaration",
+          "content": "var angleRad = angleDiff * Math.PI / 180;"
+        },
+        {
+          "line": 9064,
+          "type": "var_declaration",
+          "content": "var area = 0;"
+        },
+        {
+          "line": 9065,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < points.length; i++) {"
+        },
+        {
+          "line": 9066,
+          "type": "var_declaration",
+          "content": "var j = (i + 1) % points.length;"
+        },
+        {
+          "line": 9067,
+          "type": "var_declaration",
+          "content": "var p1 = points[i];"
+        },
+        {
+          "line": 9068,
+          "type": "var_declaration",
+          "content": "var p2 = points[j];"
+        },
+        {
+          "line": 9091,
+          "type": "var_declaration",
+          "content": "for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {"
+        },
+        {
+          "line": 9169,
+          "type": "var_declaration",
+          "content": "var center1 = this.getCenter();"
+        },
+        {
+          "line": 9170,
+          "type": "var_declaration",
+          "content": "var center2 = new GeometryWrapper(otherWrapper).getCenter();"
+        },
+        {
+          "line": 9172,
+          "type": "var_declaration",
+          "content": "var distance = _calculateDistance(center1, center2);"
+        },
+        {
+          "line": 9190,
+          "type": "var_declaration",
+          "content": "var length = 0;"
+        },
+        {
+          "line": 9195,
+          "type": "var_declaration",
+          "content": "var x1 = properties.X1 || 0;"
+        },
+        {
+          "line": 9196,
+          "type": "var_declaration",
+          "content": "var y1 = properties.Y1 || 0;"
+        },
+        {
+          "line": 9197,
+          "type": "var_declaration",
+          "content": "var x2 = properties.X2 || 0;"
+        },
+        {
+          "line": 9198,
+          "type": "var_declaration",
+          "content": "var y2 = properties.Y2 || 0;"
+        },
+        {
+          "line": 9232,
+          "type": "var_declaration",
+          "content": "var area = 0;"
+        },
+        {
+          "line": 9238,
+          "type": "var_declaration",
+          "content": "var diameter = properties.Diameter || properties.TopX || 0;"
+        },
+        {
+          "line": 9243,
+          "type": "var_declaration",
+          "content": "var radius = properties.Radius || 0;"
+        },
+        {
+          "line": 9244,
+          "type": "var_declaration",
+          "content": "var startAngle = properties.StartAngle || 0;"
+        },
+        {
+          "line": 9245,
+          "type": "var_declaration",
+          "content": "var endAngle = properties.EndAngle || 0;"
+        },
+        {
+          "line": 9279,
+          "type": "var_declaration",
+          "content": "var bbox1 = this._wrapper.getBoundingBox();"
+        },
+        {
+          "line": 9280,
+          "type": "var_declaration",
+          "content": "var bbox2 = otherWrapper.getBoundingBox();"
+        },
+        {
+          "line": 9282,
+          "type": "var_declaration",
+          "content": "var intersects = !(bbox1.right < bbox2.left ||"
+        },
+        {
+          "line": 9345,
+          "type": "var_declaration",
+          "content": "var cacheKey = \"static_calculateDistance_\" + _generateCacheKey(\"\", [point1, point2]);"
+        },
+        {
+          "line": 9351,
+          "type": "var_declaration",
+          "content": "var result = _calculateDistance(point1, point2);"
+        },
+        {
+          "line": 9384,
+          "type": "var_declaration",
+          "content": "var cacheKey = \"static_lineIntersection_\" + _generateCacheKey(\"\", [line1, line2]);"
+        },
+        {
+          "line": 9390,
+          "type": "var_declaration",
+          "content": "var result = _calculateLineIntersection(line1, line2);"
+        },
+        {
+          "line": 9516,
+          "type": "var_declaration",
+          "content": "* 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();"
+        },
+        {
+          "line": 9979,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < wrappers.length; i++) {"
+        },
+        {
+          "line": 10031,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < result.success.length; i++) {"
+        },
+        {
+          "line": 10100,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objectDataList.length; i++) {"
+        },
+        {
+          "line": 10122,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objectDataList.length; i++) {"
+        },
+        {
+          "line": 10142,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objectDataList.length; i++) {"
+        },
+        {
+          "line": 10358,
+          "type": "var_declaration",
+          "content": "var _moduleVersion = \"2.0.0\";"
+        },
+        {
+          "line": 10541,
+          "type": "var_declaration",
+          "content": "var args = Array.prototype.slice.call(arguments, 1);"
+        },
+        {
+          "line": 11028,
+          "type": "var_declaration",
+          "content": "var args = Array.prototype.slice.call(arguments, 2);"
+        },
+        {
+          "line": 11117,
+          "type": "var_declaration",
+          "content": "var hitRate = total > 0 ? (instance.state.cacheHits / total * 100).toFixed(2) : 0;"
+        },
+        {
+          "line": 11363,
+          "type": "var_declaration",
+          "content": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 11366,
+          "type": "var_declaration",
+          "content": "var _objectIdCounter = 1000;"
+        },
+        {
+          "line": 11976,
+          "type": "var_declaration",
+          "content": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 12313,
+          "type": "var_declaration",
+          "content": "var count = 0;"
+        },
+        {
+          "line": 12537,
+          "type": "var_declaration",
+          "content": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 12573,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < validTypes.length; i++) {"
+        },
+        {
+          "line": 12767,
+          "type": "var_declaration",
+          "content": "var poolIndex = -1;"
+        },
+        {
+          "line": 12768,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 12852,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 12863,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 12887,
+          "type": "var_declaration",
+          "content": "var poolIndex = -1;"
+        },
+        {
+          "line": 12888,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 12922,
+          "type": "var_declaration",
+          "content": "var destroyedCount = 0;"
+        },
+        {
+          "line": 12940,
+          "type": "var_declaration",
+          "content": "for (var i = _pendingPool.length - 1; i >= 0; i--) {"
+        },
+        {
+          "line": 12968,
+          "type": "var_declaration",
+          "content": "var boundCount = 0;"
+        },
+        {
+          "line": 13005,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 13081,
+          "type": "var_declaration",
+          "content": "var _moduleVersion = \"1.0.0\";"
+        },
+        {
+          "line": 13201,
+          "type": "var_declaration",
+          "content": "var cleanedCount = 0;"
+        },
+        {
+          "line": 13264,
+          "type": "var_declaration",
+          "content": "var cleanedCount = 0;"
+        },
+        {
+          "line": 13459,
+          "type": "var_declaration",
+          "content": "var totalCount = 0;"
+        },
+        {
+          "line": 13786,
+          "type": "var_declaration",
+          "content": "var dx = x2 - x1;"
+        },
+        {
+          "line": 13787,
+          "type": "var_declaration",
+          "content": "var dy = y2 - y1;"
+        },
+        {
+          "line": 13816,
+          "type": "var_declaration",
+          "content": "var dx = x2 - x1;"
+        },
+        {
+          "line": 13817,
+          "type": "var_declaration",
+          "content": "var dy = y2 - y1;"
+        },
+        {
+          "line": 13818,
+          "type": "var_declaration",
+          "content": "var angleRad = Math.atan2(dy, dx);"
+        },
+        {
+          "line": 13819,
+          "type": "var_declaration",
+          "content": "var angleDeg = angleRad * 180 / Math.PI;"
+        },
+        {
+          "line": 13852,
+          "type": "var_declaration",
+          "content": "var midX = (x1 + x2) / 2;"
+        },
+        {
+          "line": 13853,
+          "type": "var_declaration",
+          "content": "var midY = (y1 + y2) / 2;"
+        },
+        {
+          "line": 13883,
+          "type": "var_declaration",
+          "content": "var angleRad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 13920,
+          "type": "var_declaration",
+          "content": "var angleRad = angleDiff * Math.PI / 180;"
+        },
+        {
+          "line": 13980,
+          "type": "var_declaration",
+          "content": "var halfWidth = width / 2;"
+        },
+        {
+          "line": 13981,
+          "type": "var_declaration",
+          "content": "var halfHeight = height / 2;"
+        },
+        {
+          "line": 14018,
+          "type": "var_declaration",
+          "content": "var halfWidth = width / 2;"
+        },
+        {
+          "line": 14077,
+          "type": "var_declaration",
+          "content": "var radius = Math.min(sizeX, sizeY) / 2;"
+        },
+        {
+          "line": 14159,
+          "type": "var_declaration",
+          "content": "var A = x - x1;"
+        },
+        {
+          "line": 14160,
+          "type": "var_declaration",
+          "content": "var B = y - y1;"
+        },
+        {
+          "line": 14161,
+          "type": "var_declaration",
+          "content": "var C = x2 - x1;"
+        },
+        {
+          "line": 14162,
+          "type": "var_declaration",
+          "content": "var D = y2 - y1;"
+        },
+        {
+          "line": 14166,
+          "type": "var_declaration",
+          "content": "var param = -1;"
+        },
+        {
+          "line": 14286,
+          "type": "var_declaration",
+          "content": "var radius = Math.min(sizeX, sizeY) / 2;"
+        },
+        {
+          "line": 14291,
+          "type": "var_declaration",
+          "content": "var halfWidth = sizeX / 2;"
+        },
+        {
+          "line": 14292,
+          "type": "var_declaration",
+          "content": "var halfHeight = sizeY / 2;"
+        },
+        {
+          "line": 14298,
+          "type": "var_declaration",
+          "content": "var inscribedRadius = Math.min(sizeX, sizeY) / 2 * 0.924;"
+        },
+        {
+          "line": 14303,
+          "type": "var_declaration",
+          "content": "var halfWidth = sizeX / 2;"
+        },
+        {
+          "line": 14304,
+          "type": "var_declaration",
+          "content": "var halfHeight = sizeY / 2;"
+        },
+        {
+          "line": 14337,
+          "type": "var_declaration",
+          "content": "var angleRad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 14377,
+          "type": "var_declaration",
+          "content": "var angle = GeometryCalculator.calculateAngle(x1, y1, x2, y2);"
+        },
+        {
+          "line": 14378,
+          "type": "var_declaration",
+          "content": "var angleRad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 14380,
+          "type": "var_declaration",
+          "content": "var extendedX = x2 + extension * Math.cos(angleRad);"
+        },
+        {
+          "line": 14381,
+          "type": "var_declaration",
+          "content": "var extendedY = y2 + extension * Math.sin(angleRad);"
+        },
+        {
+          "line": 14407,
+          "type": "var_declaration",
+          "content": "var result = !(box1.x2 < box2.x1 || box2.x2 < box1.x1 ||"
+        },
+        {
+          "line": 14437,
+          "type": "var_declaration",
+          "content": "var resistivity = 0.0175;"
+        },
+        {
+          "line": 14439,
+          "type": "var_declaration",
+          "content": "var resistance = resistivity * length / 1000 / crossSection; // 转换为米"
+        },
+        {
+          "line": 14466,
+          "type": "var_declaration",
+          "content": "var dielectricConstant = 4.5; // FR4的介电常数"
+        },
+        {
+          "line": 14467,
+          "type": "var_declaration",
+          "content": "var capacitancePerMm = 0.2; // pF/mm 经验值"
+        },
+        {
+          "line": 14495,
+          "type": "var_declaration",
+          "content": "var impedance = 50; // 默认50欧姆"
+        },
+        {
+          "line": 14529,
+          "type": "var_declaration",
+          "content": "var ringThickness = (size - holeSize) / 2;"
+        },
+        {
+          "line": 14530,
+          "type": "var_declaration",
+          "content": "var resistance = 0.001; // 典型过孔电阻约1mΩ"
+        },
+        {
+          "line": 14559,
+          "type": "var_declaration",
+          "content": "var capacitance = 0.5; // 典型过孔电容约0.5pF"
+        },
+        {
+          "line": 14588,
+          "type": "var_declaration",
+          "content": "var inductance = 1.0; // 典型过孔电感约1nH"
+        },
+        {
+          "line": 14613,
+          "type": "var_declaration",
+          "content": "var impedance = 25; // 典型过孔阻抗约25欧姆"
+        },
+        {
+          "line": 14640,
+          "type": "var_declaration",
+          "content": "var layerDistance = 1.6; // 标准FR4板厚1.6mm"
+        },
+        {
+          "line": 14949,
+          "type": "var_declaration",
+          "content": "var rad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 14967,
+          "type": "var_declaration",
+          "content": "var rad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 15023,
+          "type": "var_declaration",
+          "content": "var rad = startAngle * Math.PI / 180;"
+        },
+        {
+          "line": 15045,
+          "type": "var_declaration",
+          "content": "var rad = endAngle * Math.PI / 180;"
+        },
+        {
+          "line": 15120,
+          "type": "var_declaration",
+          "content": "var distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));"
+        },
+        {
+          "line": 15126,
+          "type": "var_declaration",
+          "content": "var pointAngle = Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;"
+        },
+        {
+          "line": 15127,
+          "type": "var_declaration",
+          "content": "var normalizedStart = startAngle % 360;"
+        },
+        {
+          "line": 15128,
+          "type": "var_declaration",
+          "content": "var normalizedEnd = endAngle % 360;"
+        },
+        {
+          "line": 15129,
+          "type": "var_declaration",
+          "content": "var normalizedPoint = pointAngle % 360;"
+        },
+        {
+          "line": 15706,
+          "type": "var_declaration",
+          "content": "var rad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 16540,
+          "type": "var_declaration",
+          "content": "var x1 = getX1();"
+        },
+        {
+          "line": 16541,
+          "type": "var_declaration",
+          "content": "var y1 = getY1();"
+        },
+        {
+          "line": 16542,
+          "type": "var_declaration",
+          "content": "var x2 = getX2();"
+        },
+        {
+          "line": 16543,
+          "type": "var_declaration",
+          "content": "var y2 = getY2();"
+        },
+        {
+          "line": 16545,
+          "type": "var_declaration",
+          "content": "var rad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 16550,
+          "type": "var_declaration",
+          "content": "var newX1 = cx + (x1 - cx) * cos - (y1 - cy) * sin;"
+        },
+        {
+          "line": 16551,
+          "type": "var_declaration",
+          "content": "var newY1 = cy + (x1 - cx) * sin + (y1 - cy) * cos;"
+        },
+        {
+          "line": 16554,
+          "type": "var_declaration",
+          "content": "var newX2 = cx + (x2 - cx) * cos - (y2 - cy) * sin;"
+        },
+        {
+          "line": 16555,
+          "type": "var_declaration",
+          "content": "var newY2 = cy + (x2 - cx) * sin + (y2 - cy) * cos;"
+        },
+        {
+          "line": 16610,
+          "type": "var_declaration",
+          "content": "var x1 = getX1();"
+        },
+        {
+          "line": 16611,
+          "type": "var_declaration",
+          "content": "var y1 = getY1();"
+        },
+        {
+          "line": 16612,
+          "type": "var_declaration",
+          "content": "var x2 = getX2();"
+        },
+        {
+          "line": 16613,
+          "type": "var_declaration",
+          "content": "var y2 = getY2();"
+        },
+        {
+          "line": 16619,
+          "type": "var_declaration",
+          "content": "var dx = x2 - x1;"
+        },
+        {
+          "line": 16620,
+          "type": "var_declaration",
+          "content": "var dy = y2 - y1;"
+        },
+        {
+          "line": 16630,
+          "type": "var_declaration",
+          "content": "var x1 = getX1();"
+        },
+        {
+          "line": 16631,
+          "type": "var_declaration",
+          "content": "var y1 = getY1();"
+        },
+        {
+          "line": 16632,
+          "type": "var_declaration",
+          "content": "var x2 = getX2();"
+        },
+        {
+          "line": 16633,
+          "type": "var_declaration",
+          "content": "var y2 = getY2();"
+        },
+        {
+          "line": 16639,
+          "type": "var_declaration",
+          "content": "var dx = x2 - x1;"
+        },
+        {
+          "line": 16640,
+          "type": "var_declaration",
+          "content": "var dy = y2 - y1;"
+        },
+        {
+          "line": 16650,
+          "type": "var_declaration",
+          "content": "var x1 = getX1();"
+        },
+        {
+          "line": 16651,
+          "type": "var_declaration",
+          "content": "var y1 = getY1();"
+        },
+        {
+          "line": 16652,
+          "type": "var_declaration",
+          "content": "var x2 = getX2();"
+        },
+        {
+          "line": 16653,
+          "type": "var_declaration",
+          "content": "var y2 = getY2();"
+        },
+        {
+          "line": 16688,
+          "type": "var_declaration",
+          "content": "var x1 = getX1();"
+        },
+        {
+          "line": 16689,
+          "type": "var_declaration",
+          "content": "var y1 = getY1();"
+        },
+        {
+          "line": 16690,
+          "type": "var_declaration",
+          "content": "var x2 = getX2();"
+        },
+        {
+          "line": 16691,
+          "type": "var_declaration",
+          "content": "var y2 = getY2();"
+        },
+        {
+          "line": 16697,
+          "type": "var_declaration",
+          "content": "var A = x - x1;"
+        },
+        {
+          "line": 16698,
+          "type": "var_declaration",
+          "content": "var B = y - y1;"
+        },
+        {
+          "line": 16699,
+          "type": "var_declaration",
+          "content": "var C = x2 - x1;"
+        },
+        {
+          "line": 16700,
+          "type": "var_declaration",
+          "content": "var D = y2 - y1;"
+        },
+        {
+          "line": 16704,
+          "type": "var_declaration",
+          "content": "var param = lenSq !== 0 ? dot / lenSq : -1;"
+        },
+        {
+          "line": 16732,
+          "type": "var_declaration",
+          "content": "var x1 = getX1();"
+        },
+        {
+          "line": 16733,
+          "type": "var_declaration",
+          "content": "var y1 = getY1();"
+        },
+        {
+          "line": 16734,
+          "type": "var_declaration",
+          "content": "var x2 = getX2();"
+        },
+        {
+          "line": 16735,
+          "type": "var_declaration",
+          "content": "var y2 = getY2();"
+        },
+        {
+          "line": 16754,
+          "type": "var_declaration",
+          "content": "var x1 = getX1();"
+        },
+        {
+          "line": 16755,
+          "type": "var_declaration",
+          "content": "var y1 = getY1();"
+        },
+        {
+          "line": 16756,
+          "type": "var_declaration",
+          "content": "var x2 = getX2();"
+        },
+        {
+          "line": 16757,
+          "type": "var_declaration",
+          "content": "var y2 = getY2();"
+        },
+        {
+          "line": 16774,
+          "type": "var_declaration",
+          "content": "var x1 = getX1();"
+        },
+        {
+          "line": 16775,
+          "type": "var_declaration",
+          "content": "var y1 = getY1();"
+        },
+        {
+          "line": 16776,
+          "type": "var_declaration",
+          "content": "var x2 = getX2();"
+        },
+        {
+          "line": 16777,
+          "type": "var_declaration",
+          "content": "var y2 = getY2();"
+        },
+        {
+          "line": 16781,
+          "type": "var_declaration",
+          "content": "var rad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 16782,
+          "type": "var_declaration",
+          "content": "var newX1 = x1 - startExtension * Math.cos(rad);"
+        },
+        {
+          "line": 16783,
+          "type": "var_declaration",
+          "content": "var newY1 = y1 - startExtension * Math.sin(rad);"
+        },
+        {
+          "line": 16789,
+          "type": "var_declaration",
+          "content": "var rad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 16790,
+          "type": "var_declaration",
+          "content": "var newX2 = x2 + endExtension * Math.cos(rad);"
+        },
+        {
+          "line": 16791,
+          "type": "var_declaration",
+          "content": "var newY2 = y2 + endExtension * Math.sin(rad);"
+        },
+        {
+          "line": 16845,
+          "type": "var_declaration",
+          "content": "var thickness = 0.035; // 默认铜厚35um"
+        },
+        {
+          "line": 16897,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < otherObjects.length; i++) {"
+        },
+        {
+          "line": 17372,
+          "type": "var_declaration",
+          "content": "var rad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 17390,
+          "type": "var_declaration",
+          "content": "var rad = angle * Math.PI / 180;"
+        },
+        {
+          "line": 17463,
+          "type": "var_declaration",
+          "content": "var radius = size / 2;"
+        },
+        {
+          "line": 17484,
+          "type": "var_declaration",
+          "content": "var radius = size / 2;"
+        },
+        {
+          "line": 17500,
+          "type": "var_declaration",
+          "content": "var radius = holeSize / 2;"
+        },
+        {
+          "line": 17528,
+          "type": "var_declaration",
+          "content": "var radius = size / 2;"
+        },
+        {
+          "line": 17529,
+          "type": "var_declaration",
+          "content": "var distance = Math.sqrt(Math.pow(x - viaX, 2) + Math.pow(y - viaY, 2));"
+        },
+        {
+          "line": 17549,
+          "type": "var_declaration",
+          "content": "var radius = holeSize / 2;"
+        },
+        {
+          "line": 17550,
+          "type": "var_declaration",
+          "content": "var distance = Math.sqrt(Math.pow(x - viaX, 2) + Math.pow(y - viaY, 2));"
+        },
+        {
+          "line": 17885,
+          "type": "var_declaration",
+          "content": "* 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();"
+        },
+        {
+          "line": 18318,
+          "type": "var_declaration",
+          "content": "var _conflictThreshold = 10; // 冲突检测阈值"
+        },
+        {
+          "line": 18359,
+          "type": "var_declaration",
+          "content": "var dx = point1.x - point2.x;"
+        },
+        {
+          "line": 18360,
+          "type": "var_declaration",
+          "content": "var dy = point1.y - point2.y;"
+        },
+        {
+          "line": 18408,
+          "type": "var_declaration",
+          "content": "for (var i = objects.length - 1; i >= 0; i--) {"
+        },
+        {
+          "line": 18523,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objects.length; i++) {"
+        },
+        {
+          "line": 18571,
+          "type": "var_declaration",
+          "content": "var step = _coordinateSystem.gridSize * 2; // 使用网格大小的2倍作为步长"
+        },
+        {
+          "line": 18586,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < Math.min(count, directions.length); i++) {"
+        },
+        {
+          "line": 18796,
+          "type": "var_declaration",
+          "content": "var cacheSize = 0;"
+        },
+        {
+          "line": 19161,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < objectList.length; i++) {"
+        },
+        {
+          "line": 19299,
+          "type": "var_declaration",
+          "content": "* 1. 本模块使用IIFE模式封装对象：var ModuleName = (function(){...})();"
+        },
+        {
+          "line": 19392,
+          "type": "var_declaration",
+          "content": "var random = Math.floor(Math.random() * 10000);"
+        },
+        {
+          "line": 19707,
+          "type": "var_declaration",
+          "content": "for (var i = 0; i < result.success.length; i++) {"
+        },
+        {
+          "line": 20371,
+          "type": "var_declaration",
+          "content": "var targetPath = \"D:\\\\!Work\\\\AD21_JS_Project\\\\logs\";"
+        }
+      ]
+    },
+    "definitionInvestigation": {
+      "varDeclarations": [],
+      "arrayElements": [
+        {
+          "line": 156,
+          "array": "[1]",
+          "numbers": [
+            "1"
+          ],
+          "fullLine": "//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]"
+        }
+      ],
+      "objectProperties": [],
+      "functionParameters": [
+        {
+          "line": 9344,
+          "signature": "function(point1, point2)",
+          "fullLine": "GeometryWrapper.calculateDistance = function(point1, point2) {"
+        },
+        {
+          "line": 9383,
+          "signature": "function(line1, line2)",
+          "fullLine": "GeometryWrapper.calculateLineIntersection = function(line1, line2) {"
+        },
+        {
+          "line": 13777,
+          "signature": "function(x1, y1, x2, y2)",
+          "fullLine": "GeometryCalculator.calculateDistance = function(x1, y1, x2, y2) {"
+        },
+        {
+          "line": 13807,
+          "signature": "function(x1, y1, x2, y2)",
+          "fullLine": "GeometryCalculator.calculateAngle = function(x1, y1, x2, y2) {"
+        },
+        {
+          "line": 13843,
+          "signature": "function(x1, y1, x2, y2)",
+          "fullLine": "GeometryCalculator.calculateMidPoint = function(x1, y1, x2, y2) {"
+        },
+        {
+          "line": 14008,
+          "signature": "function(x1, y1, x2, y2, width)",
+          "fullLine": "GeometryCalculator.calculateTrackBoundingBox = function(x1, y1, x2, y2, width) {"
+        },
+        {
+          "line": 14146,
+          "signature": "function(x, y, x1, y1, x2, y2, tolerance)",
+          "fullLine": "GeometryCalculator.isPointOnLine = function(x, y, x1, y1, x2, y2, tolerance) {"
+        },
+        {
+          "line": 14367,
+          "signature": "function(x1, y1, x2, y2, extension)",
+          "fullLine": "GeometryCalculator.extendLine = function(x1, y1, x2, y2, extension) {"
+        },
+        {
+          "line": 14400,
+          "signature": "function(box1, box2)",
+          "fullLine": "GeometryCalculator.doBoundingBoxesIntersect = function(box1, box2) {"
+        }
+      ],
+      "otherDefinitions": []
+    },
+    "indexInvestigation": {
+      "forLoops": [
+        {
+          "line": 34,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < globalVars.length; i++) {"
+        },
+        {
+          "line": 902,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < commonModules.length; i++) {"
+        },
+        {
+          "line": 1748,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < content.length; i++) {"
+        },
+        {
+          "line": 1785,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < deleteCount; i++) {"
+        },
+        {
+          "line": 2405,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < deleteCount; i++) {"
+        },
+        {
+          "line": 4232,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < pathParts.length - 1; i++) {"
+        },
+        {
+          "line": 4845,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < logsToWrite.length; i++) {"
+        },
+        {
+          "line": 6826,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objectList.length; i++) {"
+        },
+        {
+          "line": 7019,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objectsAtPosition.length; i++) {"
+        },
+        {
+          "line": 7120,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < typeArray.length; i++) {"
+        },
+        {
+          "line": 7133,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < positionArray.length; i++) {"
+        },
+        {
+          "line": 7196,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < toRemove.length; i++) {"
+        },
+        {
+          "line": 7341,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objectIds.length; i++) {"
+        },
+        {
+          "line": 7370,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objectIds.length; i++) {"
+        },
+        {
+          "line": 7885,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < mockList.length; i++) {"
+        },
+        {
+          "line": 8264,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < commonProperties.length; i++) {"
+        },
+        {
+          "line": 8823,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < args.length; i++) {"
+        },
+        {
+          "line": 9065,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < points.length; i++) {"
+        },
+        {
+          "line": 9091,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {"
+        },
+        {
+          "line": 9979,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < wrappers.length; i++) {"
+        },
+        {
+          "line": 10031,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < result.success.length; i++) {"
+        },
+        {
+          "line": 10100,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objectDataList.length; i++) {"
+        },
+        {
+          "line": 10122,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objectDataList.length; i++) {"
+        },
+        {
+          "line": 10142,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objectDataList.length; i++) {"
+        },
+        {
+          "line": 12573,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < validTypes.length; i++) {"
+        },
+        {
+          "line": 12768,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 12852,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 12863,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 12888,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 13005,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < _pendingPool.length; i++) {"
+        },
+        {
+          "line": 16897,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < otherObjects.length; i++) {"
+        },
+        {
+          "line": 18523,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objects.length; i++) {"
+        },
+        {
+          "line": 18586,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < Math.min(count, directions.length); i++) {"
+        },
+        {
+          "line": 19161,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < objectList.length; i++) {"
+        },
+        {
+          "line": 19707,
+          "variable": "i",
+          "startValue": "0",
+          "fullLine": "for (var i = 0; i < result.success.length; i++) {"
+        }
+      ],
+      "whileLoops": [
+        {
+          "line": 9042,
+          "condition": "while (startAngle < 0",
+          "fullLine": "while (startAngle < 0) startAngle += 360;"
+        },
+        {
+          "line": 9043,
+          "condition": "while (startAngle >= 360",
+          "fullLine": "while (startAngle >= 360) startAngle -= 360;"
+        },
+        {
+          "line": 9044,
+          "condition": "while (endAngle < 0",
+          "fullLine": "while (endAngle < 0) endAngle += 360;"
+        },
+        {
+          "line": 9045,
+          "condition": "while (endAngle >= 360",
+          "fullLine": "while (endAngle >= 360) endAngle -= 360;"
+        },
+        {
+          "line": 15068,
+          "condition": "while (angleDiff < 0",
+          "fullLine": "while (angleDiff < 0) {"
+        },
+        {
+          "line": 15071,
+          "condition": "while (angleDiff > 360",
+          "fullLine": "while (angleDiff > 360) {"
+        }
+      ],
+      "arrayIterations": [
+        {
+          "line": 35,
+          "pattern": "globalVars[i]",
+          "fullLine": "var varName = globalVars[i];"
+        },
+        {
+          "line": 36,
+          "pattern": "this[varName]",
+          "fullLine": "if (typeof this[varName] !== \"undefined\") {"
+        },
+        {
+          "line": 37,
+          "pattern": "window[varName]",
+          "fullLine": "window[varName] = this[varName];"
+        },
+        {
+          "line": 128,
+          "pattern": "this[key]",
+          "fullLine": "//              return this[key] instanceof Date"
+        },
+        {
+          "line": 129,
+          "pattern": "this[key]",
+          "fullLine": "//                  ? \"Date(\" + this[key] + \")\""
+        },
+        {
+          "line": 156,
+          "pattern": "a[1]",
+          "fullLine": "//                         +a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]"
+        },
+        {
+          "line": 267,
+          "pattern": "meta[a]",
+          "fullLine": "var c = meta[a];"
+        },
+        {
+          "line": 278,
+          "pattern": "holder[key]",
+          "fullLine": "// Produce a string from holder[key]."
+        },
+        {
+          "line": 286,
+          "pattern": "holder[key]",
+          "fullLine": "var value = holder[key];"
+        },
+        {
+          "line": 354,
+          "pattern": "partial[i]",
+          "fullLine": "partial[i] = str(i, value) || \"null\";"
+        },
+        {
+          "line": 381,
+          "pattern": "rep[i]",
+          "fullLine": "if (typeof rep[i] === \"string\") {"
+        },
+        {
+          "line": 382,
+          "pattern": "rep[i]",
+          "fullLine": "k = rep[i];"
+        },
+        {
+          "line": 498,
+          "pattern": "holder[key]",
+          "fullLine": "var value = holder[key];"
+        },
+        {
+          "line": 504,
+          "pattern": "value[k]",
+          "fullLine": "value[k] = v;"
+        },
+        {
+          "line": 506,
+          "pattern": "value[k]",
+          "fullLine": "delete value[k];"
+        },
+        {
+          "line": 674,
+          "pattern": "window[moduleName]",
+          "fullLine": "if (typeof window !== \"undefined\" && window && typeof window[moduleName] !== \"undefined\") {"
+        },
+        {
+          "line": 675,
+          "pattern": "window[moduleName]",
+          "fullLine": "return window[moduleName];"
+        },
+        {
+          "line": 691,
+          "pattern": "exports[moduleName]",
+          "fullLine": "if (typeof module !== \"undefined\" && module.exports && typeof module.exports[moduleName] !== \"undefined\") {"
+        },
+        {
+          "line": 692,
+          "pattern": "exports[moduleName]",
+          "fullLine": "return module.exports[moduleName];"
+        },
+        {
+          "line": 708,
+          "pattern": "global[moduleName]",
+          "fullLine": "if (typeof global !== \"undefined\" && global && typeof global[moduleName] !== \"undefined\") {"
+        },
+        {
+          "line": 709,
+          "pattern": "global[moduleName]",
+          "fullLine": "return global[moduleName];"
+        },
+        {
+          "line": 783,
+          "pattern": "_cache[moduleName]",
+          "fullLine": "return _cache[moduleName];"
+        },
+        {
+          "line": 793,
+          "pattern": "_cache[moduleName]",
+          "fullLine": "_cache[moduleName] = module;"
+        },
+        {
+          "line": 819,
+          "pattern": "_cache[moduleName]",
+          "fullLine": "delete _cache[moduleName];"
+        },
+        {
+          "line": 861,
+          "pattern": "_config[key]",
+          "fullLine": "_config[key] = config[key];"
+        },
+        {
+          "line": 876,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = _config[key];"
+        },
+        {
+          "line": 903,
+          "pattern": "commonModules[i]",
+          "fullLine": "var moduleName = commonModules[i];"
+        },
+        {
+          "line": 1000,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = defaults[key];"
+        },
+        {
+          "line": 1007,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = userOptions[key];"
+        },
+        {
+          "line": 1366,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = defaults[key];"
+        },
+        {
+          "line": 1373,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = userOptions[key];"
+        },
+        {
+          "line": 1425,
+          "pattern": "systemState[key]",
+          "fullLine": "this.systemState[key] = updates[key];"
+        },
+        {
+          "line": 1662,
+          "pattern": "_stats[type]",
+          "fullLine": "if (_stats[type] && typeof _stats[type][level] === \"number\") {"
+        },
+        {
+          "line": 1663,
+          "pattern": "_stats[type]",
+          "fullLine": "_stats[type][level]++;"
+        },
+        {
+          "line": 1771,
+          "pattern": "_processedLogs[logId]",
+          "fullLine": "_processedLogs[logId] = true;"
+        },
+        {
+          "line": 1786,
+          "pattern": "keys[i]",
+          "fullLine": "delete _processedLogs[keys[i]];"
+        },
+        {
+          "line": 1812,
+          "pattern": "_stats[type]",
+          "fullLine": "if (_stats[type] && typeof _stats[type][level] === \"number\") {"
+        },
+        {
+          "line": 1813,
+          "pattern": "_stats[type]",
+          "fullLine": "_stats[type][level]++;"
+        },
+        {
+          "line": 1873,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "var oldValue = _generationSwitches[level];"
+        },
+        {
+          "line": 1874,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "_generationSwitches[level] = enabled;"
+        },
+        {
+          "line": 1902,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "var enabled = _generationSwitches[level];"
+        },
+        {
+          "line": 1926,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "return _generationSwitches[level];"
+        },
+        {
+          "line": 1933,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = _generationSwitches[key];"
+        },
+        {
+          "line": 1954,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "var oldValue = _displaySwitches[level];"
+        },
+        {
+          "line": 1955,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "_displaySwitches[level] = enabled;"
+        },
+        {
+          "line": 1983,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "var enabled = _displaySwitches[level];"
+        },
+        {
+          "line": 2000,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "return _displaySwitches[level];"
+        },
+        {
+          "line": 2007,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = _displaySwitches[key];"
+        },
+        {
+          "line": 2025,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "if (!_generationSwitches[level]) {"
+        },
+        {
+          "line": 2026,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "_generationSwitches[level] = true;"
+        },
+        {
+          "line": 2034,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "if (!_displaySwitches[level]) {"
+        },
+        {
+          "line": 2035,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "_displaySwitches[level] = true;"
+        },
+        {
+          "line": 2061,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "if (_generationSwitches[level]) {"
+        },
+        {
+          "line": 2062,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "_generationSwitches[level] = false;"
+        },
+        {
+          "line": 2070,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "if (_displaySwitches[level]) {"
+        },
+        {
+          "line": 2071,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "_displaySwitches[level] = false;"
+        },
+        {
+          "line": 2099,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "if (_generationSwitches[level] !== newValue) {"
+        },
+        {
+          "line": 2100,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "_generationSwitches[level] = newValue;"
+        },
+        {
+          "line": 2110,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "if (_displaySwitches[level] !== newValue) {"
+        },
+        {
+          "line": 2111,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "_displaySwitches[level] = newValue;"
+        },
+        {
+          "line": 2140,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "if (_generationSwitches[level] !== newValue) {"
+        },
+        {
+          "line": 2141,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "_generationSwitches[level] = newValue;"
+        },
+        {
+          "line": 2151,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "if (_displaySwitches[level] !== newValue) {"
+        },
+        {
+          "line": 2152,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "_displaySwitches[level] = newValue;"
+        },
+        {
+          "line": 2196,
+          "pattern": "result[type]",
+          "fullLine": "result[type] = {};"
+        },
+        {
+          "line": 2197,
+          "pattern": "_stats[type]",
+          "fullLine": "for (var level in _stats[type]) {"
+        },
+        {
+          "line": 2198,
+          "pattern": "_stats[type]",
+          "fullLine": "if (_stats[type].hasOwnProperty(level)) {"
+        },
+        {
+          "line": 2199,
+          "pattern": "result[type]",
+          "fullLine": "result[type][level] = _stats[type][level];"
+        },
+        {
+          "line": 2208,
+          "pattern": "generated[level]",
+          "fullLine": "var total = _stats.generated[level];"
+        },
+        {
+          "line": 2209,
+          "pattern": "filtered[level]",
+          "fullLine": "var filtered = _stats.filtered[level];"
+        },
+        {
+          "line": 2210,
+          "pattern": "displayed[level]",
+          "fullLine": "var displayed = _stats.displayed[level];"
+        },
+        {
+          "line": 2212,
+          "pattern": "summary[level]",
+          "fullLine": "result.summary[level] = {"
+        },
+        {
+          "line": 2371,
+          "pattern": "_generationSwitches[level]",
+          "fullLine": "generation: _generationSwitches[level],"
+        },
+        {
+          "line": 2372,
+          "pattern": "_displaySwitches[level]",
+          "fullLine": "display: _displaySwitches[level]"
+        },
+        {
+          "line": 2406,
+          "pattern": "keys[i]",
+          "fullLine": "delete _processedLogs[keys[i]];"
+        },
+        {
+          "line": 2419,
+          "pattern": "_moduleConfig[key]",
+          "fullLine": "_moduleConfig[key] = config[key];"
+        },
+        {
+          "line": 2433,
+          "pattern": "config[key]",
+          "fullLine": "config[key] = _moduleConfig[key];"
+        },
+        {
+          "line": 2668,
+          "pattern": "LEVEL_NAMES[level]",
+          "fullLine": "return LEVEL_NAMES[level] || \"UNKNOWN\";"
+        },
+        {
+          "line": 2677,
+          "pattern": "LEVEL_DESCRIPTIONS[level]",
+          "fullLine": "return LEVEL_DESCRIPTIONS[level] || \"未知级别\";"
+        },
+        {
+          "line": 2696,
+          "pattern": "ERROR_MESSAGES[errorCode]",
+          "fullLine": "return ERROR_MESSAGES[errorCode] || \"未知错误\";"
+        },
+        {
+          "line": 2710,
+          "pattern": "config[key]",
+          "fullLine": "config[key] = DEFAULT_CONFIG[key];"
+        },
+        {
+          "line": 2717,
+          "pattern": "config[key]",
+          "fullLine": "config[key] = overrides[key];"
+        },
+        {
+          "line": 2734,
+          "pattern": "stats[key]",
+          "fullLine": "stats[key] = STATS_TEMPLATE[key];"
+        },
+        {
+          "line": 2749,
+          "pattern": "entry[key]",
+          "fullLine": "entry[key] = LOG_ENTRY_TEMPLATE[key];"
+        },
+        {
+          "line": 2764,
+          "pattern": "data[key]",
+          "fullLine": "data[key] = INSTANCE_DATA_TEMPLATE[key];"
+        },
+        {
+          "line": 2871,
+          "pattern": "obj[key]",
+          "fullLine": "result += key + \":\" + simpleStringify(obj[key]);"
+        },
+        {
+          "line": 3054,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = target[key];"
+        },
+        {
+          "line": 3063,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = source[key];"
+        },
+        {
+          "line": 3128,
+          "pattern": "logEntry[key]",
+          "fullLine": "size += safeString(logEntry[key]).length * 2; // 假设每个字符2字节"
+        },
+        {
+          "line": 3150,
+          "pattern": "requiredFields[i]",
+          "fullLine": "if (!logEntry.hasOwnProperty(requiredFields[i]) ||"
+        },
+        {
+          "line": 3151,
+          "pattern": "requiredFields[i]",
+          "fullLine": "!isValidString(logEntry[requiredFields[i]])) {"
+        },
+        {
+          "line": 3174,
+          "pattern": "logEntry[key]",
+          "fullLine": "var value = logEntry[key];"
+        },
+        {
+          "line": 3178,
+          "pattern": "cleaned[key]",
+          "fullLine": "cleaned[key] = value;"
+        },
+        {
+          "line": 3250,
+          "pattern": "array[index]",
+          "fullLine": "return array[index];"
+        },
+        {
+          "line": 3453,
+          "pattern": "logEntries[i]",
+          "fullLine": "var entry = logEntries[i];"
+        },
+        {
+          "line": 3556,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = defaultConfig[key];"
+        },
+        {
+          "line": 3564,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = userConfig[key];"
+        },
+        {
+          "line": 3706,
+          "pattern": "obj[key]",
+          "fullLine": "result += key + \":\" + simpleStringify(obj[key]);"
+        },
+        {
+          "line": 3964,
+          "pattern": "logEntries[i]",
+          "fullLine": "var entry = logEntries[i];"
+        },
+        {
+          "line": 4233,
+          "pattern": "pathParts[i]",
+          "fullLine": "if (pathParts[i] !== \"\") {"
+        },
+        {
+          "line": 4234,
+          "pattern": "pathParts[i]",
+          "fullLine": "dirPath += pathParts[i] + \"\\\\\";"
+        },
+        {
+          "line": 4441,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = defaultConfig[key];"
+        },
+        {
+          "line": 4449,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = userConfig[key];"
+        },
+        {
+          "line": 4549,
+          "pattern": "obj[key]",
+          "fullLine": "result += key + \":\" + simpleStringify(obj[key]);"
+        },
+        {
+          "line": 4800,
+          "pattern": "cache[i]",
+          "fullLine": "totalSize += estimateLogSize(cache[i]);"
+        },
+        {
+          "line": 4846,
+          "pattern": "logsToWrite[i]",
+          "fullLine": "inst.data.cache.push(logsToWrite[i]);"
+        },
+        {
+          "line": 5270,
+          "pattern": "stats[key]",
+          "fullLine": "stats[key] = inst.data.stats[key];"
+        },
+        {
+          "line": 5435,
+          "pattern": "cache[i]",
+          "fullLine": "result.push(baseInst.data.cache[i]);"
+        },
+        {
+          "line": 5540,
+          "pattern": "_instances[instanceName]",
+          "fullLine": "if (_instances[instanceName]) {"
+        },
+        {
+          "line": 5541,
+          "pattern": "_instances[instanceName]",
+          "fullLine": "return _instances[instanceName];"
+        },
+        {
+          "line": 5561,
+          "pattern": "_instances[instanceName]",
+          "fullLine": "_instances[instanceName] = instance;"
+        },
+        {
+          "line": 5588,
+          "pattern": "instance[methodName]",
+          "fullLine": "if (_validateInstance(instance) && typeof instance[methodName] === \"function\") {"
+        },
+        {
+          "line": 5589,
+          "pattern": "instance[methodName]",
+          "fullLine": "instance[methodName].apply(instance, args);"
+        },
+        {
+          "line": 5682,
+          "pattern": "_instances[name]",
+          "fullLine": "if (_instances[name] === instance) {"
+        },
+        {
+          "line": 5683,
+          "pattern": "_instances[name]",
+          "fullLine": "delete _instances[name];"
+        },
+        {
+          "line": 5790,
+          "pattern": "_moduleConfig[key]",
+          "fullLine": "_moduleConfig[key] = config[key];"
+        },
+        {
+          "line": 5804,
+          "pattern": "config[key]",
+          "fullLine": "config[key] = _moduleConfig[key];"
+        },
+        {
+          "line": 5901,
+          "pattern": "_instances[name]",
+          "fullLine": "var instance = _instances[name];"
+        },
+        {
+          "line": 5902,
+          "pattern": "instances[name]",
+          "fullLine": "instances[name] = {"
+        },
+        {
+          "line": 5931,
+          "pattern": "_instances[name]",
+          "fullLine": "var instance = _instances[name];"
+        },
+        {
+          "line": 5934,
+          "pattern": "instance[operation]",
+          "fullLine": "if (typeof instance[operation] === \"function\") {"
+        },
+        {
+          "line": 5935,
+          "pattern": "instance[operation]",
+          "fullLine": "var result = instance[operation].apply(instance, args);"
+        },
+        {
+          "line": 5936,
+          "pattern": "details[name]",
+          "fullLine": "results.details[name] = {success: true, result: result};"
+        },
+        {
+          "line": 5939,
+          "pattern": "details[name]",
+          "fullLine": "results.details[name] = {success: false, error: \"方法不存在\"};"
+        },
+        {
+          "line": 5943,
+          "pattern": "details[name]",
+          "fullLine": "results.details[name] = {success: false, error: e.message};"
+        },
+        {
+          "line": 5978,
+          "pattern": "_instances[name]",
+          "fullLine": "var instance = _instances[name];"
+        },
+        {
+          "line": 6009,
+          "pattern": "_instances[name]",
+          "fullLine": "var instance = _instances[name];"
+        },
+        {
+          "line": 6016,
+          "pattern": "instances[name]",
+          "fullLine": "globalStats.instances[name] = {"
+        },
+        {
+          "line": 6024,
+          "pattern": "instances[name]",
+          "fullLine": "globalStats.totalCacheSize += globalStats.instances[name].cacheSize;"
+        },
+        {
+          "line": 6257,
+          "pattern": "_instances[instanceName]",
+          "fullLine": "if (_instances[instanceName]) {"
+        },
+        {
+          "line": 6258,
+          "pattern": "_instances[instanceName]",
+          "fullLine": "return _instances[instanceName];"
+        },
+        {
+          "line": 6274,
+          "pattern": "_instances[instanceName]",
+          "fullLine": "_instances[instanceName] = instance;"
+        },
+        {
+          "line": 6347,
+          "pattern": "_instances[name]",
+          "fullLine": "if (_instances[name] === instance) {"
+        },
+        {
+          "line": 6348,
+          "pattern": "_instances[name]",
+          "fullLine": "delete _instances[name];"
+        },
+        {
+          "line": 6471,
+          "pattern": "_moduleConfig[key]",
+          "fullLine": "_moduleConfig[key] = config[key];"
+        },
+        {
+          "line": 6485,
+          "pattern": "config[key]",
+          "fullLine": "config[key] = _moduleConfig[key];"
+        },
+        {
+          "line": 6605,
+          "pattern": "byType[objectType]",
+          "fullLine": "if (!_statistics.byType[objectType]) {"
+        },
+        {
+          "line": 6606,
+          "pattern": "byType[objectType]",
+          "fullLine": "_statistics.byType[objectType] = 0;"
+        },
+        {
+          "line": 6608,
+          "pattern": "byType[objectType]",
+          "fullLine": "_statistics.byType[objectType]++;"
+        },
+        {
+          "line": 6655,
+          "pattern": "_wrapperConstructors[objectType]",
+          "fullLine": "_wrapperConstructors[objectType] = constructor;"
+        },
+        {
+          "line": 6656,
+          "pattern": "_supportedTypes[objectType]",
+          "fullLine": "_supportedTypes[objectType] = true;"
+        },
+        {
+          "line": 6682,
+          "pattern": "_wrapperConstructors[objectType]",
+          "fullLine": "var WrapperConstructor = _wrapperConstructors[objectType];"
+        },
+        {
+          "line": 6827,
+          "pattern": "objectList[i]",
+          "fullLine": "var item = objectList[i];"
+        },
+        {
+          "line": 7017,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "if (_positions[positionKey]) {"
+        },
+        {
+          "line": 7018,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "var objectsAtPosition = _positions[positionKey];"
+        },
+        {
+          "line": 7020,
+          "pattern": "objectsAtPosition[i]",
+          "fullLine": "var objId = objectsAtPosition[i];"
+        },
+        {
+          "line": 7021,
+          "pattern": "_objects[objId]",
+          "fullLine": "if (objId !== excludeObjectId && _objects[objId]) {"
+        },
+        {
+          "line": 7024,
+          "pattern": "_objects[objId]",
+          "fullLine": "objectType: _objects[objId].objectType,"
+        },
+        {
+          "line": 7025,
+          "pattern": "_objects[objId]",
+          "fullLine": "position: _objects[objId].position"
+        },
+        {
+          "line": 7055,
+          "pattern": "_objects[objId]",
+          "fullLine": "var obj = _objects[objId];"
+        },
+        {
+          "line": 7103,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "if (!_positions[positionKey]) {"
+        },
+        {
+          "line": 7104,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "_positions[positionKey] = [];"
+        },
+        {
+          "line": 7106,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "_positions[positionKey].push(objectId);"
+        },
+        {
+          "line": 7121,
+          "pattern": "typeArray[i]",
+          "fullLine": "if (typeArray[i] === objectId) {"
+        },
+        {
+          "line": 7131,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "if (positionKey && _positions[positionKey]) {"
+        },
+        {
+          "line": 7132,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "var positionArray = _positions[positionKey];"
+        },
+        {
+          "line": 7134,
+          "pattern": "positionArray[i]",
+          "fullLine": "if (positionArray[i] === objectId) {"
+        },
+        {
+          "line": 7189,
+          "pattern": "_objects[objectId]",
+          "fullLine": "var obj = _objects[objectId];"
+        },
+        {
+          "line": 7197,
+          "pattern": "toRemove[i]",
+          "fullLine": "removeObject(toRemove[i]);"
+        },
+        {
+          "line": 7240,
+          "pattern": "_objects[objectId]",
+          "fullLine": "_objects[objectId] = {"
+        },
+        {
+          "line": 7251,
+          "pattern": "_objects[objectId]",
+          "fullLine": "_updateIndexes(objectId, _objects[objectId]);"
+        },
+        {
+          "line": 7254,
+          "pattern": "_objects[objectId]",
+          "fullLine": "_updateStatistics(\"add\", _objects[objectId]);"
+        },
+        {
+          "line": 7265,
+          "pattern": "_objects[objectId]",
+          "fullLine": "if (!objectId || !_objects[objectId]) {"
+        },
+        {
+          "line": 7270,
+          "pattern": "_objects[objectId]",
+          "fullLine": "_objects[objectId].lastAccessed = new Date().getTime();"
+        },
+        {
+          "line": 7272,
+          "pattern": "_objects[objectId]",
+          "fullLine": "return _objects[objectId];"
+        },
+        {
+          "line": 7281,
+          "pattern": "_objects[objectId]",
+          "fullLine": "if (!objectId || !_objects[objectId]) {"
+        },
+        {
+          "line": 7285,
+          "pattern": "_objects[objectId]",
+          "fullLine": "var objectData = _objects[objectId];"
+        },
+        {
+          "line": 7291,
+          "pattern": "_objects[objectId]",
+          "fullLine": "delete _objects[objectId];"
+        },
+        {
+          "line": 7306,
+          "pattern": "_objects[objectId]",
+          "fullLine": "if (!objectId || !_objects[objectId]) {"
+        },
+        {
+          "line": 7310,
+          "pattern": "_objects[objectId]",
+          "fullLine": "var objectData = _objects[objectId];"
+        },
+        {
+          "line": 7334,
+          "pattern": "_types[objectType]",
+          "fullLine": "if (!objectType || !_types[objectType]) {"
+        },
+        {
+          "line": 7339,
+          "pattern": "_types[objectType]",
+          "fullLine": "var objectIds = _types[objectType];"
+        },
+        {
+          "line": 7342,
+          "pattern": "objectIds[i]",
+          "fullLine": "var objectId = objectIds[i];"
+        },
+        {
+          "line": 7343,
+          "pattern": "_objects[objectId]",
+          "fullLine": "if (_objects[objectId]) {"
+        },
+        {
+          "line": 7344,
+          "pattern": "_objects[objectId]",
+          "fullLine": "result.push(_objects[objectId]);"
+        },
+        {
+          "line": 7368,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "if (_positions[positionKey]) {"
+        },
+        {
+          "line": 7369,
+          "pattern": "_positions[positionKey]",
+          "fullLine": "var objectIds = _positions[positionKey];"
+        },
+        {
+          "line": 7371,
+          "pattern": "objectIds[i]",
+          "fullLine": "var objectId = objectIds[i];"
+        },
+        {
+          "line": 7372,
+          "pattern": "_objects[objectId]",
+          "fullLine": "if (_objects[objectId]) {"
+        },
+        {
+          "line": 7373,
+          "pattern": "_objects[objectId]",
+          "fullLine": "result.push(_objects[objectId]);"
+        },
+        {
+          "line": 7381,
+          "pattern": "_objects[objectId]",
+          "fullLine": "var obj = _objects[objectId];"
+        },
+        {
+          "line": 7413,
+          "pattern": "_objects[objectId]",
+          "fullLine": "result.push(_objects[objectId]);"
+        },
+        {
+          "line": 7438,
+          "pattern": "_config[key]",
+          "fullLine": "_config[key] = config[key];"
+        },
+        {
+          "line": 7451,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = _config[key];"
+        },
+        {
+          "line": 7659,
+          "pattern": "defaults[objectType]",
+          "fullLine": "return defaults[objectType] || {};"
+        },
+        {
+          "line": 7674,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = defaultData[key];"
+        },
+        {
+          "line": 7682,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = userData[key];"
+        },
+        {
+          "line": 7698,
+          "pattern": "byType[objectType]",
+          "fullLine": "if (!_statistics.byType[objectType]) {"
+        },
+        {
+          "line": 7699,
+          "pattern": "byType[objectType]",
+          "fullLine": "_statistics.byType[objectType] = 0;"
+        },
+        {
+          "line": 7701,
+          "pattern": "byType[objectType]",
+          "fullLine": "_statistics.byType[objectType]++;"
+        },
+        {
+          "line": 7704,
+          "pattern": "templatesUsed[templateName]",
+          "fullLine": "if (!_statistics.templatesUsed[templateName]) {"
+        },
+        {
+          "line": 7705,
+          "pattern": "templatesUsed[templateName]",
+          "fullLine": "_statistics.templatesUsed[templateName] = 0;"
+        },
+        {
+          "line": 7707,
+          "pattern": "templatesUsed[templateName]",
+          "fullLine": "_statistics.templatesUsed[templateName]++;"
+        },
+        {
+          "line": 7785,
+          "pattern": "_mockTemplates[templateName]",
+          "fullLine": "_mockTemplates[templateName] = {"
+        },
+        {
+          "line": 7837,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "_mockObjects[mockId] = mockObject;"
+        },
+        {
+          "line": 7852,
+          "pattern": "_mockTemplates[templateName]",
+          "fullLine": "if (!templateName || !_mockTemplates[templateName]) {"
+        },
+        {
+          "line": 7856,
+          "pattern": "_mockTemplates[templateName]",
+          "fullLine": "var template = _mockTemplates[templateName];"
+        },
+        {
+          "line": 7886,
+          "pattern": "mockList[i]",
+          "fullLine": "var item = mockList[i];"
+        },
+        {
+          "line": 7921,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "return _mockObjects[mockId] || null;"
+        },
+        {
+          "line": 7930,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "if (_mockObjects[mockId]) {"
+        },
+        {
+          "line": 7931,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "delete _mockObjects[mockId];"
+        },
+        {
+          "line": 7945,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "result.push(_mockObjects[mockId]);"
+        },
+        {
+          "line": 7960,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "var mockObj = _mockObjects[mockId];"
+        },
+        {
+          "line": 7977,
+          "pattern": "_mockTemplates[templateName]",
+          "fullLine": "var template = _mockTemplates[templateName];"
+        },
+        {
+          "line": 8010,
+          "pattern": "_config[key]",
+          "fullLine": "_config[key] = config[key];"
+        },
+        {
+          "line": 8023,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = _config[key];"
+        },
+        {
+          "line": 8265,
+          "pattern": "commonProperties[i]",
+          "fullLine": "var propName = commonProperties[i];"
+        },
+        {
+          "line": 8266,
+          "pattern": "nativeObject[propName]",
+          "fullLine": "if (typeof nativeObject[propName] !== \"undefined\") {"
+        },
+        {
+          "line": 8267,
+          "pattern": "properties[propName]",
+          "fullLine": "properties[propName] = nativeObject[propName];"
+        },
+        {
+          "line": 8321,
+          "pattern": "nativeObject[methodName]",
+          "fullLine": "if (!nativeObject || typeof nativeObject[methodName] !== \"function\") {"
+        },
+        {
+          "line": 8327,
+          "pattern": "nativeObject[methodName]",
+          "fullLine": "return nativeObject[methodName].apply(nativeObject, args);"
+        },
+        {
+          "line": 8440,
+          "pattern": "properties[propertyName]",
+          "fullLine": "return this._objectData.properties[propertyName] || null;"
+        },
+        {
+          "line": 8457,
+          "pattern": "nativeObject[propertyName]",
+          "fullLine": "typeof this._objectData.nativeObject[propertyName] !== \"undefined\") {"
+        },
+        {
+          "line": 8458,
+          "pattern": "nativeObject[propertyName]",
+          "fullLine": "this._objectData.nativeObject[propertyName] = value;"
+        },
+        {
+          "line": 8462,
+          "pattern": "properties[propertyName]",
+          "fullLine": "this._objectData.properties[propertyName] = value;"
+        },
+        {
+          "line": 8488,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = this._objectData.properties[key];"
+        },
+        {
+          "line": 8510,
+          "pattern": "nativeObject[methodName]",
+          "fullLine": "if (typeof nativeObject[methodName] !== \"function\") {"
+        },
+        {
+          "line": 8516,
+          "pattern": "nativeObject[methodName]",
+          "fullLine": "var result = nativeObject[methodName].apply(nativeObject, args);"
+        },
+        {
+          "line": 8538,
+          "pattern": "_methodCache[methodName]",
+          "fullLine": "if (_wrapperConfig.enableMethodCache && this._methodCache[methodName]) {"
+        },
+        {
+          "line": 8539,
+          "pattern": "_methodCache[methodName]",
+          "fullLine": "return this._methodCache[methodName];"
+        },
+        {
+          "line": 8543,
+          "pattern": "nativeObject[methodName]",
+          "fullLine": "if (!nativeObject || typeof nativeObject[methodName] !== \"function\") {"
+        },
+        {
+          "line": 8552,
+          "pattern": "_methodCache[methodName]",
+          "fullLine": "this._methodCache[methodName] = proxy;"
+        },
+        {
+          "line": 8724,
+          "pattern": "_wrapperConfig[key]",
+          "fullLine": "_wrapperConfig[key] = config[key];"
+        },
+        {
+          "line": 8737,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = _wrapperConfig[key];"
+        },
+        {
+          "line": 8824,
+          "pattern": "args[i]",
+          "fullLine": "var arg = args[i];"
+        },
+        {
+          "line": 8841,
+          "pattern": "_cache[cacheKey]",
+          "fullLine": "if (!_config.enableCache || !_cache[cacheKey]) {"
+        },
+        {
+          "line": 8846,
+          "pattern": "_cache[cacheKey]",
+          "fullLine": "var cached = _cache[cacheKey];"
+        },
+        {
+          "line": 8850,
+          "pattern": "_cache[cacheKey]",
+          "fullLine": "delete _cache[cacheKey];"
+        },
+        {
+          "line": 8869,
+          "pattern": "_cache[cacheKey]",
+          "fullLine": "_cache[cacheKey] = {"
+        },
+        {
+          "line": 8882,
+          "pattern": "byType[calculationType]",
+          "fullLine": "if (!_statistics.byType[calculationType]) {"
+        },
+        {
+          "line": 8883,
+          "pattern": "byType[calculationType]",
+          "fullLine": "_statistics.byType[calculationType] = 0;"
+        },
+        {
+          "line": 8885,
+          "pattern": "byType[calculationType]",
+          "fullLine": "_statistics.byType[calculationType]++;"
+        },
+        {
+          "line": 9067,
+          "pattern": "points[i]",
+          "fullLine": "var p1 = points[i];"
+        },
+        {
+          "line": 9068,
+          "pattern": "points[j]",
+          "fullLine": "var p2 = points[j];"
+        },
+        {
+          "line": 9092,
+          "pattern": "polygon[i]",
+          "fullLine": "var xi = polygon[i].x, yi = polygon[i].y;"
+        },
+        {
+          "line": 9093,
+          "pattern": "polygon[j]",
+          "fullLine": "var xj = polygon[j].x, yj = polygon[j].y;"
+        },
+        {
+          "line": 9095,
+          "pattern": "polygon[i]",
+          "fullLine": "if (_isValidPoint(polygon[i]) && _isValidPoint(polygon[j])) {"
+        },
+        {
+          "line": 9444,
+          "pattern": "_config[key]",
+          "fullLine": "_config[key] = config[key];"
+        },
+        {
+          "line": 9457,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = _config[key];"
+        },
+        {
+          "line": 9772,
+          "pattern": "_config[key]",
+          "fullLine": "_config[key] = config[key];"
+        },
+        {
+          "line": 9813,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = _config[key];"
+        },
+        {
+          "line": 9830,
+          "pattern": "_config[key]",
+          "fullLine": "_config[key] = config[key];"
+        },
+        {
+          "line": 9980,
+          "pattern": "wrappers[i]",
+          "fullLine": "var wrapper = wrappers[i];"
+        },
+        {
+          "line": 10032,
+          "pattern": "success[i]",
+          "fullLine": "var wrapper = result.success[i];"
+        },
+        {
+          "line": 10101,
+          "pattern": "objectDataList[i]",
+          "fullLine": "wrappers.push(objectDataList[i].wrapper);"
+        },
+        {
+          "line": 10123,
+          "pattern": "objectDataList[i]",
+          "fullLine": "wrappers.push(objectDataList[i].wrapper);"
+        },
+        {
+          "line": 10143,
+          "pattern": "objectDataList[i]",
+          "fullLine": "wrappers.push(objectDataList[i].wrapper);"
+        },
+        {
+          "line": 10378,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = defaults[key];"
+        },
+        {
+          "line": 10385,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = userOptions[key];"
+        },
+        {
+          "line": 10806,
+          "pattern": "cachedProperties[propertyName]",
+          "fullLine": "value = instance.cachedProperties[propertyName];"
+        },
+        {
+          "line": 10814,
+          "pattern": "nativeObject[propertyName]",
+          "fullLine": "if (!instance.isMock && instance.nativeObject && instance.nativeObject[propertyName] !== undefined) {"
+        },
+        {
+          "line": 10815,
+          "pattern": "nativeObject[propertyName]",
+          "fullLine": "value = instance.nativeObject[propertyName];"
+        },
+        {
+          "line": 10819,
+          "pattern": "cachedProperties[propertyName]",
+          "fullLine": "instance.cachedProperties[propertyName] = value;"
+        },
+        {
+          "line": 10827,
+          "pattern": "mockData[propertyName]",
+          "fullLine": "} else if (instance.isMock && instance.mockData && instance.mockData[propertyName] !== undefined) {"
+        },
+        {
+          "line": 10829,
+          "pattern": "mockData[propertyName]",
+          "fullLine": "value = instance.mockData[propertyName];"
+        },
+        {
+          "line": 10833,
+          "pattern": "cachedProperties[propertyName]",
+          "fullLine": "instance.cachedProperties[propertyName] = value;"
+        },
+        {
+          "line": 10879,
+          "pattern": "cachedProperties[propertyName]",
+          "fullLine": "instance.cachedProperties[propertyName] = value;"
+        },
+        {
+          "line": 10885,
+          "pattern": "nativeObject[propertyName]",
+          "fullLine": "instance.nativeObject[propertyName] = value;"
+        },
+        {
+          "line": 10896,
+          "pattern": "mockData[propertyName]",
+          "fullLine": "instance.mockData[propertyName] = value;"
+        },
+        {
+          "line": 10939,
+          "pattern": "nativeObject[propertyName]",
+          "fullLine": "var value = instance.nativeObject[propertyName];"
+        },
+        {
+          "line": 10980,
+          "pattern": "nativeObject[propertyName]",
+          "fullLine": "instance.nativeObject[propertyName] = value;"
+        },
+        {
+          "line": 10985,
+          "pattern": "cachedProperties[propertyName]",
+          "fullLine": "instance.cachedProperties[propertyName] = value;"
+        },
+        {
+          "line": 11022,
+          "pattern": "nativeObject[methodName]",
+          "fullLine": "if (!instance.nativeObject[methodName] || typeof instance.nativeObject[methodName] !== \"function\") {"
+        },
+        {
+          "line": 11031,
+          "pattern": "nativeObject[methodName]",
+          "fullLine": "var result = instance.nativeObject[methodName].apply(instance.nativeObject, args);"
+        },
+        {
+          "line": 11070,
+          "pattern": "nativeObject[propertyName]",
+          "fullLine": "if (!instance.isMock && instance.nativeObject && instance.nativeObject[propertyName] !== undefined) {"
+        },
+        {
+          "line": 11075,
+          "pattern": "mockData[propertyName]",
+          "fullLine": "if (instance.isMock && instance.mockData && instance.mockData[propertyName] !== undefined) {"
+        },
+        {
+          "line": 11382,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = templateData[key];"
+        },
+        {
+          "line": 11391,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = userData[key];"
+        },
+        {
+          "line": 11606,
+          "pattern": "_mockDataTemplates[objectType]",
+          "fullLine": "var templateData = _mockDataTemplates[objectType];"
+        },
+        {
+          "line": 11623,
+          "pattern": "_mockData[propertyName]",
+          "fullLine": "return this._mockData[propertyName];"
+        },
+        {
+          "line": 11627,
+          "pattern": "_mockData[propertyName]",
+          "fullLine": "this._mockData[propertyName] = value;"
+        },
+        {
+          "line": 11643,
+          "pattern": "_mockData[propName]",
+          "fullLine": "return mockObject._mockData[propName];"
+        },
+        {
+          "line": 11646,
+          "pattern": "_mockData[propName]",
+          "fullLine": "mockObject._mockData[propName] = value;"
+        },
+        {
+          "line": 11674,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "var mockObject = _mockObjects[mockId];"
+        },
+        {
+          "line": 11697,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "var mockObject = _mockObjects[mockId];"
+        },
+        {
+          "line": 11704,
+          "pattern": "_mockObjects[mockId]",
+          "fullLine": "delete _mockObjects[mockId];"
+        },
+        {
+          "line": 11727,
+          "pattern": "_mockObjects[key]",
+          "fullLine": "result.push(_mockObjects[key]);"
+        },
+        {
+          "line": 11771,
+          "pattern": "_mockDataTemplates[objectType]",
+          "fullLine": "var template = _mockDataTemplates[objectType];"
+        },
+        {
+          "line": 11783,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = template[key];"
+        },
+        {
+          "line": 11813,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = {};"
+        },
+        {
+          "line": 11815,
+          "pattern": "_mockDataTemplates[key]",
+          "fullLine": "for (subKey in _mockDataTemplates[key]) {"
+        },
+        {
+          "line": 11816,
+          "pattern": "_mockDataTemplates[key]",
+          "fullLine": "if (_mockDataTemplates[key].hasOwnProperty(subKey)) {"
+        },
+        {
+          "line": 11817,
+          "pattern": "result[key]",
+          "fullLine": "result[key][subKey] = _mockDataTemplates[key][subKey];"
+        },
+        {
+          "line": 11851,
+          "pattern": "objectIds[objectType]",
+          "fullLine": "var objectId = objectIds[objectType];"
+        },
+        {
+          "line": 11885,
+          "pattern": "_mockObjects[key]",
+          "fullLine": "var mockObject = _mockObjects[key];"
+        },
+        {
+          "line": 11888,
+          "pattern": "mockObjectsByType[type]",
+          "fullLine": "if (!stats.mockObjectsByType[type]) {"
+        },
+        {
+          "line": 11889,
+          "pattern": "mockObjectsByType[type]",
+          "fullLine": "stats.mockObjectsByType[type] = 0;"
+        },
+        {
+          "line": 11891,
+          "pattern": "mockObjectsByType[type]",
+          "fullLine": "stats.mockObjectsByType[type]++;"
+        },
+        {
+          "line": 12031,
+          "pattern": "createdByType[objectType]",
+          "fullLine": "if (!_factoryStats.createdByType[objectType]) {"
+        },
+        {
+          "line": 12032,
+          "pattern": "createdByType[objectType]",
+          "fullLine": "_factoryStats.createdByType[objectType] = 0;"
+        },
+        {
+          "line": 12034,
+          "pattern": "createdByType[objectType]",
+          "fullLine": "_factoryStats.createdByType[objectType]++;"
+        },
+        {
+          "line": 12050,
+          "pattern": "typeMapping[objectId]",
+          "fullLine": "return typeMapping[objectId] || 'Unknown';"
+        },
+        {
+          "line": 12151,
+          "pattern": "_objectTypeMapping[objectType]",
+          "fullLine": "if (!_objectTypeMapping[objectType]) {"
+        },
+        {
+          "line": 12159,
+          "pattern": "_objectTypeMapping[objectType]",
+          "fullLine": "_objectTypeMapping[objectType].wrapperConstructor = constructor;"
+        },
+        {
+          "line": 12160,
+          "pattern": "_wrapperConstructors[objectType]",
+          "fullLine": "_wrapperConstructors[objectType] = constructor;"
+        },
+        {
+          "line": 12204,
+          "pattern": "_wrapperConstructors[objectType]",
+          "fullLine": "if (_wrapperConstructors[objectType]) {"
+        },
+        {
+          "line": 12205,
+          "pattern": "_wrapperConstructors[objectType]",
+          "fullLine": "wrapper = _wrapperConstructors[objectType]({"
+        },
+        {
+          "line": 12256,
+          "pattern": "_wrapperConstructors[objectType]",
+          "fullLine": "if (_wrapperConstructors[objectType]) {"
+        },
+        {
+          "line": 12257,
+          "pattern": "_wrapperConstructors[objectType]",
+          "fullLine": "wrapper = _wrapperConstructors[objectType]({"
+        },
+        {
+          "line": 12429,
+          "pattern": "createdByType[key]",
+          "fullLine": "stats.createdByType[key] = _factoryStats.createdByType[key];"
+        },
+        {
+          "line": 12574,
+          "pattern": "validTypes[i]",
+          "fullLine": "if (lowerType === validTypes[i]) {"
+        },
+        {
+          "line": 12645,
+          "pattern": "_boundObjects[key]",
+          "fullLine": "_boundObjects[key] = wrapper;"
+        },
+        {
+          "line": 12669,
+          "pattern": "_boundObjects[key]",
+          "fullLine": "delete _boundObjects[key];"
+        },
+        {
+          "line": 12769,
+          "pattern": "_pendingPool[i]",
+          "fullLine": "if (_pendingPool[i].wrapper === wrapper) {"
+        },
+        {
+          "line": 12842,
+          "pattern": "_boundObjects[key]",
+          "fullLine": "return _boundObjects[key];"
+        },
+        {
+          "line": 12853,
+          "pattern": "_pendingPool[i]",
+          "fullLine": "result.push(_pendingPool[i].wrapper);"
+        },
+        {
+          "line": 12864,
+          "pattern": "_pendingPool[i]",
+          "fullLine": "var item = _pendingPool[i];"
+        },
+        {
+          "line": 12889,
+          "pattern": "_pendingPool[i]",
+          "fullLine": "if (_pendingPool[i].wrapper === wrapper) {"
+        },
+        {
+          "line": 12928,
+          "pattern": "_boundObjects[key]",
+          "fullLine": "var wrapper = _boundObjects[key];"
+        },
+        {
+          "line": 12941,
+          "pattern": "_pendingPool[i]",
+          "fullLine": "var item = _pendingPool[i];"
+        },
+        {
+          "line": 12993,
+          "pattern": "_boundObjects[key]",
+          "fullLine": "var wrapper = _boundObjects[key];"
+        },
+        {
+          "line": 13006,
+          "pattern": "_pendingPool[i]",
+          "fullLine": "var item = _pendingPool[i];"
+        },
+        {
+          "line": 13154,
+          "pattern": "objectsByPool[poolType]",
+          "fullLine": "if (!_poolStats.objectsByPool[poolType]) {"
+        },
+        {
+          "line": 13155,
+          "pattern": "objectsByPool[poolType]",
+          "fullLine": "_poolStats.objectsByPool[poolType] = 0;"
+        },
+        {
+          "line": 13157,
+          "pattern": "objectsByPool[poolType]",
+          "fullLine": "_poolStats.objectsByPool[poolType]++;"
+        },
+        {
+          "line": 13159,
+          "pattern": "objectsByType[objectType]",
+          "fullLine": "if (!_poolStats.objectsByType[objectType]) {"
+        },
+        {
+          "line": 13160,
+          "pattern": "objectsByType[objectType]",
+          "fullLine": "_poolStats.objectsByType[objectType] = 0;"
+        },
+        {
+          "line": 13162,
+          "pattern": "objectsByType[objectType]",
+          "fullLine": "_poolStats.objectsByType[objectType]++;"
+        },
+        {
+          "line": 13167,
+          "pattern": "objectsByPool[poolType]",
+          "fullLine": "if (_poolStats.objectsByPool[poolType]) {"
+        },
+        {
+          "line": 13168,
+          "pattern": "objectsByPool[poolType]",
+          "fullLine": "_poolStats.objectsByPool[poolType] = Math.max(0, _poolStats.objectsByPool[poolType] - 1);"
+        },
+        {
+          "line": 13171,
+          "pattern": "objectsByType[objectType]",
+          "fullLine": "if (_poolStats.objectsByType[objectType]) {"
+        },
+        {
+          "line": 13172,
+          "pattern": "objectsByType[objectType]",
+          "fullLine": "_poolStats.objectsByType[objectType] = Math.max(0, _poolStats.objectsByType[objectType] - 1);"
+        },
+        {
+          "line": 13206,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "for (key in _objectPools[poolType]) {"
+        },
+        {
+          "line": 13207,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "if (_objectPools[poolType].hasOwnProperty(key)) {"
+        },
+        {
+          "line": 13208,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "objectInfo = _objectPools[poolType][key];"
+        },
+        {
+          "line": 13245,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "for (key in _objectPools[poolType]) {"
+        },
+        {
+          "line": 13246,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "if (_objectPools[poolType].hasOwnProperty(key)) {"
+        },
+        {
+          "line": 13247,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "objectInfo = _objectPools[poolType][key];"
+        },
+        {
+          "line": 13267,
+          "pattern": "allObjects[i]",
+          "fullLine": "if (removeFromPool(allObjects[i].poolType, allObjects[i].key)) {"
+        },
+        {
+          "line": 13328,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "_objectPools[poolType][fullKey] = {"
+        },
+        {
+          "line": 13360,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "var objectInfo = _objectPools[poolType][key];"
+        },
+        {
+          "line": 13395,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "var objectInfo = _objectPools[poolType][key];"
+        },
+        {
+          "line": 13406,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "delete _objectPools[poolType][key];"
+        },
+        {
+          "line": 13429,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "var count = Object.keys(_objectPools[poolType]).length;"
+        },
+        {
+          "line": 13433,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "for (key in _objectPools[poolType]) {"
+        },
+        {
+          "line": 13434,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "if (_objectPools[poolType].hasOwnProperty(key)) {"
+        },
+        {
+          "line": 13435,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "objectInfo = _objectPools[poolType][key];"
+        },
+        {
+          "line": 13441,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "_objectPools[poolType] = {};"
+        },
+        {
+          "line": 13489,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "var size = Object.keys(_objectPools[poolType]).length;"
+        },
+        {
+          "line": 13515,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "for (key in _objectPools[poolType]) {"
+        },
+        {
+          "line": 13516,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "if (_objectPools[poolType].hasOwnProperty(key)) {"
+        },
+        {
+          "line": 13517,
+          "pattern": "_objectPools[poolType]",
+          "fullLine": "objectInfo = _objectPools[poolType][key];"
+        },
+        {
+          "line": 13567,
+          "pattern": "objectsByPool[key]",
+          "fullLine": "stats.objectsByPool[key] = _poolStats.objectsByPool[key];"
+        },
+        {
+          "line": 13573,
+          "pattern": "objectsByType[key]",
+          "fullLine": "stats.objectsByType[key] = _poolStats.objectsByType[key];"
+        },
+        {
+          "line": 13580,
+          "pattern": "poolSizes[key]",
+          "fullLine": "stats.poolSizes[key] = Object.keys(_objectPools[key]).length;"
+        },
+        {
+          "line": 13587,
+          "pattern": "config[key]",
+          "fullLine": "stats.config[key] = _poolConfig[key];"
+        },
+        {
+          "line": 13615,
+          "pattern": "_poolConfig[key]",
+          "fullLine": "_poolConfig[key] = config[key];"
+        },
+        {
+          "line": 16898,
+          "pattern": "otherObjects[i]",
+          "fullLine": "var obj = otherObjects[i];"
+        },
+        {
+          "line": 18393,
+          "pattern": "_positionCache[key]",
+          "fullLine": "if (!_positionCache[key]) {"
+        },
+        {
+          "line": 18394,
+          "pattern": "_positionCache[key]",
+          "fullLine": "_positionCache[key] = [];"
+        },
+        {
+          "line": 18396,
+          "pattern": "_positionCache[key]",
+          "fullLine": "_positionCache[key].push(objectInfo);"
+        },
+        {
+          "line": 18406,
+          "pattern": "_positionCache[key]",
+          "fullLine": "if (_positionCache[key]) {"
+        },
+        {
+          "line": 18407,
+          "pattern": "_positionCache[key]",
+          "fullLine": "var objects = _positionCache[key];"
+        },
+        {
+          "line": 18409,
+          "pattern": "objects[i]",
+          "fullLine": "if (objects[i].id === objectId) {"
+        },
+        {
+          "line": 18417,
+          "pattern": "_positionCache[key]",
+          "fullLine": "delete _positionCache[key];"
+        },
+        {
+          "line": 18521,
+          "pattern": "_positionCache[key]",
+          "fullLine": "if (_positionCache[key]) {"
+        },
+        {
+          "line": 18522,
+          "pattern": "_positionCache[key]",
+          "fullLine": "var objects = _positionCache[key];"
+        },
+        {
+          "line": 18524,
+          "pattern": "objects[i]",
+          "fullLine": "var cachedObject = objects[i];"
+        },
+        {
+          "line": 18587,
+          "pattern": "directions[i]",
+          "fullLine": "var direction = directions[i];"
+        },
+        {
+          "line": 18799,
+          "pattern": "_positionCache[key]",
+          "fullLine": "cacheSize += _positionCache[key].length;"
+        },
+        {
+          "line": 18936,
+          "pattern": "_defaultParameters[objectType]",
+          "fullLine": "var defaults = _defaultParameters[objectType];"
+        },
+        {
+          "line": 18945,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = defaults[key];"
+        },
+        {
+          "line": 18963,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = defaults[key];"
+        },
+        {
+          "line": 18971,
+          "pattern": "result[key]",
+          "fullLine": "result[key] = userParams[key];"
+        },
+        {
+          "line": 19163,
+          "pattern": "objectList[i]",
+          "fullLine": "var obj = createObject(objectList[i]);"
+        },
+        {
+          "line": 19169,
+          "pattern": "objectList[i]",
+          "fullLine": "object: objectList[i]"
+        },
+        {
+          "line": 19488,
+          "pattern": "config[key]",
+          "fullLine": "config[key] = _moduleConfig[key];"
+        },
+        {
+          "line": 19493,
+          "pattern": "config[key]",
+          "fullLine": "config[key] = options[key];"
+        },
+        {
+          "line": 19708,
+          "pattern": "success[i]",
+          "fullLine": "var object = result.success[i];"
+        },
+        {
+          "line": 19709,
+          "pattern": "objectList[i]",
+          "fullLine": "var options = objectList[i];"
+        },
+        {
+          "line": 20469,
+          "pattern": "summary[level]",
+          "fullLine": "var levelStats = stats.summary[level];"
+        }
+      ],
+      "objectIterations": [
+        {
+          "line": 12940,
+          "pattern": "for (var i = _pendingPool.length - 1; i >= 0",
+          "fullLine": "for (var i = _pendingPool.length - 1; i >= 0; i--) {"
+        }
+      ]
+    },
+    "astInvestigation": {
+      "parsingErrors": [],
+      "symbolExtractionIssues": [],
+      "variableDetectionProblems": []
+    }
+  },
+  "hypotheses": [],
+  "conclusions": [
+    {
+      "type": "no_real_variables",
+      "severity": "info",
+      "description": "构建文件中不存在真正的数字命名全局变量",
+      "recommendation": "确认符号提取工具的正确性"
+    }
+  ]
+}

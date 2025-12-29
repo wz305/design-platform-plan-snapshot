@@ -1,0 +1,3 @@
+#### GetDefaultSchSheetStyle
+
+Function  GetDefaultSchSheetStyle : TSheetStyle;

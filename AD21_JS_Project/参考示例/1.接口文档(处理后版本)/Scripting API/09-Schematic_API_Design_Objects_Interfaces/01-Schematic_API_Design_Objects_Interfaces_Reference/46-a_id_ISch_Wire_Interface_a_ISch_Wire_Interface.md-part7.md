@@ -1,0 +1,25 @@
+#### cBooleanEditorAttributes
+
+cBooleanEditorAttributes =  
+    \[eObjectAttribute\_IsHidden,  
+     eObjectAttribute\_Locked,  
+     eObjectAttribute\_Accessible,  
+     eObjectAttribute\_Solid,  
+     eObjectAttribute\_ShowName,  
+     eObjectAttribute\_IsMirrored,  
+     eObjectAttribute\_DesignatorLocked,  
+     eObjectAttribute\_PartIdLocked,  
+     eObjectAttribute\_PinsMoveable,  
+     eObjectAttribute\_ImageKeepAspect,  
+     eObjectAttribute\_ImageEmbed,  
+     eObjectAttribute\_ParameterAllowLibrarySynchronize,  
+     eObjectAttribute\_ParameterAllowDatabaseSynchronize,  
+     eObjectAttribute\_TextAutoPosition,  
+     eObjectAttribute\_PinShowDesignator,  
+     eObjectAttribute\_ShowHiddenFields,  
+     eObjectAttribute\_ShowHiddenPins,  
+     eObjectAttribute\_ShowDesignator,  
+     eObjectAttribute\_TextFrameWordWrap,  
+     eObjectAttribute\_TextFrameShowBorder,  
+     eObjectAttribute\_TextFrameClipToRect,  
+     eObjectAttribute\_PowerObjectShowNetName\];

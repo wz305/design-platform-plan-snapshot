@@ -1,0 +1,17 @@
+{
+  "safe": {
+    "collections": ["Scripting.Dictionary"],
+    "wsh": ["WScript.Shell", "WScript.Network", "VBScript.RegExp", "Scriptlet.TypeLib", "MSScriptControl.ScriptControl"],
+    "xml": ["MSXML2.DOMDocument.6.0", "MSXML2.DOMDocument.4.0", "MSXML2.XMLSchemaCache.6.0", "MSXML2.ServerXMLHTTP.6.0", "Microsoft.XMLDOM", "htmlfile"],
+    "http": ["WinHttp.WinHttpRequest.5.1", "MSXML2.XMLHTTP", "MSXML2.XMLHTTP.3.0", "MSXML2.ServerXMLHTTP.3.0"],
+    "ado": ["ADODB.Stream", "ADODB.Connection", "ADODB.Recordset"],
+    "crypto_maybe": ["CAPICOM.HashedData", "CAPICOM.Utilities"],
+    "imaging_maybe": ["WIA.ImageFile", "WIA.CommonDialog"],
+    "system": ["WbemScripting.SWbemLocator", "WbemScripting.SWbemNamedValueSet"],
+    "misc": ["WindowsInstaller.Installer", "SAPI.SpVoice"]
+  },
+  "risky": {
+    "shell_office": ["Shell.Application", "InternetExplorer.Application", "Excel.Application", "Word.Application", "Outlook.Application"],
+    "task_scheduler": ["Schedule.Service"]
+  }
+}

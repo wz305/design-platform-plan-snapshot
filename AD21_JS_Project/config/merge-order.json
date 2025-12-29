@@ -1,0 +1,58 @@
+{
+  "description": "文件合并顺序配置",
+  "version": "2.0.0",
+  "mergeOrder": [
+    "src/json2.js",
+    "src/core/__adGetHostGlobal.js",
+    "src/core/__adJsonParse.js",
+    "src/core/JsonUtil.js",
+    "src/core/全局符号桥.js",
+    "src/core/module-accessor.js",
+    "src/modules/base/index.js",
+    "src/core/core.js",
+    "src/modules/log-controller/index.js",
+    "src/modules/logger/types.js",
+    "src/modules/logger/tools.js",
+    "src/modules/logger/steps/step_format.js",
+    "src/modules/logger/steps/step_write.js",
+    "src/modules/logger/core.js",
+    "src/modules/logger/index.js",
+    "src/modules/ui-logger/index.js",
+    "src/modules/http-client/index.js",
+    "src/环境探测/EnvironmentProbeModule.js",
+    "ui/core/UIEventManager.js",
+    
+    "src/modules/object-module/core/ObjectFactory.js",
+    "src/modules/object-module/core/ObjectManager.js",
+    "src/modules/object-module/core/MockSystem.js",
+    "src/modules/object-module/wrappers/PCBObjectWrapper.js",
+    "src/modules/object-module/wrappers/GeometryWrapper.js",
+    "src/modules/object-module/index.js",
+    
+    "src/modules/pcb-interfaces/core/BasePCBWrapper.js",
+    "src/modules/pcb-interfaces/core/PCBMockSystem.js",
+    "src/modules/pcb-interfaces/core/PCBObjectFactory.js",
+    "src/modules/pcb-interfaces/core/PCBObjectManager.js",
+    "src/modules/pcb-interfaces/core/PCBObjectPool.js",
+    "src/modules/pcb-interfaces/core/StackMap.js",
+    "src/modules/pcb-interfaces/calculators/GeometryCalculator.js",
+    "src/modules/pcb-interfaces/wrappers/ArcWrapper.js",
+    "src/modules/pcb-interfaces/wrappers/PadWrapper.js",
+    "src/modules/pcb-interfaces/wrappers/TrackWrapper.js",
+    "src/modules/pcb-interfaces/wrappers/ViaWrapper.js",
+    "src/modules/pcb-interfaces/index.js",
+    "src/modules/object-creator/core/PositionManager.js",
+    "src/modules/object-creator/core/ObjectCreator.js",
+    "src/modules/object-creator/index.js",
+    "ui/object-creator.js",
+    "src/core/global-events.js"
+  ],
+  "output": {
+    "utf8": "main_utf8.js",
+    "gb2312": "main.js"
+  },
+  "encoding": {
+    "source": "UTF-8",
+    "target": "GB2312"
+  }
+}

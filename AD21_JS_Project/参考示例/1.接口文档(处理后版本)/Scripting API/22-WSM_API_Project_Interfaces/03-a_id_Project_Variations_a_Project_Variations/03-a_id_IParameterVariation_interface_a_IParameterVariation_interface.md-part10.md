@@ -1,0 +1,531 @@
+#### Methods
+
+##### DM\_BusIndex method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_BusIndex : Integer;  
+__Description__  
+The function returns the bus index\. An IBus interface is inherited from a INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_BusKind method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_BusKind : TBusKind;  
+__Description__  
+The function returns the type of bus\. An IBus interface is inherited from a INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_BusPrefix method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_BusPrefix : WideString;  
+__Description__  
+The function returns the bus prefix\. An example, a bus object could have this A\[0\.\.7\] net label, and the prefix is A\. An IBus interface is inherited from a INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_BusRange1 method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_BusRange1 : WideString;  
+__Description__  
+This function returns the bus range 1 string\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_BusRange2 method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_BusRange2 : WideString;  
+__Description__  
+This function returns the bus range 1 string\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_BusRangeValue1 method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_BusRangeValue1 : Integer;  
+__Description__  
+This function returns value of the bus range 1\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_BusRangeValue2 method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_BusRangeValue2 : Integer;  
+__Description__  
+This function returns value of the bus range 1\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_BusWidth method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_BusWidth : Integer;  
+__Description__  
+The function returns the bus width\. An IBus interface is inherited from a INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_DisplayMode method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_DisplayMode : TDisplayMode;  
+__Description__  
+The function returns the display mode for this part object\. A part object can have up to 254 alternative graphical displays along with the normal graphical display\.  
+__Example__  
+__See also__  
+INetItem interface  
+TDisplayMode type
+
+##### DM\_Electric method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_Electric : TPinElectrical;  
+__Description__  
+This function denotes the electrical pin property for a net aware object\.  
+__Example__  
+__See also__  
+INetItem interface  
+TPinElectrical type
+
+##### DM\_Electrical method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_Electrical : TPinElectrical;  
+__Description__  
+The function returns the electrical pin property\.  
+__Example__  
+__See also__  
+INetItem interface  
+TPinElectrical type
+
+##### DM\_ElectricalString method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_ElectricalString : WideString;  
+__Description__  
+The function returns the electrical property string\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_FlattenedNetName method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_FlattenedNetName : WideString;  
+__Description__  
+The function returns the net name of the flattened net where the net aware object is associated with\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_FootPrint method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_FootPrint : WideString;  
+__Description__  
+The function returns the Footprint string for this INetItem associated with an IPart object\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_FullLogicalPartDesignator method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_FullLogicalPartDesignator : WideString;  
+__Description__  
+The function returns the logical part designator and the channel instance for this INetItem Interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_FullPhysicalPartDesignator method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_FullPhysicalPartDesignator : WideString;  
+__Description__  
+The function returns the full logical part designator and the channel instance for this INetItem Interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_FullPinName method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_FullPinName : WideString;  
+__Description__  
+The function returns the full Pin name and number that this INetItem interface is associated with\. An IPin interface is inherited from an INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_FullUniqueId method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_FullUniqueId : WideString;  
+__Description__  
+The function returns the full Unique ID string for this INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_Id method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_Id : WideString;  
+__Description__  
+The function returns the Id value for this net aware object\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_IsAutoGenerated method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_IsAutoGenerated : Boolean;  
+__Description__  
+The function returns a Boolean value whether this INetItem has been automatically generated by Atlium Designer or not\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_IsBusElement method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_IsBusElement : Boolean;  
+__Description__  
+The function returns a Boolean value whether this bus element exists or not for this INetItem interface\. An IBus interface is inherited from a INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_IsBusMember method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_IsBusMember : Boolean;  
+__Description__  
+The function returns a Boolean value whether this bus member exists or not for this INetItem interface\. An IBus interface is inherited from a INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_IsBusSection method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_IsBusSection : Boolean;  
+__Description__  
+The function returns a Boolean value whether the bus section exists or not for this INetItem interface\. An IBus interface is inherited from a INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_IsHidden method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_IsHidden : Boolean;  
+__Description__  
+The function returns whether this pin object is hidden or not\. An IPin interface is inherited from an INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_LinkObject method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_LinkObject : INetItem;  
+__Description__  
+The function denotes the linked object to a sheet entry or port from a port or a sheet entry respectively\. This method is for port objects that are connected from child schematic sheets to sheet entries of sheet symbols on a parent sheet\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_LogicalPartDesignator method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_LogicalPartDesignator : WideString;  
+__Description__  
+The function returns the logical part designator for this INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_NetName method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_NetName : WideString;  
+__Description__  
+The function returns the net name of the net where the net aware object is associated with\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_NetNumber method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_NetNumber : WideString;  
+__Description__  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_OwnerNetLogical method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_OwnerNetLogical : INet;  
+__Description__  
+The function denotes whether this net aware object is associated with the net of a logical document\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_OwnerNetPhysical method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_OwnerNetPhysical : INet;  
+__Description__  
+The function denotes whether this net aware object is associated with the net of a physical document\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_ParentID method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_ParentID : WideString;  
+__Description__  
+The function denotes the parent ID or the Sheet document name / Net Name property where this interface is associated with\. For example a sheet entry on a sheet symbol object’s parent ID is the name of the schematic sheet where the port is\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_ParentSheetSymbolName method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_ParentSheetSymbolName : WideString;  
+__Description__  
+The function Returns the parent sheet symbol name associated with this INetItem interface \(which is a SheetEntry object\)\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_ParentSheetSymbolSheetName method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_ParentSheetSymbolSheetName : WideString;  
+__Description__  
+The function returns the parent sheet symbol sheet name string associated with this INetItem interface \(which is a sheet entry object\)\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_Part method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_Part : IPart;  
+__Description__  
+The function returns the IPart interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PartId method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PartId : Integer;  
+__Description__  
+The function returns the Part ID value\. A part object is a composite of a multi\-part component, and thus each part object is referenced by its Part Id\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PartSwapId method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PartSwapId : WideString;  
+__Description__  
+The function returns the wide string for the part swap Id\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PartType method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PartType : WideString;  
+__Description__  
+The function returns the part type for this INetItem associated with an IPart object\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PartUniqueId method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PartUniqueId : WideString;  
+__Description__  
+The function returns the Unique ID for this part the NetItem is associated with\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PhysicalPartDesignator method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PhysicalPartDesignator : WideString;  
+__Description__  
+The function returns the logical part designator and the channel instance for this INetItem Interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PinName method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PinName : WideString;  
+__Description__  
+The function returns the Pin name that this INetItem interface is associated with\. Since an IPin interface is inherited from an INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PinNameNoPartId method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PinNameNoPartId : WideString;  
+__Description__  
+The function returns the Pin Name Number and Part ID string for this INetItem associated with an Part object\. A pin is part of a part / component\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PinNumber method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PinNumber : WideString;  
+__Description__  
+The function returns the Pin Number that this INetItem interface is associated with\. An IPin interface is inherited from an INetItem interface\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_PinSwapId method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_PinSwapId : WideString;  
+__Description__  
+The function returns the wide string for the pin swap Id\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_RangeDefinedByValue method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_RangeDefinedByValue : Boolean;  
+__Description__  
+The function returns a Boolean value whether the range is defined by a two specific range values or not\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_SheetSymbol method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_SheetSymbol : ISheetSymbol;  
+__Description__  
+The function returns the ISheetSymbol interface where this INetItem \(representing a ISheetEntry interface if it exists\) is associated with\. If not, a nil value is returned\.  
+__Example__  
+__See also__  
+INetItem interface
+
+##### DM\_SignalType method
+
+\(INetItem interface\)  
+__Syntax__  
+Function DM\_SignalType : WideString;  
+__Description__  
+The function returns the signal type string\.  
+__Example__  
+__See also__  
+INetItem interface
+
+### <a id="INetLabel_interface"></a>INetLabel interface
+
+__Overview__  
+The INetLabel interface is a net label interface to an existing net label object on the schematic sheet document\. A net describes a connection from one component pin, to a second pin, and then to a third pin and so on\.  
+__Notes__  
+The INetLabel interface is inherited from the INetItem interface\.  
+An equivalent NetLabel object representation is the ISch\_NetLabel class in Schematic API Reference\.  
+__See also__  
+INetItem interface\.
+
+### <a id="IObjectClass_interface"></a>IObjectClass interface
+
+__Overview__  
+The IObjectClass interface is the ancestor object class interface for Channel Class, Component Class and Net Class interfaces\.
+
+__IObjectClass methods__  
+DM\_Name  
+DM\_MemberCount  
+DM\_Members
+
+__IObjectClass properties__

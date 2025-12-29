@@ -1,0 +1,261 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #f5f7fb;
+  --foreground: #1b2330;
+  --card: #ffffff;
+  --card-foreground: #1b2330;
+  --popover: #ffffff;
+  --popover-foreground: #1b2330;
+  --primary: #1f55d7;
+  --primary-foreground: #ffffff;
+  --secondary: #e7ecf5;
+  --secondary-foreground: #1b2330;
+  --muted: #e4e9f2;
+  --muted-foreground: #5b6878;
+  --accent: #dbe4f5;
+  --accent-foreground: #1b2330;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: #d3dbe6;
+  --input: #ffffff;
+  --input-background: #f1f4f9;
+  --switch-background: #c8d4e5;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #9fb2c9;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: #f8faff;
+  --sidebar-foreground: #1b2330;
+  --sidebar-primary: #1f55d7;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e7eef7;
+  --sidebar-accent-foreground: #1b2330;
+  --sidebar-border: #d3dbe6;
+  --sidebar-ring: #9fb2c9;
+  --app-bg: #f2f6fb;
+  --app-bg-deep: #e3eaf4;
+  --app-panel: #ffffff;
+  --app-panel-alt: #f3f6fb;
+  --app-panel-hover: #e6edf7;
+  --app-border: #d3dbe6;
+  --app-border-muted: rgba(211, 219, 230, 0.6);
+  --app-border-strong: #c0cada;
+  --app-text: #1b2330;
+  --app-text-muted: #566475;
+  --app-text-subtle: #6c7b8c;
+  --app-text-faint: #8b9aab;
+  --app-text-ghost: #a2b0c2;
+  --app-text-invert: #ffffff;
+  --app-accent: #2f6df6;
+  --app-accent-strong: #1f55d7;
+  --app-accent-soft: rgba(47, 109, 246, 0.16);
+  --app-accent-muted: rgba(47, 109, 246, 0.4);
+  --app-accent-glow: #8ab2ff;
+  --app-accent-glow-soft: rgba(138, 178, 255, 0.55);
+  --app-accent-purple: #a76cf2;
+  --app-grid: rgba(47, 109, 246, 0.16);
+  --app-chip-bg: #e6ecf5;
+  --app-console-bg: #f8fafc;
+  --app-console-border: #d3dbe6;
+  --app-console-divider: rgba(89, 101, 117, 0.14);
+  --app-console-text: #1b2330;
+  --app-console-muted: #5d6b7c;
+  --app-console-dim: #7c8a9a;
+  --app-console-source: #4f5f71;
+  --app-console-time: #7c8a9a;
+  --app-console-highlight: rgba(47, 109, 246, 0.14);
+  --app-cursor-core: #f8fafc;
+  --app-toggle-track: linear-gradient(120deg, #8cc8ff 0%, #d6f0ff 45%, #f7fbff 100%);
+  --app-toggle-thumb: #ffd76a;
+  --app-toggle-thumb-shadow: 0 6px 14px rgba(15, 23, 42, 0.2);
+  --app-toggle-icon: #8a5a00;
+  --app-toggle-star: #ffffff;
+  --app-toggle-cloud: #ffffff;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  --card: #1a1f2e;
+  --card-foreground: #e2e8f0;
+  --popover: #0f1419;
+  --popover-foreground: #e2e8f0;
+  --primary: #3b82f6;
+  --primary-foreground: #0b1220;
+  --secondary: #1f2733;
+  --secondary-foreground: #e2e8f0;
+  --muted: #1b2432;
+  --muted-foreground: #94a3b8;
+  --accent: #1a1f2e;
+  --accent-foreground: #e2e8f0;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: #2a3441;
+  --input: #0f1419;
+  --input-background: #0f1419;
+  --switch-background: #2a3441;
+  --ring: #475569;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: #111827;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #0b1220;
+  --sidebar-accent: #1b2432;
+  --sidebar-accent-foreground: #e2e8f0;
+  --sidebar-border: #2a3441;
+  --sidebar-ring: #475569;
+  --app-bg: #0f172a;
+  --app-bg-deep: #0a0e1a;
+  --app-panel: #1a1f2e;
+  --app-panel-alt: #0f1419;
+  --app-panel-hover: #232a3b;
+  --app-border: #2a3441;
+  --app-border-muted: rgba(42, 52, 65, 0.55);
+  --app-border-strong: #394455;
+  --app-text: #e2e8f0;
+  --app-text-muted: #94a3b8;
+  --app-text-subtle: #6b7280;
+  --app-text-faint: #4b5563;
+  --app-text-ghost: #374151;
+  --app-text-invert: #ffffff;
+  --app-accent: #3b82f6;
+  --app-accent-strong: #2563eb;
+  --app-accent-soft: rgba(59, 130, 246, 0.2);
+  --app-accent-muted: rgba(59, 130, 246, 0.4);
+  --app-accent-glow: #93c5fd;
+  --app-accent-glow-soft: rgba(147, 197, 253, 0.55);
+  --app-accent-purple: #c084fc;
+  --app-grid: rgba(59, 130, 246, 0.2);
+  --app-chip-bg: #2a3441;
+  --app-console-bg: #0f1419;
+  --app-console-border: #2a3441;
+  --app-console-divider: rgba(148, 163, 184, 0.12);
+  --app-console-text: #cbd5e1;
+  --app-console-muted: #94a3b8;
+  --app-console-dim: #64748b;
+  --app-console-source: #7a889d;
+  --app-console-time: #64748b;
+  --app-console-highlight: rgba(59, 130, 246, 0.2);
+  --app-cursor-core: #ffffff;
+  --app-toggle-track: linear-gradient(120deg, #0b1220 0%, #1b2845 45%, #2b3b6a 100%);
+  --app-toggle-thumb: #cbd5e1;
+  --app-toggle-thumb-shadow: 0 6px 16px rgba(3, 7, 18, 0.5);
+  --app-toggle-icon: #1b2330;
+  --app-toggle-star: #e2e8f0;
+  --app-toggle-cloud: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}

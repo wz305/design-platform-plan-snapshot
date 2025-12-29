@@ -1,0 +1,3 @@
+#### TByte
+
+TByte          = Byte;

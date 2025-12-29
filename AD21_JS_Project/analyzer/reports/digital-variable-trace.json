@@ -1,0 +1,135 @@
+{
+  "meta": {
+    "generatedAt": "2025-12-16T17:19:27.223Z",
+    "description": "数字变量来源追踪报告"
+  },
+  "summary": {
+    "totalBuiltFiles": 2,
+    "totalNumberVariables": 0,
+    "maxConsecutiveGroup": null,
+    "hasScriptGeneration": true,
+    "patternsFound": 2
+  },
+  "builtFileAnalysis": [
+    {
+      "filePath": "dist/main_utf8.js",
+      "totalNumberVars": 0,
+      "numberVariables": [],
+      "numberVarLines": [],
+      "consecutiveGroups": [],
+      "totalLines": 21577,
+      "fileSize": 673180
+    },
+    {
+      "filePath": "dist/main.js",
+      "totalNumberVars": 0,
+      "numberVariables": [],
+      "numberVarLines": [],
+      "consecutiveGroups": [],
+      "totalLines": 21577,
+      "fileSize": 687549
+    }
+  ],
+  "scriptAnalysis": {
+    "filePath": "build/build.js",
+    "hasNumberGeneration": true,
+    "numberGenerationCode": [
+      {
+        "lineNumber": 121,
+        "line": "mergedContent += '    var globalVars = [\\n';"
+      },
+      {
+        "lineNumber": 143,
+        "line": "mergedContent += '    for (var i = 0; i < globalVars.length; i++) {\\n';"
+      },
+      {
+        "lineNumber": 144,
+        "line": "mergedContent += '        var varName = globalVars[i];\\n';"
+      },
+      {
+        "lineNumber": 145,
+        "line": "mergedContent += '        if (typeof this[varName] !== \"undefined\") {\\n';"
+      },
+      {
+        "lineNumber": 146,
+        "line": "mergedContent += '            window[varName] = this[varName];\\n';"
+      },
+      {
+        "lineNumber": 154,
+        "line": "for (var i = 0; i < fileList.length; i++) {"
+      },
+      {
+        "lineNumber": 289,
+        "line": "for (var i = 0; i < assets.length; i++) {"
+      },
+      {
+        "lineNumber": 391,
+        "line": "for (var i = 0; i < totalSteps; i++) {"
+      },
+      {
+        "lineNumber": 624,
+        "line": "for (var i = 0; i < result.errors.length; i++) {"
+      }
+    ],
+    "globalExportCode": [
+      {
+        "startLine": 121,
+        "endLine": 141,
+        "content": "        mergedContent += '    var globalVars = [\\n';\r\n        mergedContent += '        \"BaseModule_GLOBAL\", \"Core_GLOBAL\", \"LOG_LEVELS_GLOBAL\", \"LEVEL_NAMES_GLOBAL\",\\n';\r\n        mergedContent += '        \"LEVEL_DESCRIPTIONS_GLOBAL\", \"DEFAULT_CONFIG_GLOBAL\", \"LOG_ENTRY_TEMPLATE_GLOBAL\",\\n';\r\n        mergedContent += '        \"STATS_TEMPLATE_GLOBAL\", \"INSTANCE_DATA_TEMPLATE_GLOBAL\", \"ERROR_CODES_GLOBAL\",\\n';\r\n        mergedContent += '        \"ERROR_MESSAGES_GLOBAL\", \"isValidLogLevel_GLOBAL\", \"getLevelName_GLOBAL\",\\n';\r\n        mergedContent += '        \"getLevelDescription_GLOBAL\", \"isLevelEnabled_GLOBAL\", \"getErrorMessage_GLOBAL\",\\n';\r\n        mergedContent += '        \"createDefaultConfig_GLOBAL\", \"createStats_GLOBAL\", \"createLogEntry_GLOBAL\",\\n';\r\n        mergedContent += '        \"createInstanceData_GLOBAL\", \"simpleStringify_GLOBAL\", \"safeString_GLOBAL\",\\n';\r\n        mergedContent += '        \"padString_GLOBAL\", \"truncateString_GLOBAL\", \"formatTimestamp_GLOBAL\",\\n';\r\n        mergedContent += '        \"getCurrentTime_GLOBAL\", \"isValidString_GLOBAL\", \"isValidObject_GLOBAL\",\\n';\r\n        mergedContent += '        \"isValidFunction_GLOBAL\", \"isValidNumber_GLOBAL\", \"isPositiveInteger_GLOBAL\",\\n';\r\n        mergedContent += '        \"isValidBoolean_GLOBAL\", \"mergeConfig_GLOBAL\", \"validateConfig_GLOBAL\",\\n';\r\n        mergedContent += '        \"estimateLogSize_GLOBAL\", \"validateLogEntry_GLOBAL\", \"cleanLogEntry_GLOBAL\",\\n';\r\n        mergedContent += '        \"safeExecute_GLOBAL\", \"createError_GLOBAL\", \"safeArrayLength_GLOBAL\",\\n';\r\n        mergedContent += '        \"safeArrayGet_GLOBAL\", \"clearArray_GLOBAL\", \"executeWriteStep_GLOBAL\",\\n';\r\n        mergedContent += '        \"getQueueStatus_GLOBAL\", \"clearWriteQueue_GLOBAL\", \"DEFAULT_WRITE_CONFIG_GLOBAL\",\\n';\r\n        mergedContent += '        \"LoggerModule_GLOBAL\", \"LoggerModuleIndex_GLOBAL\", \"UILoggerModule_GLOBAL\",\\n';\r\n        mergedContent += '        \"GlobalLogController_GLOBAL\", \"ObjectFactory_GLOBAL\", \"ObjectManager_GLOBAL\",\\n';\r\n        mergedContent += '        \"MockSystem_GLOBAL\", \"PCBObjectWrapper_GLOBAL\", \"GeometryWrapper_GLOBAL\",\\n';\r\n        mergedContent += '        \"ObjectModule_GLOBAL\", \"ObjectCreatorModule_GLOBAL\", \"PositionManager_GLOBAL\", \"PCBInterfaces_GLOBAL\"\\n';\r\n        mergedContent += '    ];\\n';\r"
+      }
+    ]
+  },
+  "patternAnalysis": [
+    {
+      "name": "构建脚本全局变量导出",
+      "description": "构建脚本中的globalVars数组可能生成数字变量",
+      "matches": [
+        {
+          "file": "build/build.js",
+          "matches": [
+            "globalVars = [\\n';\r\n        mergedContent += '        \"BaseModule_GLOBAL\", \"Core_GLOBAL\", \"LOG_LEVELS_GLOBAL\", \"LEVEL_NAMES_GLOBAL\",\\n';\r\n        mergedContent += '        \"LEVEL_DESCRIPTIONS_GLOBAL\", \"DEFAULT_CONFIG_GLOBAL\", \"LOG_ENTRY_TEMPLATE_GLOBAL\",\\n';\r\n        mergedContent += '        \"STATS_TEMPLATE_GLOBAL\", \"INSTANCE_DATA_TEMPLATE_GLOBAL\", \"ERROR_CODES_GLOBAL\",\\n';\r\n        mergedContent += '        \"ERROR_MESSAGES_GLOBAL\", \"isValidLogLevel_GLOBAL\", \"getLevelName_GLOBAL\",\\n';\r\n        mergedContent += '        \"getLevelDescription_GLOBAL\", \"isLevelEnabled_GLOBAL\", \"getErrorMessage_GLOBAL\",\\n';\r\n        mergedContent += '        \"createDefaultConfig_GLOBAL\", \"createStats_GLOBAL\", \"createLogEntry_GLOBAL\",\\n';\r\n        mergedContent += '        \"createInstanceData_GLOBAL\", \"simpleStringify_GLOBAL\", \"safeString_GLOBAL\",\\n';\r\n        mergedContent += '        \"padString_GLOBAL\", \"truncateString_GLOBAL\", \"formatTimestamp_GLOBAL\",\\n';\r\n        mergedContent += '        \"getCurrentTime_GLOBAL\", \"isValidString_GLOBAL\", \"isValidObject_GLOBAL\",\\n';\r\n        mergedContent += '        \"isValidFunction_GLOBAL\", \"isValidNumber_GLOBAL\", \"isPositiveInteger_GLOBAL\",\\n';\r\n        mergedContent += '        \"isValidBoolean_GLOBAL\", \"mergeConfig_GLOBAL\", \"validateConfig_GLOBAL\",\\n';\r\n        mergedContent += '        \"estimateLogSize_GLOBAL\", \"validateLogEntry_GLOBAL\", \"cleanLogEntry_GLOBAL\",\\n';\r\n        mergedContent += '        \"safeExecute_GLOBAL\", \"createError_GLOBAL\", \"safeArrayLength_GLOBAL\",\\n';\r\n        mergedContent += '        \"safeArrayGet_GLOBAL\", \"clearArray_GLOBAL\", \"executeWriteStep_GLOBAL\",\\n';\r\n        mergedContent += '        \"getQueueStatus_GLOBAL\", \"clearWriteQueue_GLOBAL\", \"DEFAULT_WRITE_CONFIG_GLOBAL\",\\n';\r\n        mergedContent += '        \"LoggerModule_GLOBAL\", \"LoggerModuleIndex_GLOBAL\", \"UILoggerModule_GLOBAL\",\\n';\r\n        mergedContent += '        \"GlobalLogController_GLOBAL\", \"ObjectFactory_GLOBAL\", \"ObjectManager_GLOBAL\",\\n';\r\n        mergedContent += '        \"MockSystem_GLOBAL\", \"PCBObjectWrapper_GLOBAL\", \"GeometryWrapper_GLOBAL\",\\n';\r\n        mergedContent += '        \"ObjectModule_GLOBAL\", \"ObjectCreatorModule_GLOBAL\", \"PositionManager_GLOBAL\", \"PCBInterfaces_GLOBAL\"\\n';\r\n        mergedContent += '    ]",
+            "\\n';\r\n        mergedContent += '        \"BaseModule_GLOBAL\", \"Core_GLOBAL\", \"LOG_LEVELS_GLOBAL\", \"LEVEL_NAMES_GLOBAL\",\\n';\r\n        mergedContent += '        \"LEVEL_DESCRIPTIONS_GLOBAL\", \"DEFAULT_CONFIG_GLOBAL\", \"LOG_ENTRY_TEMPLATE_GLOBAL\",\\n';\r\n        mergedContent += '        \"STATS_TEMPLATE_GLOBAL\", \"INSTANCE_DATA_TEMPLATE_GLOBAL\", \"ERROR_CODES_GLOBAL\",\\n';\r\n        mergedContent += '        \"ERROR_MESSAGES_GLOBAL\", \"isValidLogLevel_GLOBAL\", \"getLevelName_GLOBAL\",\\n';\r\n        mergedContent += '        \"getLevelDescription_GLOBAL\", \"isLevelEnabled_GLOBAL\", \"getErrorMessage_GLOBAL\",\\n';\r\n        mergedContent += '        \"createDefaultConfig_GLOBAL\", \"createStats_GLOBAL\", \"createLogEntry_GLOBAL\",\\n';\r\n        mergedContent += '        \"createInstanceData_GLOBAL\", \"simpleStringify_GLOBAL\", \"safeString_GLOBAL\",\\n';\r\n        mergedContent += '        \"padString_GLOBAL\", \"truncateString_GLOBAL\", \"formatTimestamp_GLOBAL\",\\n';\r\n        mergedContent += '        \"getCurrentTime_GLOBAL\", \"isValidString_GLOBAL\", \"isValidObject_GLOBAL\",\\n';\r\n        mergedContent += '        \"isValidFunction_GLOBAL\", \"isValidNumber_GLOBAL\", \"isPositiveInteger_GLOBAL\",\\n';\r\n        mergedContent += '        \"isValidBoolean_GLOBAL\", \"mergeConfig_GLOBAL\", \"validateConfig_GLOBAL\",\\n';\r\n        mergedContent += '        \"estimateLogSize_GLOBAL\", \"validateLogEntry_GLOBAL\", \"cleanLogEntry_GLOBAL\",\\n';\r\n        mergedContent += '        \"safeExecute_GLOBAL\", \"createError_GLOBAL\", \"safeArrayLength_GLOBAL\",\\n';\r\n        mergedContent += '        \"safeArrayGet_GLOBAL\", \"clearArray_GLOBAL\", \"executeWriteStep_GLOBAL\",\\n';\r\n        mergedContent += '        \"getQueueStatus_GLOBAL\", \"clearWriteQueue_GLOBAL\", \"DEFAULT_WRITE_CONFIG_GLOBAL\",\\n';\r\n        mergedContent += '        \"LoggerModule_GLOBAL\", \"LoggerModuleIndex_GLOBAL\", \"UILoggerModule_GLOBAL\",\\n';\r\n        mergedContent += '        \"GlobalLogController_GLOBAL\", \"ObjectFactory_GLOBAL\", \"ObjectManager_GLOBAL\",\\n';\r\n        mergedContent += '        \"MockSystem_GLOBAL\", \"PCBObjectWrapper_GLOBAL\", \"GeometryWrapper_GLOBAL\",\\n';\r\n        mergedContent += '        \"ObjectModule_GLOBAL\", \"ObjectCreatorModule_GLOBAL\", \"PositionManager_GLOBAL\", \"PCBInterfaces_GLOBAL\"\\n';\r\n        mergedContent += '    "
+          ],
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "自动索引生成",
+      "description": "循环中可能生成数字索引变量",
+      "matches": [
+        {
+          "file": "build/build.js",
+          "matches": [
+            "for (var i = 0",
+            "for (var i = 0",
+            "for (var i = 0",
+            "for (var i = 0",
+            "for (var i = 0"
+          ],
+          "count": 5
+        },
+        {
+          "file": "scripts/build-integrator.js",
+          "matches": [
+            "for (var i = 0",
+            "for (var i = 0"
+          ],
+          "count": 2
+        }
+      ]
+    }
+  ],
+  "conclusions": [
+    {
+      "type": "script_generation",
+      "severity": "medium",
+      "description": "构建脚本可能包含数字变量生成代码"
+    },
+    {
+      "type": "pattern_matches",
+      "severity": "low",
+      "description": "发现2个可能的数字变量生成模式"
+    }
+  ]
+}

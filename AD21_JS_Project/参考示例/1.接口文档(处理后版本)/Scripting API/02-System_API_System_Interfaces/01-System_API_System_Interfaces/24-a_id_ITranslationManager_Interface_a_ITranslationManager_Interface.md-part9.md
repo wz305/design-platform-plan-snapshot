@@ -1,0 +1,3 @@
+#### TDynamicString
+
+TDynamicString = AnsiString;

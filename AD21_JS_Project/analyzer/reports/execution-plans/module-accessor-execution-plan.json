@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "id": "plan_1765903871994_k596qeuvb",
+    "createdAt": "2025-12-16T16:51:11.994Z",
+    "version": "1.0.0",
+    "source": "stage6-interpretation"
+  },
+  "steps": [
+    {
+      "type": "add-comment",
+      "id": "step_1765903871994_rp7a0pr3o",
+      "description": "Process symbol: analysis",
+      "target": {
+        "symbol": "analysis",
+        "file": "src/core/module-accessor.js",
+        "line": 1,
+        "column": 0
+      },
+      "reversible": false,
+      "requiresApproval": false,
+      "risk": "low",
+      "confidence": "high",
+      "reason": "File analysis completed successfully",
+      "context": {
+        "originalCode": "/**\r\n * ModuleAccessor - 统一的模块访问器\r\n * \r\n * 提供跨环境的统...",
+        "scope": "",
+        "dependencies": []
+      },
+      "rollback": {
+        "operation": "",
+        "data": {}
+      }
+    }
+  ],
+  "riskSummary": {
+    "level": "low",
+    "blockers": 0,
+    "totalSteps": 1,
+    "reversibleSteps": 0,
+    "approvalRequired": 0
+  },
+  "execution": {
+    "mode": "dry-run",
+    "batchEnabled": true,
+    "rollbackEnabled": true
+  },
+  "statistics": {
+    "stepsByType": {
+      "add-comment": 1
+    },
+    "stepsByRisk": {
+      "low": 1
+    },
+    "estimatedImpact": {
+      "filesAffected": [
+        "src/core/module-accessor.js"
+      ],
+      "symbolsAffected": [
+        "analysis"
+      ],
+      "highRiskCount": 0,
+      "criticalCount": 0
+    }
+  }
+}

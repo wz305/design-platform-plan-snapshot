@@ -1,0 +1,3 @@
+#### cMaxShortStringLength
+
+cMaxShortStringLength = 254;

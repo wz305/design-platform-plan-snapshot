@@ -1,0 +1,17 @@
+[Design]
+Version=1.0
+
+[Document1]
+DocumentPath=FormatCopy.pas
+
+[Parameter1]
+Name=Version
+Value=0.91
+
+[Parameter2]
+Name=RelaseDate
+Value=17/06/2023
+
+[Parameter3]
+Name=Author
+Value=BL Miller

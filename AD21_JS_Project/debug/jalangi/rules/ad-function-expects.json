@@ -1,0 +1,140 @@
+{
+  "PCBServer": {
+    "description": "PCB服务器接口",
+    "returns": {
+      "type": "object",
+      "requiredMethods": ["GetCurrentPCBBoard", "PCBObjectFactory"]
+    }
+  },
+  "GetCurrentPCBBoard": {
+    "description": "获取当前PCB文档",
+    "returns": {
+      "type": "object",
+      "requiredProps": ["I_ObjectAddress"],
+      "optionalProps": ["FileName", "IsLibrary"]
+    },
+    "warnings": [
+      {"condition": "result === null", "message": "PCB文档为空，可能没有打开的PCB文件"}
+    ]
+  },
+  "PCBObjectFactory": {
+    "description": "PCB对象工厂",
+    "expects": [
+      {
+        "arg": 0,
+        "type": "number",
+        "enum": [1, 2, 3, 4, 5, 6, 7],
+        "description": "对象类型ID"
+      },
+      {
+        "arg": 1,
+        "type": "number",
+        "description": "X坐标"
+      },
+      {
+        "arg": 2,
+        "type": "number",
+        "description": "Y坐标"
+      }
+    ],
+    "returns": {
+      "type": "object",
+      "requiredProps": ["I_ObjectAddress"],
+      "description": "创建的PCB对象"
+    },
+    "errors": [
+      {
+        "condition": "args[0] < 1 || args[0] > 7",
+        "message": "无效的对象类型ID"
+      },
+      {
+        "condition": "result && !result.I_ObjectAddress",
+        "message": "PCBObjectFactory返回的对象缺少I_ObjectAddress"
+      }
+    ]
+  },
+  "AddPCBObject": {
+    "description": "添加PCB对象到文档",
+    "expects": [
+      {
+        "arg": 0,
+        "type": "object",
+        "requiredProps": ["I_ObjectAddress"],
+        "description": "要添加的PCB对象"
+      }
+    ],
+    "this": {
+      "type": "object",
+      "requiredMethods": ["AddPCBObject"],
+      "description": "必须是PCB文档对象"
+    },
+    "errors": [
+      {
+        "condition": "args[0] == null",
+        "message": "不能添加null对象"
+      },
+      {
+        "condition": "args[0] && !args[0].I_ObjectAddress",
+        "message": "添加的对象缺少I_ObjectAddress属性"
+      }
+    ]
+  },
+  "BoardIterator_Create": {
+    "description": "创建PCB迭代器",
+    "returns": {
+      "type": "object",
+      "requiredMethods": ["FirstPCBObject", "NextPCBObject", "AddFilter_ObjectSet"],
+      "description": "迭代器对象"
+    },
+    "errors": [
+      {
+        "condition": "result == null",
+        "message": "迭代器创建失败"
+      }
+    ]
+  },
+  "FirstPCBObject": {
+    "description": "获取第一个PCB对象",
+    "this": {
+      "type": "object",
+      "description": "必须是迭代器对象"
+    },
+    "returns": {
+      "type": "object",
+      "optionalProps": ["I_ObjectAddress"],
+      "description": "PCB对象或null"
+    }
+  },
+  "NextPCBObject": {
+    "description": "获取下一个PCB对象",
+    "this": {
+      "type": "object",
+      "description": "必须是迭代器对象"
+    },
+    "returns": {
+      "type": "object",
+      "optionalProps": ["I_ObjectAddress"],
+      "description": "PCB对象或null"
+    }
+  },
+  "BoardIterator_Destroy": {
+    "description": "销毁迭代器",
+    "expects": [
+      {
+        "arg": 0,
+        "type": "object",
+        "description": "要销毁的迭代器"
+      }
+    ]
+  },
+  "AddFilter_ObjectSet": {
+    "description": "添加迭代器过滤条件",
+    "expects": [
+      {
+        "arg": 0,
+        "type": "object",
+        "description": "对象集合过滤器"
+      }
+    ]
+  }
+}

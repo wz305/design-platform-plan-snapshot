@@ -1,0 +1,36 @@
+{
+  "dependencies": {
+    "acorn": "^8.15.0",
+    "estraverse": "^5.3.0",
+    "fs-extra": "^11.3.2",
+    "glob": "^13.0.0",
+    "iconv-lite": "^0.7.0",
+    "jalangi2": "^0.2.6",
+    "mammoth": "^1.11.0"
+  },
+  "scripts": {
+    "prebuild": "node scripts/检查_禁止遮蔽宿主全局.js && node scripts/检查_禁止eval.js",
+    "build": "node build/build.js",
+    "build-with-test": "node scripts/build-integrator.js",
+    "test-dependencies": "node scripts/dependency-builder.js",
+    "test-modules": "node scripts/test-runner.js",
+    "validate-build": "node scripts/dependency-builder.js && node scripts/test-runner.js",
+    "exports-index": "node scripts/generate-exports-index.js",
+    "clean": "node build/build.js clean",
+    "defuse-check": "node scripts/defuse-runner.js",
+    "defuse-single": "node scripts/defuse-runner.js single",
+    "defuse-multi": "node scripts/defuse-runner.js multi",
+    "defuse-integrated": "node scripts/defuse-runner.js both",
+    "analyzer-test": "node analyzer/tests/basic-test.js",
+    "es3-validate": "node scripts/es3-validator.js",
+    "es3-analyze": "node scripts/es3-analyzer.js",
+    "mock": "node web-mock/mock-server-es3.js",
+    "mock-server:start": "node web-mock/mock-server-es3.js",
+    "mock-server:clean": "powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force }\"",
+    "mock-server:restart": "npm run mock-server:clean && npm run mock-server:start"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2"
+  }
+}

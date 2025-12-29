@@ -1,0 +1,817 @@
+{
+  "meta": {
+    "generatedAt": "2025-12-17T15:40:37.074Z",
+    "version": "2.0.0-corrected",
+    "description": "修正版构建文件语义总览报告（修复1359个数字变量误报）"
+  },
+  "summary": {
+    "analyzedFiles": 2,
+    "totalModules": 32,
+    "totalCallableObjects": 51,
+    "totalGlobalVariables": 34,
+    "falsePositiveFix": {
+      "originalCount": 1359,
+      "correctedCount": 34,
+      "falsePositivesRemoved": 1325,
+      "improvementRate": "97.50"
+    }
+  },
+  "modules": {
+    "ModuleAccessor": {
+      "name": "ModuleAccessor",
+      "type": "module",
+      "line": 587
+    },
+    "BaseModule": {
+      "name": "BaseModule",
+      "type": "module",
+      "line": 981
+    },
+    "Core": {
+      "name": "Core",
+      "type": "module",
+      "line": 1342
+    },
+    "GlobalLogController": {
+      "name": "GlobalLogController",
+      "type": "module",
+      "line": 1574
+    },
+    "LoggerTypes": {
+      "name": "LoggerTypes",
+      "type": "module",
+      "line": 2487
+    },
+    "LoggerTools": {
+      "name": "LoggerTools",
+      "type": "module",
+      "line": 2832
+    },
+    "StepFormat": {
+      "name": "StepFormat",
+      "type": "module",
+      "line": 3325
+    },
+    "StepWrite": {
+      "name": "StepWrite",
+      "type": "module",
+      "line": 3779
+    },
+    "LoggerModule": {
+      "name": "LoggerModule",
+      "type": "module",
+      "line": 4599
+    },
+    "LoggerModuleIndex": {
+      "name": "LoggerModuleIndex",
+      "type": "module",
+      "line": 5633
+    },
+    "UILoggerModule": {
+      "name": "UILoggerModule",
+      "type": "module",
+      "line": 6364
+    },
+    "ObjectFactory": {
+      "name": "ObjectFactory",
+      "type": "module",
+      "line": 6778
+    },
+    "ObjectManager": {
+      "name": "ObjectManager",
+      "type": "module",
+      "line": 7188
+    },
+    "MockSystem": {
+      "name": "MockSystem",
+      "type": "module",
+      "line": 7781
+    },
+    "PCBObjectWrapper": {
+      "name": "PCBObjectWrapper",
+      "type": "module",
+      "line": 8422
+    },
+    "GeometryWrapper": {
+      "name": "GeometryWrapper",
+      "type": "module",
+      "line": 8996
+    },
+    "ObjectModule": {
+      "name": "ObjectModule",
+      "type": "module",
+      "line": 9759
+    },
+    "BasePCBWrapper": {
+      "name": "BasePCBWrapper",
+      "type": "module",
+      "line": 10588
+    },
+    "PCBMockSystem": {
+      "name": "PCBMockSystem",
+      "type": "module",
+      "line": 11593
+    },
+    "PCBObjectFactory": {
+      "name": "PCBObjectFactory",
+      "type": "module",
+      "line": 12206
+    },
+    "PCBObjectManager": {
+      "name": "PCBObjectManager",
+      "type": "module",
+      "line": 12767
+    },
+    "PCBObjectPool": {
+      "name": "PCBObjectPool",
+      "type": "module",
+      "line": 13311
+    },
+    "GeometryCalculator": {
+      "name": "GeometryCalculator",
+      "type": "module",
+      "line": 13968
+    },
+    "ArcWrapper": {
+      "name": "ArcWrapper",
+      "type": "module",
+      "line": 14906
+    },
+    "PadWrapper": {
+      "name": "PadWrapper",
+      "type": "module",
+      "line": 15526
+    },
+    "TrackWrapper": {
+      "name": "TrackWrapper",
+      "type": "module",
+      "line": 16558
+    },
+    "ViaWrapper": {
+      "name": "ViaWrapper",
+      "type": "module",
+      "line": 17318
+    },
+    "PCBInterfaces": {
+      "name": "PCBInterfaces",
+      "type": "module",
+      "line": 18167
+    },
+    "PositionManager": {
+      "name": "PositionManager",
+      "type": "module",
+      "line": 18508
+    },
+    "ObjectCreator": {
+      "name": "ObjectCreator",
+      "type": "module",
+      "line": 19078
+    },
+    "ObjectCreatorModule": {
+      "name": "ObjectCreatorModule",
+      "type": "module",
+      "line": 19539
+    },
+    "ObjectCreatorWindow": {
+      "name": "ObjectCreatorWindow",
+      "type": "module",
+      "line": 20048
+    }
+  },
+  "callableObjects": {
+    "showErrorInUI": {
+      "name": "showErrorInUI",
+      "type": "function",
+      "params": [
+        "functionName",
+        "error",
+        "context"
+      ],
+      "line": 20185
+    },
+    "showSuccessInUI": {
+      "name": "showSuccessInUI",
+      "type": "function",
+      "params": [
+        "functionName",
+        "message",
+        "context"
+      ],
+      "line": 20221
+    },
+    "checkLoggerModuleAvailability": {
+      "name": "checkLoggerModuleAvailability",
+      "type": "function",
+      "params": [],
+      "line": 20245
+    },
+    "btnOutputLogClick": {
+      "name": "btnOutputLogClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20311
+    },
+    "btnGenerateLogClick": {
+      "name": "btnGenerateLogClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20369
+    },
+    "btnClearDisplayClick": {
+      "name": "btnClearDisplayClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20567
+    },
+    "btnSaveLogClick": {
+      "name": "btnSaveLogClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20593
+    },
+    "btnDebugStatusClick": {
+      "name": "btnDebugStatusClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20652
+    },
+    "btnLogStatsClick": {
+      "name": "btnLogStatsClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20681
+    },
+    "showObjectCreatorWindow": {
+      "name": "showObjectCreatorWindow",
+      "type": "function",
+      "params": [],
+      "line": 20732
+    },
+    "btnCreateObjectClick": {
+      "name": "btnCreateObjectClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20767
+    },
+    "btnRefreshStatusClick": {
+      "name": "btnRefreshStatusClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20789
+    },
+    "btnObjectStatsClick": {
+      "name": "btnObjectStatsClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20850
+    },
+    "btnClearCacheClick": {
+      "name": "btnClearCacheClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20898
+    },
+    "chkGenDebugClick": {
+      "name": "chkGenDebugClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20957
+    },
+    "chkGenInfoClick": {
+      "name": "chkGenInfoClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 20983
+    },
+    "chkGenWarnClick": {
+      "name": "chkGenWarnClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21009
+    },
+    "chkGenErrorClick": {
+      "name": "chkGenErrorClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21035
+    },
+    "chkUIDebugClick": {
+      "name": "chkUIDebugClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21061
+    },
+    "chkUIInfoClick": {
+      "name": "chkUIInfoClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21087
+    },
+    "chkUIWarnClick": {
+      "name": "chkUIWarnClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21113
+    },
+    "chkUIErrorClick": {
+      "name": "chkUIErrorClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21139
+    },
+    "btnDevModeClick": {
+      "name": "btnDevModeClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21169
+    },
+    "btnProdModeClick": {
+      "name": "btnProdModeClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21195
+    },
+    "btnDebugModeClick": {
+      "name": "btnDebugModeClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21221
+    },
+    "btnSilentModeClick": {
+      "name": "btnSilentModeClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21247
+    },
+    "updateAllSwitches": {
+      "name": "updateAllSwitches",
+      "type": "function",
+      "params": [
+        "enabled"
+      ],
+      "line": 21278
+    },
+    "updateProductionModeSwitches": {
+      "name": "updateProductionModeSwitches",
+      "type": "function",
+      "params": [],
+      "line": 21316
+    },
+    "updateDebugModeSwitches": {
+      "name": "updateDebugModeSwitches",
+      "type": "function",
+      "params": [],
+      "line": 21354
+    },
+    "initializeGlobalEvents": {
+      "name": "initializeGlobalEvents",
+      "type": "function",
+      "params": [],
+      "line": 21393
+    },
+    "uiWrite": {
+      "name": "uiWrite",
+      "type": "function",
+      "params": [
+        "message"
+      ],
+      "line": 21410
+    },
+    "uiDebug": {
+      "name": "uiDebug",
+      "type": "function",
+      "params": [
+        "level",
+        "message",
+        "context",
+        "fileName",
+        "functionName"
+      ],
+      "line": 21433
+    },
+    "uiTrace": {
+      "name": "uiTrace",
+      "type": "function",
+      "params": [
+        "message",
+        "context",
+        "fileName",
+        "functionName"
+      ],
+      "line": 21478
+    },
+    "uiInfo": {
+      "name": "uiInfo",
+      "type": "function",
+      "params": [
+        "message",
+        "context",
+        "fileName",
+        "functionName"
+      ],
+      "line": 21485
+    },
+    "uiWarn": {
+      "name": "uiWarn",
+      "type": "function",
+      "params": [
+        "message",
+        "context",
+        "fileName",
+        "functionName"
+      ],
+      "line": 21492
+    },
+    "uiError": {
+      "name": "uiError",
+      "type": "function",
+      "params": [
+        "message",
+        "context",
+        "fileName",
+        "functionName"
+      ],
+      "line": 21499
+    },
+    "uiFatal": {
+      "name": "uiFatal",
+      "type": "function",
+      "params": [
+        "message",
+        "context",
+        "fileName",
+        "functionName"
+      ],
+      "line": 21506
+    },
+    "debugModuleStatus": {
+      "name": "debugModuleStatus",
+      "type": "function",
+      "params": [],
+      "line": 21513
+    },
+    "debugFunctionCall": {
+      "name": "debugFunctionCall",
+      "type": "function",
+      "params": [
+        "functionName",
+        "args",
+        "fileName"
+      ],
+      "line": 21581
+    },
+    "debugFunctionReturn": {
+      "name": "debugFunctionReturn",
+      "type": "function",
+      "params": [
+        "functionName",
+        "result",
+        "fileName"
+      ],
+      "line": 21591
+    },
+    "debugFunctionError": {
+      "name": "debugFunctionError",
+      "type": "function",
+      "params": [
+        "functionName",
+        "error",
+        "fileName"
+      ],
+      "line": 21601
+    },
+    "cmbObjectTypeChange": {
+      "name": "cmbObjectTypeChange",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21615
+    },
+    "btnSetOriginClick": {
+      "name": "btnSetOriginClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21635
+    },
+    "btnValidateClick": {
+      "name": "btnValidateClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21655
+    },
+    "btnCreateClick": {
+      "name": "btnCreateClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21675
+    },
+    "btnCreateAtOriginClick": {
+      "name": "btnCreateAtOriginClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21695
+    },
+    "btnResetClick": {
+      "name": "btnResetClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21715
+    },
+    "btnCancelClick": {
+      "name": "btnCancelClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21735
+    },
+    "chkGridSnapClick": {
+      "name": "chkGridSnapClick",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21755
+    },
+    "edtGridSizeChange": {
+      "name": "edtGridSizeChange",
+      "type": "function",
+      "params": [
+        "Sender"
+      ],
+      "line": 21775
+    },
+    "cleanupGlobalEvents": {
+      "name": "cleanupGlobalEvents",
+      "type": "function",
+      "params": [],
+      "line": 21796
+    }
+  },
+  "globalVariables": {
+    "ModuleAccessor": {
+      "name": "ModuleAccessor",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 587
+    },
+    "BaseModule": {
+      "name": "BaseModule",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 981
+    },
+    "Core": {
+      "name": "Core",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 1342
+    },
+    "GlobalLogController": {
+      "name": "GlobalLogController",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 1574
+    },
+    "LoggerTypes": {
+      "name": "LoggerTypes",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 2487
+    },
+    "LoggerTools": {
+      "name": "LoggerTools",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 2832
+    },
+    "StepFormat": {
+      "name": "StepFormat",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 3325
+    },
+    "StepWrite": {
+      "name": "StepWrite",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 3779
+    },
+    "LoggerModule": {
+      "name": "LoggerModule",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 4599
+    },
+    "LoggerModuleIndex": {
+      "name": "LoggerModuleIndex",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 5633
+    },
+    "UILoggerModule": {
+      "name": "UILoggerModule",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 6364
+    },
+    "ObjectFactory": {
+      "name": "ObjectFactory",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 6778
+    },
+    "ObjectManager": {
+      "name": "ObjectManager",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 7188
+    },
+    "MockSystem": {
+      "name": "MockSystem",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 7781
+    },
+    "PCBObjectWrapper": {
+      "name": "PCBObjectWrapper",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 8422
+    },
+    "GeometryWrapper": {
+      "name": "GeometryWrapper",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 8996
+    },
+    "ObjectModule": {
+      "name": "ObjectModule",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 9759
+    },
+    "BasePCBWrapper": {
+      "name": "BasePCBWrapper",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 10588
+    },
+    "PCBMockSystem": {
+      "name": "PCBMockSystem",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 11593
+    },
+    "PCBObjectFactory": {
+      "name": "PCBObjectFactory",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 12206
+    },
+    "PCBObjectManager": {
+      "name": "PCBObjectManager",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 12767
+    },
+    "PCBObjectPool": {
+      "name": "PCBObjectPool",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 13311
+    },
+    "GeometryCalculator": {
+      "name": "GeometryCalculator",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 13968
+    },
+    "ArcWrapper": {
+      "name": "ArcWrapper",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 14906
+    },
+    "PadWrapper": {
+      "name": "PadWrapper",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 15526
+    },
+    "TrackWrapper": {
+      "name": "TrackWrapper",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 16558
+    },
+    "ViaWrapper": {
+      "name": "ViaWrapper",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 17318
+    },
+    "SimpleLogger": {
+      "name": "SimpleLogger",
+      "type": "global_variable",
+      "init": "ObjectExpression",
+      "line": 18129
+    },
+    "logger": {
+      "name": "logger",
+      "type": "global_variable",
+      "init": "Identifier",
+      "line": 18153
+    },
+    "PCBInterfaces": {
+      "name": "PCBInterfaces",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 18167
+    },
+    "PositionManager": {
+      "name": "PositionManager",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 18508
+    },
+    "ObjectCreator": {
+      "name": "ObjectCreator",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 19078
+    },
+    "ObjectCreatorModule": {
+      "name": "ObjectCreatorModule",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 19539
+    },
+    "ObjectCreatorWindow": {
+      "name": "ObjectCreatorWindow",
+      "type": "global_variable",
+      "init": "CallExpression",
+      "line": 20048
+    }
+  },
+  "correctionDetails": {
+    "problem": "原始符号提取工具将所有VariableDeclaration节点识别为全局变量",
+    "solution": "修正版只提取真正在全局作用域中的变量声明",
+    "impact": "消除了1359个数字变量的误报，准确率提升97.50%"
+  }
+}

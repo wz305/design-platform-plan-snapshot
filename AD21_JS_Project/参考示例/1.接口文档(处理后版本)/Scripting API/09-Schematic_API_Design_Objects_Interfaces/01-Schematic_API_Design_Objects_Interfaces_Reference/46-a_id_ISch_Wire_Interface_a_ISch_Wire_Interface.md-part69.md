@@ -1,0 +1,3 @@
+#### GetIniFileName
+
+Function GetIniFileName : AnsiString;

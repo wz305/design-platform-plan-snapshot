@@ -1,0 +1,3 @@
+### TFontID
+
+TFontID = SmallInt;

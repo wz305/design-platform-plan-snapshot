@@ -1,0 +1,3 @@
+#### TMatchFileNameKind
+
+TMatchFileNameKind = \(eMatchByPath,eMatchByFileName\);

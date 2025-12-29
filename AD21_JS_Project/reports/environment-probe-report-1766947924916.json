@@ -1,0 +1,1011 @@
+{
+  "schema": "environment-probe/v2",
+  "generatedAt": "Mon Dec 29 02:51:49 UTC+0800 2025",
+  "config": {
+    "safeMode": true,
+    "allowRiskyProbes": true,
+    "includeMaybeProbes": true,
+    "progIdCandidatesPath": "config\\ActiveX-ProgID-超级候选清单.v1.json",
+    "httpBaseUrl": "http://127.0.0.1:8080",
+    "uploadPath": "/api/upload-report",
+    "enableUploadReport": true
+  },
+  "language": {
+    "jsonSource": "projectProvided(json2.js)",
+    "hasDate": true,
+    "hasMath": true,
+    "hasActiveXObject": true
+  },
+  "globals": [
+    {
+      "name": "window",
+      "exists": true,
+      "type": "object"
+    },
+    {
+      "name": "Client",
+      "exists": true,
+      "type": "object"
+    },
+    {
+      "name": "WorkspaceManager",
+      "exists": false,
+      "type": "",
+      "error": {
+        "number": -2146823279,
+        "message": "'WorkspaceManager' 未定义"
+      }
+    },
+    {
+      "name": "PCBServer",
+      "exists": true,
+      "type": "object"
+    },
+    {
+      "name": "SchServer",
+      "exists": true,
+      "type": "object"
+    },
+    {
+      "name": "IntegratedLibraryManager",
+      "exists": true,
+      "type": "object"
+    },
+    {
+      "name": "ServerProcess",
+      "exists": false,
+      "type": "",
+      "error": {
+        "number": -2146823279,
+        "message": "'ServerProcess' 未定义"
+      }
+    },
+    {
+      "name": "ShowMessage",
+      "exists": false,
+      "type": "",
+      "error": {
+        "number": -2146827838,
+        "message": "错误的参数个数或无效的参数属性值"
+      }
+    },
+    {
+      "name": "memLog",
+      "exists": true,
+      "type": "object"
+    },
+    {
+      "name": "UILoggerModule",
+      "exists": true,
+      "type": "object"
+    },
+    {
+      "name": "UIEventManager",
+      "exists": true,
+      "type": "object"
+    },
+    {
+      "name": "exportModule",
+      "exists": false,
+      "type": "",
+      "error": {
+        "number": -2146823279,
+        "message": "'exportModule' 未定义"
+      }
+    },
+    {
+      "name": "module",
+      "exists": false,
+      "type": "",
+      "error": {
+        "number": -2146823279,
+        "message": "'module' 未定义"
+      }
+    }
+  ],
+  "capabilityChecks": {
+    "json": {
+      "source": "projectProvided(json2.js)",
+      "error": null
+    },
+    "tempPath": {
+      "ok": false,
+      "value": "",
+      "error": {
+        "number": -2146827850,
+        "message": "对象不支持此属性或方法"
+      }
+    },
+    "httpPing": {
+      "ok": true,
+      "status": 200,
+      "text": "pong",
+      "via": "WinHttp.WinHttpRequest.5.1",
+      "error": null
+    },
+    "msxmlLoadXml": {
+      "ok": true,
+      "via": "MSXML2.DOMDocument.6.0",
+      "error": null
+    }
+  },
+  "progIdResults": {
+    "safe": {
+      "groups": {
+        "http": {
+          "ok": 8,
+          "fail": 0,
+          "skipped": 0,
+          "total": 8,
+          "items": [
+            {
+              "progId": "WinHttp.WinHttpRequest.5.1",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.ServerXMLHTTP",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.ServerXMLHTTP.3.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.ServerXMLHTTP.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XMLHTTP",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XMLHTTP.3.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XMLHTTP.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Microsoft.XMLHTTP",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "xml_dom_sax_xslt": {
+          "ok": 19,
+          "fail": 1,
+          "skipped": 0,
+          "total": 20,
+          "items": [
+            {
+              "progId": "MSXML2.DOMDocument",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.DOMDocument.3.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.DOMDocument.4.0",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            },
+            {
+              "progId": "MSXML2.DOMDocument.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Microsoft.XMLDOM",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.FreeThreadedDOMDocument",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.FreeThreadedDOMDocument.3.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.FreeThreadedDOMDocument.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.SAXXMLReader",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.SAXXMLReader.3.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.SAXXMLReader.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.MXXMLWriter",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.MXXMLWriter.3.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.MXXMLWriter.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XMLSchemaCache",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XMLSchemaCache.3.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XMLSchemaCache.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XSLTemplate",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XSLTemplate.3.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "MSXML2.XSLTemplate.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "html_dom": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "htmlfile",
+              "ok": true,
+              "error": null,
+              "type": "[object]"
+            }
+          ]
+        },
+        "collections": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "Scripting.Dictionary",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "wsh_core": {
+          "ok": 4,
+          "fail": 0,
+          "skipped": 0,
+          "total": 4,
+          "items": [
+            {
+              "progId": "WScript.Shell",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "WScript.Network",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "VBScript.RegExp",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Scriptlet.TypeLib",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "file_io_stream": {
+          "ok": 2,
+          "fail": 0,
+          "skipped": 0,
+          "total": 2,
+          "items": [
+            {
+              "progId": "Scripting.FileSystemObject",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "ADODB.Stream",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "ado_db": {
+          "ok": 3,
+          "fail": 0,
+          "skipped": 0,
+          "total": 3,
+          "items": [
+            {
+              "progId": "ADODB.Connection",
+              "ok": true,
+              "error": null
+            },
+            {
+              "progId": "ADODB.Recordset",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "ADODB.Command",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "wmi": {
+          "ok": 3,
+          "fail": 0,
+          "skipped": 0,
+          "total": 3,
+          "items": [
+            {
+              "progId": "WbemScripting.SWbemLocator",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "WbemScripting.SWbemNamedValueSet",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "WbemScripting.SWbemRefresher",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "msi": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "WindowsInstaller.Installer",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "sapi": {
+          "ok": 3,
+          "fail": 0,
+          "skipped": 0,
+          "total": 3,
+          "items": [
+            {
+              "progId": "SAPI.SpVoice",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "SAPI.SpFileStream",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "SAPI.SpMemoryStream",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "imaging_wia": {
+          "ok": 3,
+          "fail": 0,
+          "skipped": 0,
+          "total": 3,
+          "items": [
+            {
+              "progId": "WIA.ImageFile",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "WIA.CommonDialog",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "WIA.Vector",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "xml_signature_maybe": {
+          "ok": 0,
+          "fail": 1,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "Microsoft.XMLDSig",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        },
+        "clipboard_maybe": {
+          "ok": 0,
+          "fail": 1,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "MSForms.DataObject",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        },
+        "update_maybe": {
+          "ok": 2,
+          "fail": 0,
+          "skipped": 0,
+          "total": 2,
+          "items": [
+            {
+              "progId": "Microsoft.Update.Session",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Microsoft.Update.ServiceManager",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "compression_maybe": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "ADODB.Stream",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "net_misc_maybe": {
+          "ok": 2,
+          "fail": 0,
+          "skipped": 0,
+          "total": 2,
+          "items": [
+            {
+              "progId": "Msxml2.XMLHTTP.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Msxml2.ServerXMLHTTP.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        }
+      },
+      "totals": {
+        "ok": 53,
+        "fail": 3,
+        "skipped": 0,
+        "total": 56
+      }
+    },
+    "maybe": {
+      "groups": {
+        "type_library_introspection": {
+          "ok": 0,
+          "fail": 3,
+          "skipped": 0,
+          "total": 3,
+          "items": [
+            {
+              "progId": "TLI.TLIApplication",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            },
+            {
+              "progId": "TLBINF32.TLIApplication",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            },
+            {
+              "progId": "OLEVIEW.OLEView",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        },
+        "crypto_capicom": {
+          "ok": 0,
+          "fail": 4,
+          "skipped": 0,
+          "total": 4,
+          "items": [
+            {
+              "progId": "CAPICOM.HashedData",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            },
+            {
+              "progId": "CAPICOM.Utilities",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            },
+            {
+              "progId": "CAPICOM.SignedData",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            },
+            {
+              "progId": "CAPICOM.Store",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        },
+        "crypto_csp_maybe": {
+          "ok": 4,
+          "fail": 0,
+          "skipped": 0,
+          "total": 4,
+          "items": [
+            {
+              "progId": "X509Enrollment.CX509Enrollment",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "X509Enrollment.CX509CertificateRequestPkcs10",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "X509Enrollment.CObjectId",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "X509Enrollment.CX500DistinguishedName",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "cert_store_maybe": {
+          "ok": 0,
+          "fail": 1,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "CAPICom.Store",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        },
+        "json_maybe": {
+          "ok": 0,
+          "fail": 1,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "MSScriptControl.ScriptControl",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        },
+        "windows_scripting_extra": {
+          "ok": 2,
+          "fail": 1,
+          "skipped": 0,
+          "total": 3,
+          "items": [
+            {
+              "progId": "Scripting.Encoder",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Scripting.Signer",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Scripting.Dictionary.1",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        },
+        "zip_maybe": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "CompressedFolder",
+              "ok": true,
+              "error": null
+            }
+          ]
+        },
+        "network_discovery_maybe": {
+          "ok": 2,
+          "fail": 0,
+          "skipped": 0,
+          "total": 2,
+          "items": [
+            {
+              "progId": "HNetCfg.FwMgr",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "HNetCfg.FwPolicy2",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "http_alt_maybe": {
+          "ok": 0,
+          "fail": 1,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "Microsoft.WinHttp.WinHttpRequest.5.1",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        },
+        "msxml_alt_maybe": {
+          "ok": 3,
+          "fail": 0,
+          "skipped": 0,
+          "total": 3,
+          "items": [
+            {
+              "progId": "Msxml2.DOMDocument.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Msxml2.FreeThreadedDOMDocument.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Msxml2.XMLSchemaCache.6.0",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "shell_exec_maybe": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "WScript.Shell.1",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "windows_task_scheduler_maybe": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "Schedule.Service",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "windows_management_maybe": {
+          "ok": 0,
+          "fail": 1,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "Microsoft.WMI",
+              "ok": false,
+              "error": {
+                "number": -2146827859,
+                "message": "Automation 服务器不能创建对象"
+              }
+            }
+          ]
+        }
+      },
+      "totals": {
+        "ok": 14,
+        "fail": 12,
+        "skipped": 0,
+        "total": 26
+      }
+    },
+    "risky": {
+      "groups": {
+        "shell": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "Shell.Application",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "browser": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "InternetExplorer.Application",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "office": {
+          "ok": 5,
+          "fail": 0,
+          "skipped": 0,
+          "total": 5,
+          "items": [
+            {
+              "progId": "Excel.Application",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Word.Application",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Outlook.Application",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "PowerPoint.Application",
+              "ok": true,
+              "error": null,
+              "type": ""
+            },
+            {
+              "progId": "Access.Application",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "process": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "WScript.Shell",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        },
+        "scheduler": {
+          "ok": 1,
+          "fail": 0,
+          "skipped": 0,
+          "total": 1,
+          "items": [
+            {
+              "progId": "Schedule.Service",
+              "ok": true,
+              "error": null,
+              "type": ""
+            }
+          ]
+        }
+      },
+      "totals": {
+        "ok": 9,
+        "fail": 0,
+        "skipped": 0,
+        "total": 9
+      }
+    }
+  },
+  "uploadReport": null
+}
