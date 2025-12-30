@@ -89,6 +89,16 @@
 - `objectId` 使用 `TObjectId` 枚举值（见 2.3.6）。
 - `fieldTypes` 仅用于解释类型，不影响数值传输；常用：`n`/`layerId`/`netId`/`s`(stringId)/`b`(0/1)/`e`(enum)。
 
+#### 2.3.2.1 Spec-0.1all（全量扩展）
+- 使用 `format: "spec-0.1all"` 的扩展规范，追加“全量属性表/字符串规则/读取策略”等内容。
+- 详见 `AD21_JS_Project/docs/规范/Spec-0.1all.md`。
+
+#### 2.3.2.2 Decl 可读版（对接文档）
+- `ad.decl` 为权威结构定义；对接阅读使用可读版。
+- 来源：`AD21_JS_Project/reports/decl-*.json`（取最新时间戳）。
+- 生成文件：`对接文档/AD21_JS_Project/规范/Decl-spec-0.1all.md`。
+- 更新规则：当 `decl` 结构或 `format` 变更时必须同步更新。
+
 #### 2.3.3 Layer Stack 同步（必须）
 - 层是**特殊对象**，不是 `TObjectId`；使用 `TLayer` 数值表示层。
 - 每次发送 `ad.object.index` 必须携带 `stackSig`。若接收端检测 `stackSig` 变化，必须请求 `ad.layer.stack` 重新同步。
@@ -199,21 +209,21 @@
 
 主要对象表：
 - eTrackObject / `track`: `[x1,y1,x2,y2,width,layerId,netId]`
-- eArcObject / `arc`: `[centerX,centerY,radius,startAngle,endAngle,lineWidth,layerId,netId]`
+- eArcObject / `arc`: `[centerX,centerY,radius,startAngle,endAngle,startX,startY,endX,endY,lineWidth,layerId,netId]`
 - eViaObject / `via`: `[x,y,lowLayerId,highLayerId,holeSize,netId]`
 - eViaObject / `via.layer`: `[viaId,layerId,shape,size]`
 - ePadObject / `pad`: `[x,y,rotation,mode,plated,holeSize,drillType,holeType,holeWidth,holeRotation,netId,ownerPartId,nameId]`
 - ePadObject / `pad.layer`: `[padId,layerId,shape,xSize,ySize,offsetX,offsetY,cornerRadiusPct]`
 - ePolyObject / `polygon`: `[layerId,netId,polygonType,pourOver,grid,trackSize,minTrack,borderWidth,removeDead,removeIslandsByArea,islandAreaThreshold,removeNarrowNecks,neckWidthThreshold,arcApprox]`
 - ePolyObject / `polygon.seg.track`: `[polyId,x1,y1,x2,y2,width]`
-- ePolyObject / `polygon.seg.arc`: `[polyId,centerX,centerY,radius,startAngle,endAngle,lineWidth]`
+- ePolyObject / `polygon.seg.arc`: `[polyId,centerX,centerY,radius,startAngle,endAngle,startX,startY,endX,endY,lineWidth]`
 - eBoardOutlineObject / `board.outline`: `[outlineId]`
 - eBoardOutlineObject / `board.outline.seg.track`: `[outlineId,x1,y1,x2,y2,width]`
-- eBoardOutlineObject / `board.outline.seg.arc`: `[outlineId,centerX,centerY,radius,startAngle,endAngle,lineWidth]`
+- eBoardOutlineObject / `board.outline.seg.arc`: `[outlineId,centerX,centerY,radius,startAngle,endAngle,startX,startY,endX,endY,lineWidth]`
 - eFillObject / `fill`: `[x1,y1,x2,y2,rotation,layerId,netId]`
 - eRegionObject / `region`: `[layerId,netId]`
 - eRegionObject / `region.seg.track`: `[regionId,x1,y1,x2,y2,width]`
-- eRegionObject / `region.seg.arc`: `[regionId,centerX,centerY,radius,startAngle,endAngle,lineWidth]`
+- eRegionObject / `region.seg.arc`: `[regionId,centerX,centerY,radius,startAngle,endAngle,startX,startY,endX,endY,lineWidth]`
 - eTextObject / `text`: `[x,y,layerId,rotation,height,width,strokeWidth,textId,fontId,inverted,mirrored]`
 - eComponentObject / `component`: `[x,y,layerId,rotation,designatorId,commentId,patternId,sourceLibId,locked]`
 - eComponentBodyObject / `component.body`: `[componentId,layerId,x1,y1,x2,y2,bodyType]`

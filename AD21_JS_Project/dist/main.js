@@ -25782,24 +25782,24 @@ function 测试_AD_Spec_0_1_一键验证(options) {
         }
 
         add("track", ids.track, ["x1","y1","x2","y2","width","layerId","netId"], ["n","n","n","n","n","layerId","netId"]);
-        add("arc", ids.arc, ["centerX","centerY","radius","startAngle","endAngle","lineWidth","layerId","netId"], ["n","n","n","n","n","n","layerId","netId"]);
+        add("arc", ids.arc, ["centerX","centerY","radius","startAngle","endAngle","startX","startY","endX","endY","lineWidth","layerId","netId"], ["n","n","n","n","n","n","n","n","n","n","layerId","netId"]);
         add("via", ids.via, ["x","y","lowLayerId","highLayerId","holeSize","netId"], ["n","n","layerId","layerId","n","netId"]);
         add("via.layer", ids.via, ["viaId","layerId","shape","size"], ["ref","layerId","e","n"]);
         add("pad", ids.pad, ["x","y","rotation","mode","plated","holeSize","drillType","holeType","holeWidth","holeRotation","netId","ownerPartId","nameId"], ["n","n","n","e","b","n","e","e","n","n","netId","n","s"]);
         add("pad.layer", ids.pad, ["padId","layerId","shape","xSize","ySize","offsetX","offsetY","cornerRadiusPct"], ["ref","layerId","e","n","n","n","n","n"]);
         add("polygon", ids.poly, ["layerId","netId","polygonType","pourOver","grid","trackSize","minTrack","borderWidth","removeDead","removeIslandsByArea","islandAreaThreshold","removeNarrowNecks","neckWidthThreshold","arcApprox"], ["layerId","netId","e","e","n","n","n","n","b","b","n","b","n","n"]);
         add("polygon.seg.track", ids.poly, ["polyId","x1","y1","x2","y2","width"], ["ref","n","n","n","n","n"]);
-        add("polygon.seg.arc", ids.poly, ["polyId","centerX","centerY","radius","startAngle","endAngle","lineWidth"], ["ref","n","n","n","n","n","n"]);
+        add("polygon.seg.arc", ids.poly, ["polyId","centerX","centerY","radius","startAngle","endAngle","startX","startY","endX","endY","lineWidth"], ["ref","n","n","n","n","n","n","n","n","n","n"]);
         add("board.outline", ids.boardOutline, ["outlineId"], ["ref"]);
         add("board.outline.seg.track", ids.boardOutline, ["outlineId","x1","y1","x2","y2","width"], ["ref","n","n","n","n","n"]);
-        add("board.outline.seg.arc", ids.boardOutline, ["outlineId","centerX","centerY","radius","startAngle","endAngle","lineWidth"], ["ref","n","n","n","n","n","n"]);
+        add("board.outline.seg.arc", ids.boardOutline, ["outlineId","centerX","centerY","radius","startAngle","endAngle","startX","startY","endX","endY","lineWidth"], ["ref","n","n","n","n","n","n","n","n","n","n"]);
         add("fill", ids.fill, ["x1","y1","x2","y2","rotation","layerId","netId"], ["n","n","n","n","n","layerId","netId"]);
         add("region", ids.region, ["layerId","netId"], ["layerId","netId"]);
         add("region.seg.track", ids.region, ["regionId","x1","y1","x2","y2","width"], ["ref","n","n","n","n","n"]);
-        add("region.seg.arc", ids.region, ["regionId","centerX","centerY","radius","startAngle","endAngle","lineWidth"], ["ref","n","n","n","n","n","n"]);
+        add("region.seg.arc", ids.region, ["regionId","centerX","centerY","radius","startAngle","endAngle","startX","startY","endX","endY","lineWidth"], ["ref","n","n","n","n","n","n","n","n","n","n"]);
         add("splitplane", ids.splitPlane, ["layerId","netId"], ["layerId","netId"]);
         add("splitplane.seg.track", ids.splitPlane, ["planeId","x1","y1","x2","y2","width"], ["ref","n","n","n","n","n"]);
-        add("splitplane.seg.arc", ids.splitPlane, ["planeId","centerX","centerY","radius","startAngle","endAngle","lineWidth"], ["ref","n","n","n","n","n","n"]);
+        add("splitplane.seg.arc", ids.splitPlane, ["planeId","centerX","centerY","radius","startAngle","endAngle","startX","startY","endX","endY","lineWidth"], ["ref","n","n","n","n","n","n","n","n","n","n"]);
         add("text", ids.text, ["x","y","layerId","rotation","height","width","strokeWidth","textId","fontId","inverted","mirrored"], ["n","n","layerId","n","n","n","n","s","s","b","b"]);
         add("component", ids.component, ["x","y","layerId","rotation","designatorId","commentId","patternId","sourceLibId","locked"], ["n","n","layerId","n","s","s","s","s","b"]);
         add("component.body", ids.componentBody, ["componentId","layerId","x1","y1","x2","y2","bodyType"], ["ref","layerId","n","n","n","n","e"]);
@@ -27114,10 +27114,14 @@ function 测试_AD_Spec_0_1_一键验证(options) {
             var r = _readNumber(obj, "Radius", 0);
             var sa = _readNumber(obj, "StartAngle", 0);
             var ea = _readNumber(obj, "EndAngle", 0);
+            var sx = _readNumber(obj, "StartX", 0);
+            var sy = _readNumber(obj, "StartY", 0);
+            var ex = _readNumber(obj, "EndX", 0);
+            var ey = _readNumber(obj, "EndY", 0);
             var w = _readNumber(obj, "LineWidth", 0);
             var layerId = _readNumber(obj, "Layer", 0);
             var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
-            t.rows.push([cx, cy, r, sa, ea, w, layerId, netId]);
+            t.rows.push([cx, cy, r, sa, ea, sx, sy, ex, ey, w, layerId, netId]);
             _addExtraProps(obj, null, t.rows.length);
         }
 
@@ -27525,8 +27529,12 @@ function 测试_AD_Spec_0_1_一键验证(options) {
                         var r = _readNumber(cursor, "Radius", 0);
                         var sa = _readNumber(cursor, "StartAngle", 0);
                         var ea = _readNumber(cursor, "EndAngle", 0);
+                        var sx = _readNumber(cursor, "StartX", 0);
+                        var sy = _readNumber(cursor, "StartY", 0);
+                        var ex = _readNumber(cursor, "EndX", 0);
+                        var ey = _readNumber(cursor, "EndY", 0);
                         var w2 = _readNumber(cursor, "LineWidth", 0);
-                        arcTable.rows.push([parentId, cx, cy, r, sa, ea, w2]);
+                        arcTable.rows.push([parentId, cx, cy, r, sa, ea, sx, sy, ex, ey, w2]);
                     }
                 }
                 cursor = it.next();

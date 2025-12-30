@@ -54,3 +54,10 @@ fieldTypes: ["e","ref","s","e","n","s","layerId"]
 - `collect` 阶段每 5000 对象输出一次：
   - `COMPACT_PROGRESS` { count, elapsedMs, ratePerSec, batchRatePerSec, batchMs }
 - 目的：避免脚本长时间无输出造成“假死”判断。
+
+## 5. 对象类型与属性结构查找标准
+- 对象类型来源：`TObjectId` 枚举（`AD21_JS_Project/参考示例/1.接口文档(处理后版本)/Scripting API/17-PCB_API_Types/01-PCB_API_PCB_Enumerated_Types_Reference/66-TObjectId.md`）。
+- 对象 -> 接口：在 `AD21_JS_Project/参考示例/1.接口文档(处理后版本)/Scripting API/14-PCB_API_System_Interfaces/**` 搜索对应 `IPCB_*` 接口，接口的 property 列表即基础属性来源。
+- 继承合并：对象属性 = 自身接口 + 父接口属性（接口文档中有继承说明时按继承合并）。
+- 层相关属性：`*OnLayer`/`*OnPlane` 需遵循接口前置条件，用 `GetState_*` 或等价方法读取；不可读时跳过。
+- 结构落地：属性名进入 `prop.name`，值按 type 填 `valueType` 与 `valueNum/valueStrId`；对象引用值优先转换为 `layerId/netId`。

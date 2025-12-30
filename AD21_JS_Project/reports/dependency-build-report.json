@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-30T07:19:54.092Z",
+  "timestamp": "2025-12-30T12:58:03.994Z",
   "summary": {
     "totalModules": 44,
     "validDependencies": true,
@@ -235,7 +235,7 @@
     "src/core/global-events.js": {
       "name": "IPCB_INTERFACE_PROPS",
       "dependencies": [],
-      "size": 298834
+      "size": 299574
     }
   },
   "dependencies": {
