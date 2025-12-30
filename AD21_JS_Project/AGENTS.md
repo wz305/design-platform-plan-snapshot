@@ -75,6 +75,17 @@ AD21_JS_Project：Altium Designer(AD21) 脚本工程（ES3 风格）+ 构建合�
 
 ---
 
+## 文档定位流程（排错用，Checklist）
+当 AD 侧出现“参数无效/未实现/属性不可读”等问题时，按以下清单排查并修复：
+- [ ] 锁定导致问题的 API 所属对象：查看 `reports/error-batch-*.json` 和 `reports/ui-log-*.json`，确认 objectId/objectIdString 与具体异常提示。
+- [ ] 在源码中定位触发点：用 `rg` 搜索对应读写方法（例如 `GetState_*` / `*OnLayer` / `Mode` / `StartLayer` 等），锁定实际调用路径。
+- [ ] 在文档树中核实可用性：到 `参考示例/1.接口文档(处理后版本)/Scripting API/14-PCB_API_System_Interfaces/**` 查接口说明，确认接口层级、是否标注 “not implemented”、是否有前置条件（如 `Mode` 约束）、`StartLayer/StopLayer` 是否返回对象而非数值。
+- [ ] 将文档约束编码进读取逻辑：仅在“接口存在 + 条件满足”时调用，必要时用 `GetState_*` 替代索引属性，避免错误参数。
+- [ ] 增加精简的 debug 记录（限量输出）用于回归验证。
+- [ ] 构建产物并复测：`npm --prefix AD21_JS_Project run build`，再跑一键验证确认 `COMPACT_SUMMARY` 的 `errors` 为 0。
+
+---
+
 ## 近期实现要点（摘要）
 - PCB API 调用严格以文档树为准：`参考示例/1.接口文档(处理后版本)/Scripting API/14-PCB_API_System_Interfaces/**`。
 - AD 一键验证已打通：PING/COMMAND/BOARD_SUMMARY/UPLOAD_REPORT/FINAL_SUMMARY；BOARD_SUMMARY 计数已可用。

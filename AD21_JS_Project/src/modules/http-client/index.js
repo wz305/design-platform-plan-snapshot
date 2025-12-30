@@ -12,20 +12,17 @@
 var HTTPClientModule = (function () {
   var DEFAULT_BASE_URL = "http://127.0.0.1:8080";
 
-  function createHttp() {
-    var progIds = [
-      "MSXML2.XMLHTTP",
-      "MSXML2.ServerXMLHTTP",
-      "Microsoft.XMLHTTP",
-      "WinHttp.WinHttpRequest.5.1"
-    ];
+  var PROG_IDS = [
+    "MSXML2.XMLHTTP",
+    "MSXML2.ServerXMLHTTP",
+    "Microsoft.XMLHTTP",
+    "WinHttp.WinHttpRequest.5.1"
+  ];
 
-    var i;
-    for (i = 0; i < progIds.length; i++) {
-      try {
-        return new ActiveXObject(progIds[i]);
-      } catch (e) {}
-    }
+  function createHttpByProgId(progId) {
+    try {
+      return new ActiveXObject(progId);
+    } catch (e) {}
     return null;
   }
 
@@ -71,60 +68,76 @@ var HTTPClientModule = (function () {
   }
 
   function request(method, url, body, headers) {
-    var http = createHttp();
-    if (!http) {
-      return { ok: false, status: 0, text: "", json: null, error: "XMLHTTP not available" };
-    }
+    var lastError = "";
+    var errors = [];
+    var i;
+    for (i = 0; i < PROG_IDS.length; i++) {
+      var progId = PROG_IDS[i];
+      var http = createHttpByProgId(progId);
+      if (!http) continue;
 
-    try {
-      http.open(method, url, false);
+      try {
+        http.open(method, url, false);
 
-      if (headers) {
-        var k;
-        for (k in headers) {
-          if (headers.hasOwnProperty(k)) {
-            try {
-              http.setRequestHeader(k, headers[k]);
-            } catch (e1) {}
+        if (headers) {
+          var k;
+          for (k in headers) {
+            if (headers.hasOwnProperty(k)) {
+              try {
+                http.setRequestHeader(k, headers[k]);
+              } catch (e1) {}
+            }
           }
         }
-      }
 
-      http.send(body || "");
+        http.send(body || "");
 
-      var status = 0;
-      var text = "";
-      try {
-        status = http.status;
-      } catch (e2) {}
-      try {
-        text = http.responseText;
-      } catch (e3) {}
+        var status = 0;
+        var text = "";
+        try {
+          status = http.status;
+        } catch (e2) {}
+        try {
+          text = http.responseText;
+        } catch (e3) {}
 
-      var json = null;
-      var parseError = null;
-      try {
-        if (typeof JsonUtil !== "undefined" && JsonUtil && JsonUtil.parse) {
-          json = JsonUtil.parse(text);
-          if (!json) parseError = "JsonUtil.parse returned null";
-        } else {
-          parseError = "JsonUtil missing";
+        var json = null;
+        var parseError = null;
+        try {
+          if (typeof JsonUtil !== "undefined" && JsonUtil && JsonUtil.parse) {
+            json = JsonUtil.parse(text);
+            if (!json) parseError = "JsonUtil.parse returned null";
+          } else {
+            parseError = "JsonUtil missing";
+          }
+        } catch (e4) {
+          parseError = "parse throws: " + String(e4);
         }
-      } catch (e4) {
-        parseError = "parse throws: " + String(e4);
-      }
 
-      return {
-        ok: status >= 200 && status < 300,
-        status: status,
-        text: text,
-        json: json,
-        parseError: parseError,
-        error: null
-      };
-    } catch (e) {
-      return { ok: false, status: 0, text: "", json: null, error: String(e) };
+        return {
+          ok: status >= 200 && status < 300,
+          status: status,
+          text: text,
+          json: json,
+          parseError: parseError,
+          error: null,
+          agent: progId,
+          errors: errors
+        };
+      } catch (e) {
+        var msg = "";
+        try {
+          msg = (e && (e.message || e.description)) ? String(e.message || e.description) : String(e);
+        } catch (e2) {
+          msg = "request failed";
+        }
+        lastError = progId + ": " + msg;
+        errors.push(lastError);
+      }
     }
+
+    if (!lastError) lastError = "XMLHTTP not available";
+    return { ok: false, status: 0, text: "", json: null, error: lastError, agent: "", errors: errors };
   }
 
   function getBaseUrl() {
@@ -149,7 +162,8 @@ var HTTPClientModule = (function () {
       url: base + "/ping",
       status: r.status,
       text: r.text,
-      error: r.error
+      error: r.error,
+      agent: r.agent
     });
     return r.ok && String(r.text) === "pong";
   }
@@ -184,7 +198,8 @@ var HTTPClientModule = (function () {
       ui(r.json.ok ? "info" : "warn", "COMMAND " + args.cmd, {
         ok: r.json.ok,
         id: r.json.id || null,
-        error: r.json.error || null
+        error: r.json.error || null,
+        agent: r.agent
       });
       return r.json;
     }
@@ -193,7 +208,9 @@ var HTTPClientModule = (function () {
       status: r.status,
       parseError: r.parseError,
       textHead: r.text ? r.text.substring(0, 80) : "",
-      error: r.error
+      error: r.error,
+      agent: r.agent,
+      errors: r.errors || null
     });
     return { ok: false, error: { code: "NON_JSON", message: r.text || r.error } };
   }

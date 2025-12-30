@@ -4,7 +4,7 @@
 
 ## AD21_JS_Project
 - 当前文档（模块文档、模块索引、项目资源总览、对接资源包、导出索引说明）：AD21_JS_Project/当前文档/
-- 文档规范：AD21_JS_Project/规范/Spec-0.1.md
+- 文档规范（主版本）：AD21_JS_Project/规范/Spec-0.1all.md（AD 侧传输协议完成）；基础：AD21_JS_Project/规范/Spec-0.1.md
 - 测试流程：AD21_JS_Project/一键测试流程.md
 - 对接口径整合包：AD21_JS_Project/对接口径/exports-index.json、exports-index.tsv
 

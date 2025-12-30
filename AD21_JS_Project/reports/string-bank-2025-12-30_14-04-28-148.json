@@ -1,0 +1,1 @@
+{"schema":"spec/0.1","type":"ad.string.bank","id":"ad.string.bank-1767074668143-layer","payload":{"bankId":"layer","offset":1,"strings":["TopLayer","BottomLayer","MultiLayer"]},"meta":{"ts":1767074668143,"source":"AD","rev":0.1,"detail":{"schema":"spec/0.1","build":"ad21-js"}}}

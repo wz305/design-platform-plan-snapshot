@@ -4,3 +4,6 @@ Error: read ECONNRESET
 [2m22:57:56[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/events[39m
 Error: read ECONNRESET
     at TCP.onStreamRead (node:internal/stream_base_commons:216:20)
+[2m09:24:00[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/events[39m
+Error: read ECONNRESET
+    at TCP.onStreamRead (node:internal/stream_base_commons:216:20)

@@ -195,7 +195,11 @@ var UIEventManager = (function(){
             if (typeof uiDebug === "function") {
                 uiDebug("取消按钮点击事件", null, "UIEventManager.js", "_handleCancelClick");
             }
-            
+
+            if (typeof 请求停止_当前任务 === "function") {
+                try { 请求停止_当前任务("ui.cancel", "ui"); } catch (eStop) {}
+            }
+
             // 关闭窗口
             if (ObjectCreatorForm) {
                 ObjectCreatorForm.Close();

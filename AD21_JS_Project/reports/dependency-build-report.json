@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-29T15:26:14.358Z",
+  "timestamp": "2025-12-30T07:19:54.092Z",
   "summary": {
     "totalModules": 44,
     "validDependencies": true,
@@ -92,7 +92,7 @@
     "src/modules/http-client/index.js": {
       "name": "HTTPClientModule",
       "dependencies": [],
-      "size": 6238
+      "size": 6834
     },
     "src/环境探测/EnvironmentProbeModule.js": {
       "name": "EnvironmentProbeModule",
@@ -102,7 +102,7 @@
     "ui/core/UIEventManager.js": {
       "name": "UIEventManager",
       "dependencies": [],
-      "size": 16173
+      "size": 16288
     },
     "src/modules/object-module/core/ObjectFactory.js": {
       "name": "ObjectFactory",
@@ -233,9 +233,9 @@
       "size": 3508
     },
     "src/core/global-events.js": {
-      "name": "global-events",
+      "name": "IPCB_INTERFACE_PROPS",
       "dependencies": [],
-      "size": 146155
+      "size": 298834
     }
   },
   "dependencies": {

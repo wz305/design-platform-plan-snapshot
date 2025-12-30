@@ -129,7 +129,19 @@
 .\scripts\stop-server.ps1
 ```
 
-### 7. `start-server.bat`（批处理脚本）
+### 7. `restart-mock-server.ps1`
+一键重启 Mock Server（AD21 web-mock，默认端口 8080）。
+
+**功能：**
+- 调用根目录 `npm run mock-server:restart`
+- 重启 `AD21_JS_Project/web-mock/mock-server-es3.js`
+
+**用法：**
+```powershell
+.\scripts\restart-mock-server.ps1
+```
+
+### 8. `start-server.bat`（批处理脚本）
 双击即可启动的后台启动脚本。
 
 **功能：**
@@ -143,7 +155,7 @@
 .\scripts\start-server.bat
 ```
 
-### 8. `stop-server.bat`（批处理脚本）
+### 9. `stop-server.bat`（批处理脚本）
 双击即可停止的批处理脚本。
 
 **功能：**
@@ -250,6 +262,7 @@ scripts/
 ├── stop-dev-server.ps1                # 停止服务器脚本
 ├── start-server-background.ps1       # 新后台启动脚本（推荐）
 ├── stop-server.ps1                    # 新停止服务器脚本
+├── restart-mock-server.ps1            # 一键重启 Mock Server
 ├── start-server.bat                   # 批处理启动脚本
 └── stop-server.bat                    # 批处理停止脚本
 ```

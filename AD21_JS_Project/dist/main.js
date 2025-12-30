@@ -6900,20 +6900,17 @@ var UILoggerModule = (function() {
 var HTTPClientModule = (function () {
   var DEFAULT_BASE_URL = "http://127.0.0.1:8080";
 
-  function createHttp() {
-    var progIds = [
-      "MSXML2.XMLHTTP",
-      "MSXML2.ServerXMLHTTP",
-      "Microsoft.XMLHTTP",
-      "WinHttp.WinHttpRequest.5.1"
-    ];
+  var PROG_IDS = [
+    "MSXML2.XMLHTTP",
+    "MSXML2.ServerXMLHTTP",
+    "Microsoft.XMLHTTP",
+    "WinHttp.WinHttpRequest.5.1"
+  ];
 
-    var i;
-    for (i = 0; i < progIds.length; i++) {
-      try {
-        return new ActiveXObject(progIds[i]);
-      } catch (e) {}
-    }
+  function createHttpByProgId(progId) {
+    try {
+      return new ActiveXObject(progId);
+    } catch (e) {}
     return null;
   }
 
@@ -6959,60 +6956,76 @@ var HTTPClientModule = (function () {
   }
 
   function request(method, url, body, headers) {
-    var http = createHttp();
-    if (!http) {
-      return { ok: false, status: 0, text: "", json: null, error: "XMLHTTP not available" };
-    }
+    var lastError = "";
+    var errors = [];
+    var i;
+    for (i = 0; i < PROG_IDS.length; i++) {
+      var progId = PROG_IDS[i];
+      var http = createHttpByProgId(progId);
+      if (!http) continue;
 
-    try {
-      http.open(method, url, false);
+      try {
+        http.open(method, url, false);
 
-      if (headers) {
-        var k;
-        for (k in headers) {
-          if (headers.hasOwnProperty(k)) {
-            try {
-              http.setRequestHeader(k, headers[k]);
-            } catch (e1) {}
+        if (headers) {
+          var k;
+          for (k in headers) {
+            if (headers.hasOwnProperty(k)) {
+              try {
+                http.setRequestHeader(k, headers[k]);
+              } catch (e1) {}
+            }
           }
         }
-      }
 
-      http.send(body || "");
+        http.send(body || "");
 
-      var status = 0;
-      var text = "";
-      try {
-        status = http.status;
-      } catch (e2) {}
-      try {
-        text = http.responseText;
-      } catch (e3) {}
+        var status = 0;
+        var text = "";
+        try {
+          status = http.status;
+        } catch (e2) {}
+        try {
+          text = http.responseText;
+        } catch (e3) {}
 
-      var json = null;
-      var parseError = null;
-      try {
-        if (typeof JsonUtil !== "undefined" && JsonUtil && JsonUtil.parse) {
-          json = JsonUtil.parse(text);
-          if (!json) parseError = "JsonUtil.parse returned null";
-        } else {
-          parseError = "JsonUtil missing";
+        var json = null;
+        var parseError = null;
+        try {
+          if (typeof JsonUtil !== "undefined" && JsonUtil && JsonUtil.parse) {
+            json = JsonUtil.parse(text);
+            if (!json) parseError = "JsonUtil.parse returned null";
+          } else {
+            parseError = "JsonUtil missing";
+          }
+        } catch (e4) {
+          parseError = "parse throws: " + String(e4);
         }
-      } catch (e4) {
-        parseError = "parse throws: " + String(e4);
-      }
 
-      return {
-        ok: status >= 200 && status < 300,
-        status: status,
-        text: text,
-        json: json,
-        parseError: parseError,
-        error: null
-      };
-    } catch (e) {
-      return { ok: false, status: 0, text: "", json: null, error: String(e) };
+        return {
+          ok: status >= 200 && status < 300,
+          status: status,
+          text: text,
+          json: json,
+          parseError: parseError,
+          error: null,
+          agent: progId,
+          errors: errors
+        };
+      } catch (e) {
+        var msg = "";
+        try {
+          msg = (e && (e.message || e.description)) ? String(e.message || e.description) : String(e);
+        } catch (e2) {
+          msg = "request failed";
+        }
+        lastError = progId + ": " + msg;
+        errors.push(lastError);
+      }
     }
+
+    if (!lastError) lastError = "XMLHTTP not available";
+    return { ok: false, status: 0, text: "", json: null, error: lastError, agent: "", errors: errors };
   }
 
   function getBaseUrl() {
@@ -7037,7 +7050,8 @@ var HTTPClientModule = (function () {
       url: base + "/ping",
       status: r.status,
       text: r.text,
-      error: r.error
+      error: r.error,
+      agent: r.agent
     });
     return r.ok && String(r.text) === "pong";
   }
@@ -7072,7 +7086,8 @@ var HTTPClientModule = (function () {
       ui(r.json.ok ? "info" : "warn", "COMMAND " + args.cmd, {
         ok: r.json.ok,
         id: r.json.id || null,
-        error: r.json.error || null
+        error: r.json.error || null,
+        agent: r.agent
       });
       return r.json;
     }
@@ -7081,7 +7096,9 @@ var HTTPClientModule = (function () {
       status: r.status,
       parseError: r.parseError,
       textHead: r.text ? r.text.substring(0, 80) : "",
-      error: r.error
+      error: r.error,
+      agent: r.agent,
+      errors: r.errors || null
     });
     return { ok: false, error: { code: "NON_JSON", message: r.text || r.error } };
   }
@@ -8076,7 +8093,11 @@ var UIEventManager = (function(){
             if (typeof uiDebug === "function") {
                 uiDebug("取消按钮点击事件", null, "UIEventManager.js", "_handleCancelClick");
             }
-            
+
+            if (typeof 请求停止_当前任务 === "function") {
+                try { 请求停止_当前任务("ui.cancel", "ui"); } catch (eStop) {}
+            }
+
             // 关闭窗口
             if (ObjectCreatorForm) {
                 ObjectCreatorForm.Close();
@@ -24646,7 +24667,23 @@ function 测试_最小通信流程() {
  * Spec v0.1 一键验证入口
  * 在 AD 中直接运行：测试_AD_Spec_0_1_一键验证()
  */
-function 测试_AD_Spec_0_1_一键验证() {
+function 测试_AD_Spec_0_1_一键验证(options) {
+    var useRunControl = !(options && options.skipRunControl);
+    var runId = 0;
+    if (useRunControl && typeof _beginAdRun === "function") {
+        runId = _beginAdRun("Spec0.1");
+    }
+    var abortCheck = null;
+    if (options && options.shouldAbort) {
+        abortCheck = options.shouldAbort;
+    } else if (useRunControl) {
+        abortCheck = function (stage, total, errors) {
+            if (typeof _shouldAdStop !== "function") return false;
+            return _shouldAdStop(runId, stage) ? "stop.requested" : false;
+        };
+    } else {
+        abortCheck = function () { return false; };
+    }
     var baseUrl = "http://127.0.0.1:8080";
 
     function _safeJson(obj) {
@@ -25413,6 +25450,2931 @@ function 测试_AD_Spec_0_1_一键验证() {
             }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
         }
         return res;
+    }
+
+    function _hashDjb2(text) {
+        var str = String(text || "");
+        var hash = 5381;
+        var i;
+        for (i = 0; i < str.length; i++) {
+            hash = ((hash << 5) + hash) + str.charCodeAt(i);
+            hash = hash & 0x7fffffff;
+        }
+        return "h:" + hash.toString(16);
+    }
+
+    function _readPropOrCall(obj, propName, args) {
+        if (!obj) return null;
+        var v = null;
+        try {
+            if (obj[propName] !== undefined && obj[propName] !== null) {
+                var t = typeof obj[propName];
+                if (t === "function" || t === "unknown") {
+                    v = obj[propName].apply(obj, args || []);
+                } else {
+                    v = obj[propName];
+                }
+            }
+        } catch (e1) {}
+        if (v === null || v === undefined) {
+            var fn = null;
+            try { fn = obj["GetState_" + propName]; } catch (e2) { fn = null; }
+            if (fn !== undefined && fn !== null) {
+                try {
+                    var t2 = typeof fn;
+                    if (t2 === "function" || t2 === "unknown") {
+                        v = fn.apply(obj, args || []);
+                    } else {
+                        v = fn;
+                    }
+                } catch (e3) {}
+            }
+        }
+        return v;
+    }
+
+    function _readNumber(obj, propName, def, args) {
+        var v = _readPropOrCall(obj, propName, args);
+        if (v === null || v === undefined || v === "") return def;
+        var n = def;
+        try {
+            n = Number(v);
+        } catch (e1) {
+            return def;
+        }
+        if (isNaN(n)) return def;
+        return n;
+    }
+
+    function _readBool(obj, propName, def, args) {
+        var v = _readPropOrCall(obj, propName, args);
+        if (v === null || v === undefined) return def ? 1 : 0;
+        return v ? 1 : 0;
+    }
+
+    function _readStringValue(obj, propName, def, args) {
+        var v = _readPropOrCall(obj, propName, args);
+        if (v === null || v === undefined) return def || "";
+        try {
+            return String(v);
+        } catch (e1) {
+            return def || "";
+        }
+    }
+
+    function _getObjectIdConsts() {
+        return {
+            arc: (typeof eArcObject !== "undefined") ? eArcObject : null,
+            pad: (typeof ePadObject !== "undefined") ? ePadObject : null,
+            via: (typeof eViaObject !== "undefined") ? eViaObject : null,
+            track: (typeof eTrackObject !== "undefined") ? eTrackObject : null,
+            text: (typeof eTextObject !== "undefined") ? eTextObject : null,
+            fill: (typeof eFillObject !== "undefined") ? eFillObject : null,
+            connection: (typeof eConnectionObject !== "undefined") ? eConnectionObject : null,
+            net: (typeof eNetObject !== "undefined") ? eNetObject : null,
+            component: (typeof eComponentObject !== "undefined") ? eComponentObject : null,
+            poly: (typeof ePolyObject !== "undefined") ? ePolyObject : null,
+            region: (typeof eRegionObject !== "undefined") ? eRegionObject : null,
+            splitPlane: (typeof eSplitPlaneObject !== "undefined") ? eSplitPlaneObject : null,
+            componentBody: (typeof eComponentBodyObject !== "undefined") ? eComponentBodyObject : null,
+            dimension: (typeof eDimensionObject !== "undefined") ? eDimensionObject : null,
+            coordinate: (typeof eCoordinateObject !== "undefined") ? eCoordinateObject : null,
+            classObj: (typeof eClassObject !== "undefined") ? eClassObject : null,
+            rule: (typeof eRuleObject !== "undefined") ? eRuleObject : null,
+            fromTo: (typeof eFromToObject !== "undefined") ? eFromToObject : null,
+            diffPair: (typeof eDifferentialPairObject !== "undefined") ? eDifferentialPairObject : null,
+            violation: (typeof eViolationObject !== "undefined") ? eViolationObject : null,
+            embedded: (typeof eEmbeddedObject !== "undefined") ? eEmbeddedObject : null,
+            embeddedBoard: (typeof eEmbeddedBoardObject !== "undefined") ? eEmbeddedBoardObject : null,
+            trace: (typeof eTraceObject !== "undefined") ? eTraceObject : null,
+            spareVia: (typeof eSpareViaObject !== "undefined") ? eSpareViaObject : null,
+            board: (typeof eBoardObject !== "undefined") ? eBoardObject : null,
+            boardOutline: (typeof eBoardOutlineObject !== "undefined") ? eBoardOutlineObject : null
+        };
+    }
+
+    var specAllFormat = "spec-0.1all";
+
+    var propValNum = 1;
+    var propValBool = 2;
+    var propValStr = 3;
+    var propValLayer = 4;
+    var propValNet = 5;
+
+    var IPCB_INTERFACE_PROPS = {
+        "IPCB_Arc": ["EndAngle","EndX","EndY","LineWidth","Radius","StartAngle","StartX","StartY","XCenter","YCenter"],
+        "IPCB_Board": ["AutomaticSplitPlanes","BigVisibleGridSize","BigVisibleGridUnit","BoardOutline","ComponentGridSize","ComponentGridSizeX","ComponentGridSizeY","CurrentLayer","DisplayUnit","DrawDotGrid","DrillLayersPairsCount","ECOOptions","FileName","GerberOptions","InternalPlane1NetName","InternalPlane2NetName","InternalPlane3NetName","InternalPlane4NetName","InternalPlaneNetName","LayerColor","LayerIsDisplayed","LayerIsUsed","LayerPair","LayerStack","MechanicalPairs","OutputOptions","PCBSheet","PCBWindow","PlacerOptions","PrimitiveCounter","PrinterOptions","SelectecObject","SelectecObjectCount","SnapGridSize","SnapGridSizeX","SnapGridSizeY","SnapGridUnit","TrackGridSize","ViaGridSize","VisibleGridSize","VisibleGridUnit","XCursor","XOrigin","YCursor","YOrigin"],
+        "IPCB_BoardOutline": [],
+        "IPCB_Component": ["ChannelOffset","Comment","CommentAutoPosition","CommentOn","ComponentKind","DefaultPCB3DModel","EnablePartSwapping","EnablePinSwapping","FootprintDescription","GroupNum","Height","IsBGA","LockStrings","Name","NameAutoPosition","NameOn","Pattern","Rotation","SourceComponentLibrary","SourceDescription","SourceDesignator","SourceFootprintLibrary","SourceHierarchicalPath","SourceLibReference","SourceUniqueId","UnionIndex"],
+        "IPCB_ComponentBody": ["BodyProjection","OverallHeight","StandoffHeight"],
+        "IPCB_Connection": ["Layer1","Layer2","Mode","X1","X2","Y1","Y2"],
+        "IPCB_Contour": ["CX","CY","Count","Points","Rotation"],
+        "IPCB_ContourMaker": [],
+        "IPCB_ContourPoint": ["X","Y"],
+        "IPCB_Coordinate": ["LineWidth","Rotation","Size","Style","TextFont","TextHeight","TextWidth"],
+        "IPCB_Embedded": ["Description","Name"],
+        "IPCB_FromTo": ["FromPad","NetName","ToPad"],
+        "IPCB_Group": ["LayerUsed","PrimitiveLock","X","Y"],
+        "IPCB_LettersCache": [],
+        "IPCB_LibComponent": ["Description","Height","Name"],
+        "IPCB_Library": ["Board","CurrentComponent"],
+        "IPCB_Net": ["Color","ConnectivelyInvalid","ConnectsVisible","DifferentialPair","InDifferentialPair","IsHighlighted","LiveHighlightMode","LoopRemoval","Name","PadByName","PadByPinDescription","PinCount","RoutedLength","ViaCount"],
+        "IPCB_ObjectClass": ["MemberKind","MemberName","Name","SuperClass"],
+        "IPCB_Pad": ["BotShape","BotXSize","BotYSize","Cache","DrillType","HoleRotation","HoleSize","HoleType","HoleWidth","IsConnectedToPlane","MidShape","MidXSize","MidYSize","Mode","Name","OwnerPart_ID","PinDescriptor","Plated","Rotation","ShapeOnLayer","StackShapeOnLayer","SwapID_Gate","SwapID_Pad","SwappedPadName","TopShape","TopXSize","TopYSize","Width","WidthOnLayer","X","XPadOffset","XSizeOnLayer","XStackSizeOnLayer","Y","YPadOffset","YSizeOnLayer","YStackSizeOnLayer"],
+        "IPCB_Pad2": ["CRPercentage","CornerRadius","StackCRPctOnLayer"],
+        "IPCB_Polygon": ["ArcApproximation","BorderWidth","Grid","IslandAreaThreshold","Layer","MinTrack","NeckWidthThreshold","PolygonType","PourOver","RemoveDead","RemoveIslandsByArea","RemoveNarrowNecks","TrackSize"],
+        "IPCB_Primitive": ["AllowGlobalEdit","Board","Component","Coordinate","DRCError","Dimension","EnableDraw","Enabled","Enabled_Direct","Enabled_vComponent","Handle","IsEmbeddedBoard","IsEmbeddedComponent","IsEmbeddedComponentBody","IsEmbeddedComponentRegion","IsPolygon","IsPolyLine","IsRegion","IsText","Layer","Locked","Mirror","Mode","Net","ObjectId","ObjectKind","ObjectKindString","ObjectKindString_vComponent","ObjectLayer","ObjectLayerString","ObjectKindString_vComponent","ObjectKindString","OwnerComponent","OwnerPart","OwnerPart_ID","PrimitiveObjectId","PrimitiveObjectIdString","PrimitiveObjectIDString","PrimitiveType","PrimitiveTypeString","PrimitiveTypeString_vComponent","Selectable","SelectionState","StreamVersion","StreamVersion2","UnderlyingLayer","V6_LayerID","V7_LayerID"],
+        "IPCB_RectangularPrimitive": ["Rotation","X1Location","X2Location","XLocation","Y1Location","Y2Location","YLocation"],
+        "IPCB_Region": ["Area","Contour","ContourString","IsRectangle","Outline","OutlineString"],
+        "IPCB_Sheet": ["DocumentName","DocumentPath","DocumentReference","Filename","Locked","Name","OwnerFileName"],
+        "IPCB_SpecialStringConverter": [],
+        "IPCB_TTFontData": ["Bold","CanEmbed","Charset","EmbeddedFontHandle","FontFaceName","FontFullName","FontStyleName","Italic","RefCount"],
+        "IPCB_Text": ["AutoPosition","Bold","BottomJustified","CanShrink","CharHeight","CharWidth","FontName","FontNameAndStyle","FontNameAndStyleInDesignator","FontNameAndStyleInText","FontNameInDesignator","FontNameInText","FontStyleName","FontStyleNameInDesignator","FontStyleNameInText","FontType","Inverted","InvertedTTTextBorder","IsDesignator","IsName","IsPolyObject","IsRotatable","IsSpecialString","IsText","IsTrueType","IsVisible","IsVisibleInView","IsVisibleInView2","IsVisibleInView3","IsVisibleInView4","IsVisibleInView5","IsVisibleInView6","IsVisibleInView7","IsVisibleInView8","IsVisibleInView9","IsVisibleInView10","IsVisibleInView11","IsVisibleInView12","IsVisibleInView13","IsVisibleInView14","IsVisibleInView15","IsVisibleInView16","IsVisibleInView17","IsVisibleInView18","IsVisibleInView19","IsVisibleInView20","IsVisibleInView21","IsVisibleInView22","IsVisibleInView23","IsVisibleInView24","IsVisibleInView25","IsVisibleInView26","IsVisibleInView27","IsVisibleInView28","IsVisibleInView29","IsVisibleInView30","Italic","LeftJustified","LineWidth","Mirror","MirrorY","ObjectId","ObjectKind","ParentIsComposite","RightJustified","Rotation","ShearAngle","SpecialString","String","Text","TextKind","TextStyle","TopJustified","UseTTFonts","UseTTFontsInDesignator","UseTTFontsInText","XLocation","YLocation"],
+        "IPCB_Track": ["Width","X1","X2","Y1","Y2"],
+        "IPCB_Via": ["HoleSize","LowLayer","HighLayer","Size","SizeOnLayer","Shape","ShapeOnLayer","Style","X","Y"],
+        "IPCB_Violation": ["Area","AreaString","ErrorKind","InDB","LocationX","LocationY","PositionX","PositionY","RuleName","RuleId","RuleKind","RuleKindString","State","Text","X1","X2","Y1","Y2"]
+    };
+
+    var OBJECT_INTERFACE_MAP = {
+        "Track": ["IPCB_Primitive","IPCB_Track"],
+        "Arc": ["IPCB_Primitive","IPCB_Arc"],
+        "Via": ["IPCB_Primitive","IPCB_Via"],
+        "Pad": ["IPCB_Primitive","IPCB_Pad","IPCB_Pad2"],
+        "Polygon": ["IPCB_Primitive","IPCB_Group","IPCB_Polygon"],
+        "BoardOutline": ["IPCB_Primitive","IPCB_Group","IPCB_BoardOutline"],
+        "Fill": ["IPCB_Primitive","IPCB_RectangularPrimitive"],
+        "Region": ["IPCB_Primitive","IPCB_Group","IPCB_Region"],
+        "Text": ["IPCB_Primitive","IPCB_Text"],
+        "Component": ["IPCB_Primitive","IPCB_Component"],
+        "ComponentBody": ["IPCB_Primitive","IPCB_ComponentBody"],
+        "Connection": ["IPCB_Primitive","IPCB_Connection"],
+        "Coordinate": ["IPCB_Primitive","IPCB_Coordinate"],
+        "Dimension": ["IPCB_Primitive","IPCB_Coordinate"],
+        "Net": ["IPCB_Group","IPCB_Net"],
+        "Class": ["IPCB_ObjectClass"],
+        "Rule": [],
+        "DifferentialPair": [],
+        "FromTo": ["IPCB_FromTo"],
+        "Violation": ["IPCB_Violation"],
+        "Embedded": ["IPCB_Primitive","IPCB_Embedded"],
+        "EmbeddedBoard": ["IPCB_Primitive","IPCB_Embedded"],
+        "Board": ["IPCB_Board"],
+        "Trace": ["IPCB_Primitive","IPCB_Track"],
+        "SpareVia": ["IPCB_Primitive","IPCB_Via"],
+        "SplitPlane": ["IPCB_Primitive","IPCB_Group","IPCB_Polygon"],
+        "SplitPlaneRegion": ["IPCB_Primitive","IPCB_Group","IPCB_Region"]
+    };
+
+    var OBJECT_PROP_DYNAMIC = {
+        "Rule": true,
+        "DifferentialPair": true
+    };
+    var OBJECT_PROP_LIST_CACHE = {};
+
+    function _getObjectPropList(objectIdString) {
+        if (!objectIdString) return null;
+        if (OBJECT_PROP_LIST_CACHE.hasOwnProperty(objectIdString)) return OBJECT_PROP_LIST_CACHE[objectIdString];
+        var ifaces = OBJECT_INTERFACE_MAP[objectIdString];
+        if (!ifaces || !ifaces.length) return null;
+        var list = [];
+        var seen = {};
+        var i;
+        for (i = 0; i < ifaces.length; i++) {
+            var iface = ifaces[i];
+            var props = IPCB_INTERFACE_PROPS[iface];
+            if (!props || !props.length) continue;
+            var j;
+            for (j = 0; j < props.length; j++) {
+                var p = props[j];
+                if (!seen[p]) {
+                    seen[p] = 1;
+                    list.push(p);
+                }
+            }
+        }
+        OBJECT_PROP_LIST_CACHE[objectIdString] = list;
+        return list;
+    }
+
+    function _isLayeredPropName(propName) {
+        if (!propName) return false;
+        if (propName.indexOf("OnLayer") >= 0) return true;
+        if (propName.indexOf("OnPlane") >= 0) return true;
+        return false;
+    }
+
+    var __adRunControl = {
+        activeId: 0,
+        stopRequested: false,
+        stopReason: "",
+        stopSource: "",
+        abortLogged: 0,
+        label: ""
+    };
+
+    function _ensureRunControl() {
+        if (!__adRunControl || typeof __adRunControl !== "object") {
+            __adRunControl = {
+                activeId: 0,
+                stopRequested: false,
+                stopReason: "",
+                stopSource: "",
+                abortLogged: 0,
+                label: ""
+            };
+        }
+        return __adRunControl;
+    }
+
+    function _beginAdRun(label) {
+        var rc = _ensureRunControl();
+        rc.activeId = rc.activeId + 1;
+        rc.stopRequested = false;
+        rc.stopReason = "";
+        rc.stopSource = "";
+        rc.abortLogged = 0;
+        rc.label = label || "";
+        try { uiInfo("RUN_BEGIN", { runId: rc.activeId, label: rc.label }, "global-events.js", "_beginAdRun"); } catch (e0) {}
+        return rc.activeId;
+    }
+
+    function _endAdRun(runId) {
+        var rc = _ensureRunControl();
+        if (rc.activeId !== runId) return;
+        rc.stopRequested = false;
+        rc.stopReason = "";
+        rc.stopSource = "";
+        rc.abortLogged = 0;
+        rc.label = "";
+        try { uiInfo("RUN_END", { runId: runId }, "global-events.js", "_endAdRun"); } catch (e0) {}
+    }
+
+    function _requestAdStop(reason, source) {
+        var rc = _ensureRunControl();
+        rc.stopRequested = true;
+        if (reason !== null && reason !== undefined) rc.stopReason = String(reason);
+        if (source !== null && source !== undefined) rc.stopSource = String(source);
+        try {
+            uiWarn("RUN_STOP_REQUEST", {
+                runId: rc.activeId,
+                label: rc.label,
+                reason: rc.stopReason,
+                source: rc.stopSource
+            }, "global-events.js", "_requestAdStop");
+        } catch (e1) {}
+        return true;
+    }
+
+    function _shouldAdStop(runId, stage) {
+        var rc = _ensureRunControl();
+        if (!runId) return false;
+        if (rc.activeId !== runId) return false;
+        if (!rc.stopRequested) return false;
+        if (rc.abortLogged !== runId) {
+            rc.abortLogged = runId;
+            try {
+                uiWarn("RUN_ABORTED", {
+                    runId: runId,
+                    stage: stage || "",
+                    reason: rc.stopReason,
+                    source: rc.stopSource
+                }, "global-events.js", "_shouldAdStop");
+            } catch (e2) {}
+        }
+        return true;
+    }
+
+    function _processMessagesSafe() {
+        try {
+            if (typeof Application !== "undefined" && Application && Application.ProcessMessages) {
+                Application.ProcessMessages();
+                return true;
+            }
+        } catch (e1) {}
+        try {
+            if (typeof ProcessMessages !== "undefined") {
+                ProcessMessages();
+                return true;
+            }
+        } catch (e2) {}
+        return false;
+    }
+
+    function 请求停止_当前任务(reason, source) {
+        return _requestAdStop(reason || "manual", source || "user");
+    }
+
+    function 请求停止_一键验证(reason, source) {
+        return _requestAdStop(reason || "manual", source || "user");
+    }
+
+    function _getCompactTableDefs(ids, format) {
+        var defs = [];
+        var useAll = (format === specAllFormat);
+        function add(name, objectId, fields, fieldTypes) {
+            defs.push({
+                tableId: defs.length + 1,
+                name: name,
+                objectId: objectId,
+                fields: fields,
+                fieldTypes: fieldTypes
+            });
+        }
+
+        add("track", ids.track, ["x1","y1","x2","y2","width","layerId","netId"], ["n","n","n","n","n","layerId","netId"]);
+        add("arc", ids.arc, ["centerX","centerY","radius","startAngle","endAngle","lineWidth","layerId","netId"], ["n","n","n","n","n","n","layerId","netId"]);
+        add("via", ids.via, ["x","y","lowLayerId","highLayerId","holeSize","netId"], ["n","n","layerId","layerId","n","netId"]);
+        add("via.layer", ids.via, ["viaId","layerId","shape","size"], ["ref","layerId","e","n"]);
+        add("pad", ids.pad, ["x","y","rotation","mode","plated","holeSize","drillType","holeType","holeWidth","holeRotation","netId","ownerPartId","nameId"], ["n","n","n","e","b","n","e","e","n","n","netId","n","s"]);
+        add("pad.layer", ids.pad, ["padId","layerId","shape","xSize","ySize","offsetX","offsetY","cornerRadiusPct"], ["ref","layerId","e","n","n","n","n","n"]);
+        add("polygon", ids.poly, ["layerId","netId","polygonType","pourOver","grid","trackSize","minTrack","borderWidth","removeDead","removeIslandsByArea","islandAreaThreshold","removeNarrowNecks","neckWidthThreshold","arcApprox"], ["layerId","netId","e","e","n","n","n","n","b","b","n","b","n","n"]);
+        add("polygon.seg.track", ids.poly, ["polyId","x1","y1","x2","y2","width"], ["ref","n","n","n","n","n"]);
+        add("polygon.seg.arc", ids.poly, ["polyId","centerX","centerY","radius","startAngle","endAngle","lineWidth"], ["ref","n","n","n","n","n","n"]);
+        add("board.outline", ids.boardOutline, ["outlineId"], ["ref"]);
+        add("board.outline.seg.track", ids.boardOutline, ["outlineId","x1","y1","x2","y2","width"], ["ref","n","n","n","n","n"]);
+        add("board.outline.seg.arc", ids.boardOutline, ["outlineId","centerX","centerY","radius","startAngle","endAngle","lineWidth"], ["ref","n","n","n","n","n","n"]);
+        add("fill", ids.fill, ["x1","y1","x2","y2","rotation","layerId","netId"], ["n","n","n","n","n","layerId","netId"]);
+        add("region", ids.region, ["layerId","netId"], ["layerId","netId"]);
+        add("region.seg.track", ids.region, ["regionId","x1","y1","x2","y2","width"], ["ref","n","n","n","n","n"]);
+        add("region.seg.arc", ids.region, ["regionId","centerX","centerY","radius","startAngle","endAngle","lineWidth"], ["ref","n","n","n","n","n","n"]);
+        add("splitplane", ids.splitPlane, ["layerId","netId"], ["layerId","netId"]);
+        add("splitplane.seg.track", ids.splitPlane, ["planeId","x1","y1","x2","y2","width"], ["ref","n","n","n","n","n"]);
+        add("splitplane.seg.arc", ids.splitPlane, ["planeId","centerX","centerY","radius","startAngle","endAngle","lineWidth"], ["ref","n","n","n","n","n","n"]);
+        add("text", ids.text, ["x","y","layerId","rotation","height","width","strokeWidth","textId","fontId","inverted","mirrored"], ["n","n","layerId","n","n","n","n","s","s","b","b"]);
+        add("component", ids.component, ["x","y","layerId","rotation","designatorId","commentId","patternId","sourceLibId","locked"], ["n","n","layerId","n","s","s","s","s","b"]);
+        add("component.body", ids.componentBody, ["componentId","layerId","x1","y1","x2","y2","bodyType"], ["ref","layerId","n","n","n","n","e"]);
+        add("net", ids.net, ["nameId"], ["s"]);
+        add("class", ids.classObj, ["classKind","nameId"], ["e","s"]);
+        add("rule", ids.rule, ["ruleKind","nameId","enabled"], ["e","s","b"]);
+        add("diffpair", ids.diffPair, ["nameId","netPId","netNId"], ["s","ref","ref"]);
+        add("fromto", ids.fromTo, ["netId","fromPadId","toPadId"], ["ref","ref","ref"]);
+        add("coordinate", ids.coordinate, ["x","y","layerId"], ["n","n","layerId"]);
+        add("dimension", ids.dimension, ["dimType","x1","y1","x2","y2","textId"], ["e","n","n","n","n","s"]);
+        add("violation", ids.violation, ["ruleId","objAId","objBId","x","y"], ["ref","ref","ref","n","n"]);
+        add("connection", ids.connection, ["x1","y1","x2","y2","layerId","netId"], ["n","n","n","n","layerId","netId"]);
+        add("embedded", ids.embedded, ["nameId","x","y","rotation","scaleX","scaleY"], ["s","n","n","n","n","n"]);
+        add("embedded.board", ids.embeddedBoard, ["nameId","x","y","rotation","scaleX","scaleY"], ["s","n","n","n","n","n"]);
+        add("board", ids.board, ["nameId","originX","originY"], ["s","n","n"]);
+        add("trace", ids.trace, ["x1","y1","x2","y2","width","layerId","netId"], ["n","n","n","n","n","layerId","netId"]);
+        add("sparevia", ids.spareVia, ["x","y","lowLayerId","highLayerId","holeSize","netId"], ["n","n","layerId","layerId","n","netId"]);
+        if (useAll) {
+            add("prop", null, ["objectId","rowId","propId","valueType","valueNum","valueStrId","layerId"], ["e","ref","s","e","n","s","layerId"]);
+        }
+        return defs;
+    }
+
+    function _initTableMap(defs) {
+        var map = {};
+        var list = [];
+        var i;
+        for (i = 0; i < defs.length; i++) {
+            var def = defs[i];
+            var t = {
+                tableId: def.tableId,
+                name: def.name,
+                objectId: def.objectId,
+                fields: def.fields,
+                fieldTypes: def.fieldTypes,
+                rows: []
+            };
+            map[def.name] = t;
+            list.push(t);
+        }
+        return { map: map, list: list };
+    }
+
+    function _getStringBank(banks, bankId) {
+        var key = String(bankId);
+        if (!banks[key]) {
+            banks[key] = { bankId: key, list: [], map: {} };
+        }
+        return banks[key];
+    }
+
+    function _addStringToBank(banks, bankId, value) {
+        if (value === null || value === undefined) return 0;
+        var str = "";
+        try {
+            str = String(value);
+        } catch (e1) {
+            return 0;
+        }
+        if (!str) return 0;
+        var bank = _getStringBank(banks, bankId);
+        if (bank.map.hasOwnProperty(str)) {
+            return bank.map[str];
+        }
+        var id = bank.list.length + 1;
+        bank.list.push(str);
+        bank.map[str] = id;
+        return id;
+    }
+
+    function _createBoardIterator(board, objectIds) {
+        if (!board || typeof board.BoardIterator_Create === "undefined") return null;
+        var it = null;
+        try { it = board.BoardIterator_Create(); } catch (e1) { it = null; }
+        if (!it) return null;
+
+        try {
+            if (objectIds && objectIds.length && typeof MkSet === "function" && typeof it.AddFilter_ObjectSet !== "undefined") {
+                var list = [];
+                var i;
+                for (i = 0; i < objectIds.length; i++) {
+                    var oid = objectIds[i];
+                    if (oid !== null && oid !== undefined) list.push(oid);
+                }
+                if (list.length) it.AddFilter_ObjectSet(MkSet.apply(null, list));
+            }
+            if (typeof it.AddFilter_LayerSet !== "undefined" && typeof AllLayers !== "undefined") {
+                it.AddFilter_LayerSet(AllLayers);
+            } else if (typeof it.AddFilter_IPCB_LayerSet !== "undefined" && typeof AllLayers !== "undefined") {
+                it.AddFilter_IPCB_LayerSet(AllLayers);
+            }
+            if (typeof it.AddFilter_Method !== "undefined" && typeof eProcessAll !== "undefined") {
+                it.AddFilter_Method(eProcessAll);
+            }
+        } catch (e2) {}
+
+        function _iterFirst() {
+            var p = null;
+            try {
+                if (typeof it.FirstPCBObject !== "undefined") {
+                    p = it.FirstPCBObject();
+                } else if (typeof it.First !== "undefined") {
+                    p = (typeof it.First === "function") ? it.First() : it.First;
+                }
+            } catch (e3) { p = null; }
+            return p || null;
+        }
+
+        function _iterNext() {
+            var p = null;
+            try {
+                if (typeof it.NextPCBObject !== "undefined") {
+                    p = it.NextPCBObject();
+                } else if (typeof it.Next !== "undefined") {
+                    p = (typeof it.Next === "function") ? it.Next() : it.Next;
+                }
+            } catch (e4) { p = null; }
+            return p || null;
+        }
+
+        function _destroy() {
+            try {
+                if (typeof board.BoardIterator_Destroy !== "undefined") {
+                    board.BoardIterator_Destroy(it);
+                }
+            } catch (e5) {}
+        }
+
+        return { it: it, first: _iterFirst, next: _iterNext, destroy: _destroy };
+    }
+
+    function _createGroupIterator(groupObj) {
+        if (!groupObj || typeof groupObj.GroupIterator_Create === "undefined") return null;
+        var it = null;
+        try { it = groupObj.GroupIterator_Create(); } catch (e1) { it = null; }
+        if (!it) return null;
+
+        function _iterFirst() {
+            var p = null;
+            try {
+                if (typeof it.FirstPCBObject !== "undefined") {
+                    p = it.FirstPCBObject();
+                } else if (typeof it.First !== "undefined") {
+                    p = (typeof it.First === "function") ? it.First() : it.First;
+                }
+            } catch (e2) { p = null; }
+            return p || null;
+        }
+
+        function _iterNext() {
+            var p = null;
+            try {
+                if (typeof it.NextPCBObject !== "undefined") {
+                    p = it.NextPCBObject();
+                } else if (typeof it.Next !== "undefined") {
+                    p = (typeof it.Next === "function") ? it.Next() : it.Next;
+                }
+            } catch (e3) { p = null; }
+            return p || null;
+        }
+
+        function _destroy() {
+            try {
+                if (typeof groupObj.GroupIterator_Destroy !== "undefined") {
+                    groupObj.GroupIterator_Destroy(it);
+                }
+            } catch (e4) {}
+        }
+
+        return { it: it, first: _iterFirst, next: _iterNext, destroy: _destroy };
+    }
+
+    function _readNetName(obj) {
+        var name = "";
+        try {
+            var netObj = _readPropOrCall(obj, "Net", null);
+            if (netObj && netObj.Name) name = String(netObj.Name);
+        } catch (e1) {}
+        if (!name) {
+            name = _readStringValue(obj, "NetName", "");
+        }
+        return name || "";
+    }
+
+    function _getNetId(netName, tables, banks, netMap, ids) {
+        if (!netName) return 0;
+        if (netMap.hasOwnProperty(netName)) return netMap[netName];
+        var netTable = tables.map["net"];
+        if (!netTable) return 0;
+        var bankId = (ids.net !== null && ids.net !== undefined) ? String(ids.net) : "net";
+        var nameId = _addStringToBank(banks, bankId, netName);
+        var id = netTable.rows.length + 1;
+        netTable.rows.push([nameId]);
+        netMap[netName] = id;
+        return id;
+    }
+
+    function _readTextString(obj) {
+        var s = _readStringValue(obj, "Text", "");
+        if (!s) s = _readStringValue(obj, "TextString", "");
+        if (!s) s = _readStringValue(obj, "String", "");
+        if (!s) s = _readStringValue(obj, "Value", "");
+        return s || "";
+    }
+
+    function _readTrackWidth(obj) {
+        var w = _readNumber(obj, "Width", null);
+        if (w === null || w === undefined) w = _readNumber(obj, "LineWidth", 0);
+        return w;
+    }
+
+    function _buildDeclInfo(format) {
+        if (!format) format = specAllFormat;
+        var ids = _getObjectIdConsts();
+        var defs = _getCompactTableDefs(ids, format);
+        var tables = _initTableMap(defs);
+        var i;
+        var hashBase = String(format) + "|";
+        for (i = 0; i < defs.length; i++) {
+            var d = defs[i];
+            hashBase += d.name + "|" + String(d.objectId) + "|" + d.fields.join(",") + "|";
+        }
+        var declHash = _hashDjb2(hashBase);
+        var declId = "decl-" + declHash;
+        var stringBanks = [];
+        stringBanks.push({ bankId: "layer", objectId: null, note: "layer names" });
+        if (ids.net !== null && ids.net !== undefined) stringBanks.push({ bankId: String(ids.net), objectId: ids.net, note: "net strings" });
+        if (ids.text !== null && ids.text !== undefined) stringBanks.push({ bankId: String(ids.text), objectId: ids.text, note: "text strings" });
+        if (ids.dimension !== null && ids.dimension !== undefined) stringBanks.push({ bankId: String(ids.dimension), objectId: ids.dimension, note: "dimension strings" });
+        if (ids.component !== null && ids.component !== undefined) stringBanks.push({ bankId: String(ids.component), objectId: ids.component, note: "component strings" });
+        if (ids.pad !== null && ids.pad !== undefined) stringBanks.push({ bankId: String(ids.pad), objectId: ids.pad, note: "pad strings" });
+        if (ids.classObj !== null && ids.classObj !== undefined) stringBanks.push({ bankId: String(ids.classObj), objectId: ids.classObj, note: "class strings" });
+        if (ids.rule !== null && ids.rule !== undefined) stringBanks.push({ bankId: String(ids.rule), objectId: ids.rule, note: "rule strings" });
+        if (ids.diffPair !== null && ids.diffPair !== undefined) stringBanks.push({ bankId: String(ids.diffPair), objectId: ids.diffPair, note: "diffpair strings" });
+        if (ids.embedded !== null && ids.embedded !== undefined) stringBanks.push({ bankId: String(ids.embedded), objectId: ids.embedded, note: "embedded strings" });
+        if (ids.embeddedBoard !== null && ids.embeddedBoard !== undefined) stringBanks.push({ bankId: String(ids.embeddedBoard), objectId: ids.embeddedBoard, note: "embedded board strings" });
+        if (ids.board !== null && ids.board !== undefined) stringBanks.push({ bankId: String(ids.board), objectId: ids.board, note: "board strings" });
+        if (format === specAllFormat) {
+            stringBanks.push({ bankId: "prop.name", objectId: null, note: "property names" });
+            stringBanks.push({ bankId: "prop.value", objectId: null, note: "property values" });
+        }
+        return {
+            format: format,
+            declId: declId,
+            declHash: declHash,
+            rowIdMode: "implicit-1",
+            ids: ids,
+            defs: defs,
+            tables: tables,
+            stringBanks: stringBanks,
+            isAll: (format === specAllFormat)
+        };
+    }
+
+    function _buildLayerStackInfo(board, banks) {
+        var res = {
+            ok: false,
+            error: "",
+            fields: ["layerId","nameId","stackIndex","flags"],
+            layers: [],
+            layerIds: [],
+            layerIndexMap: {},
+            signalLayerIds: [],
+            stackSig: ""
+        };
+        if (!board) {
+            res.error = "board missing";
+            return res;
+        }
+
+        function _resolveStack(boardRef) {
+            if (boardRef && boardRef.LayerStack) return boardRef.LayerStack;
+            if (boardRef && boardRef.LayerStack_V7) return boardRef.LayerStack_V7;
+            return null;
+        }
+
+        function _callStackFirst(stack, layerClass) {
+            if (!stack) return null;
+            var obj = null;
+            try {
+                if (stack.FirstLayer !== undefined) {
+                    obj = (typeof stack.FirstLayer === "function" || typeof stack.FirstLayer === "unknown") ? stack.FirstLayer() : stack.FirstLayer;
+                    return obj || null;
+                }
+                if (stack.First !== undefined) {
+                    if (typeof stack.First === "function" || typeof stack.First === "unknown") {
+                        obj = (layerClass !== null && layerClass !== undefined) ? stack.First(layerClass) : stack.First();
+                    } else {
+                        obj = stack.First;
+                    }
+                    return obj || null;
+                }
+            } catch (e1) {}
+            return null;
+        }
+
+        function _callStackNext(stack, layerClass, refLayer) {
+            if (!stack) return null;
+            var obj = null;
+            try {
+                if (stack.NextLayer !== undefined) {
+                    obj = (typeof stack.NextLayer === "function" || typeof stack.NextLayer === "unknown") ? stack.NextLayer(refLayer) : stack.NextLayer;
+                    return obj || null;
+                }
+                if (stack.Next !== undefined) {
+                    if (typeof stack.Next === "function" || typeof stack.Next === "unknown") {
+                        obj = (layerClass !== null && layerClass !== undefined) ? stack.Next(layerClass, refLayer) : stack.Next(refLayer);
+                    } else {
+                        obj = stack.Next;
+                    }
+                    return obj || null;
+                }
+            } catch (e2) {}
+            return null;
+        }
+
+        var stack = _resolveStack(board);
+        if (!stack) {
+            res.error = "LayerStack not available";
+            return res;
+        }
+
+        var layerClassAll = (typeof eLayerClass_All !== "undefined") ? eLayerClass_All :
+            ((typeof eLayerClass_Physical !== "undefined") ? eLayerClass_Physical : null);
+        var layerClassSignal = (typeof eLayerClass_Signal !== "undefined") ? eLayerClass_Signal : null;
+
+        var signalSet = {};
+        if (layerClassSignal !== null) {
+            var sLayer = _callStackFirst(stack, layerClassSignal);
+            while (sLayer) {
+                var sid = null;
+                try { sid = sLayer.LayerID; } catch (eS1) {}
+                if (sid !== null && sid !== undefined) {
+                    signalSet[String(sid)] = true;
+                    res.signalLayerIds.push(sid);
+                }
+                sLayer = _callStackNext(stack, layerClassSignal, sLayer);
+            }
+        }
+
+        var layerObj = _callStackFirst(stack, layerClassAll);
+        var idx = 0;
+        while (layerObj) {
+            var layerId = null;
+            var layerName = "";
+            try { layerId = layerObj.LayerID; } catch (e1) {}
+            try { layerName = String(layerObj.Name || ""); } catch (e2) {}
+            if (layerId !== null && layerId !== undefined) {
+                var flags = 0;
+                if (signalSet[String(layerId)]) flags = flags | 1;
+                var nameId = _addStringToBank(banks, "layer", layerName);
+                res.layers.push([layerId, nameId, idx, flags]);
+                res.layerIds.push(layerId);
+                res.layerIndexMap[String(layerId)] = idx;
+                idx++;
+            }
+            layerObj = _callStackNext(stack, layerClassAll, layerObj);
+        }
+
+        if (res.layers.length === 0 && typeof StackMap !== "undefined" && StackMap && StackMap.getAllNormalizedLayers) {
+            var names = StackMap.getAllNormalizedLayers();
+            var i;
+            for (i = 0; i < names.length; i++) {
+                var nm = names[i];
+                var id = StackMap.getLayerId(nm);
+                var nId = _addStringToBank(banks, "layer", nm);
+                res.layers.push([id, nId, i, 0]);
+                res.layerIds.push(id);
+                res.layerIndexMap[String(id)] = i;
+            }
+        }
+
+        var sigText = "";
+        var j;
+        for (j = 0; j < res.layers.length; j++) {
+            var row = res.layers[j];
+            sigText += String(row[0]) + ":" + String(row[1]) + ":" + String(row[2]) + ":" + String(row[3]) + ";";
+        }
+        res.stackSig = _hashDjb2(sigText);
+        res.ok = true;
+        return res;
+    }
+
+    function _collectCompactData(board, declInfo, layerInfo, banks, options) {
+        var res = {
+            ok: false,
+            error: "",
+            aborted: false,
+            abortReason: "",
+            tables: declInfo.tables,
+            stringBanks: banks,
+            stats: {
+                total: 0,
+                unsupported: 0,
+                unsupportedTypes: {},
+                tableCounts: {},
+                objectCounts: {},
+                errors: 0,
+                errorSamples: [],
+                errorDropped: 0,
+                perfSample: 0,
+                perfSamples: 0,
+                perfTotalMs: 0,
+                perfTop: null
+            }
+        };
+        if (!board) {
+            res.error = "board missing";
+            return res;
+        }
+
+        var tables = declInfo.tables;
+        var ids = declInfo.ids;
+        var netMap = {};
+        var compMap = {};
+        var classMap = {};
+        var ruleMap = {};
+        var diffMap = {};
+        var fromToMap = {};
+        var violationMap = {};
+        var padHandleMap = {};
+        var boardRowAdded = false;
+        var progressStep = (options && options.progressStep) ? options.progressStep : 5000;
+        var debug = options && options.debug;
+        var abortRequested = false;
+        var abortReason = "";
+        var shouldAbort = (options && options.shouldAbort) ? options.shouldAbort : null;
+        var maxErrors = (options && options.maxErrors) ? options.maxErrors : 0;
+        var yieldStep = (options && options.yieldStep) ? options.yieldStep : progressStep;
+        var perfSample = 0;
+        var perfEnabled = false;
+        var perfTypes = {};
+        var perfSampleCount = 0;
+        var perfTotalMs = 0;
+        var perfTopLimit = (options && options.perfTopLimit) ? options.perfTopLimit : 8;
+        if (options && options.perfSample !== undefined) perfSample = options.perfSample;
+        if (options && options.perfTypes) perfEnabled = true;
+        if (perfSample && perfSample > 0) perfEnabled = true;
+
+        function _touchTableCount(name) {
+            if (!tables.map[name]) return;
+            res.stats.tableCounts[name] = tables.map[name].rows.length;
+        }
+
+        function _markUnsupported(key) {
+            res.stats.unsupported++;
+            if (!res.stats.unsupportedTypes[key]) res.stats.unsupportedTypes[key] = 0;
+            res.stats.unsupportedTypes[key]++;
+        }
+
+        function _requestAbort(reason) {
+            if (abortRequested) return;
+            abortRequested = true;
+            abortReason = reason || "";
+        }
+
+        function _checkAbort(stage) {
+            if (abortRequested) return true;
+            if (shouldAbort) {
+                var stop = false;
+                try { stop = shouldAbort(stage, res.stats.total, res.stats.errors); } catch (eStop) { stop = false; }
+                if (stop) {
+                    _requestAbort(typeof stop === "string" ? stop : "stop.requested");
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function _yieldIfNeeded(count) {
+            if (!yieldStep) return;
+            if (count > 0 && (count % yieldStep === 0)) {
+                _processMessagesSafe();
+            }
+        }
+
+        function _countType(typeKey) {
+            if (!typeKey) return;
+            if (!res.stats.objectCounts[typeKey]) res.stats.objectCounts[typeKey] = 0;
+            res.stats.objectCounts[typeKey]++;
+        }
+
+        function _recordPerf(typeKey, startMs) {
+            if (!startMs || !typeKey) return;
+            var dt = new Date().getTime() - startMs;
+            perfSampleCount++;
+            perfTotalMs += dt;
+            var item = perfTypes[typeKey];
+            if (!item) {
+                item = { ms: 0, count: 0 };
+                perfTypes[typeKey] = item;
+            }
+            item.ms += dt;
+            item.count++;
+        }
+
+        function _perfWrap(typeKey, obj, handler) {
+            _countType(typeKey);
+            var t0 = 0;
+            if (perfEnabled && (perfSample <= 1 || (res.stats.total % perfSample === 0))) {
+                t0 = new Date().getTime();
+            }
+            handler(obj);
+            _recordPerf(typeKey, t0);
+        }
+
+        function _buildPerfTop(map, limit) {
+            var arr = [];
+            var k;
+            for (k in map) {
+                if (!map.hasOwnProperty(k)) continue;
+                arr.push({ type: k, ms: map[k].ms, count: map[k].count });
+            }
+            arr.sort(function (a, b) { return b.ms - a.ms; });
+            if (limit && arr.length > limit) arr.length = limit;
+            var i;
+            for (i = 0; i < arr.length; i++) {
+                var it = arr[i];
+                it.avgMs = (it.count > 0) ? (Math.round((it.ms / it.count) * 100) / 100) : 0;
+            }
+            return arr;
+        }
+
+        var errorBuffer = [];
+        var errorBatchSize = (options && options.errorBatchSize) ? options.errorBatchSize : 50;
+        var errorMaxBatches = (options && options.errorMaxBatches) ? options.errorMaxBatches : 20;
+        var errorBatchesSent = 0;
+        var errorVerbose = options && options.errorVerbose;
+        var debugLimit = (options && options.debugLimit) ? options.debugLimit : 5;
+        var debugCounts = { layerRead: 0, padLayer: 0, viaRange: 0, unsupported: 0, errorSample: 0, errorDetail: 0 };
+        var scanStartedAt = new Date().getTime();
+        var lastProgressAt = scanStartedAt;
+        var lastProgressCount = 0;
+
+        function _flushErrorBuffer(force) {
+            if (!options || !options.onErrorBatch) return;
+            if (!errorBuffer.length) return;
+            if (!force && errorBuffer.length < errorBatchSize) return;
+            if (errorBatchesSent >= errorMaxBatches) return;
+            try {
+                options.onErrorBatch(errorBuffer, errorBatchesSent + 1, !!force);
+            } catch (eSend) {}
+            errorBatchesSent++;
+            errorBuffer = [];
+        }
+
+        function _recordError(oid, oidStr, msg) {
+            res.stats.errors++;
+            if (res.stats.errorSamples.length < 5) {
+                res.stats.errorSamples.push({ objectId: oid, objectIdString: oidStr, message: msg });
+            }
+
+            if (maxErrors && res.stats.errors >= maxErrors) {
+                _requestAbort("error.limit");
+            }
+
+            if (errorBatchesSent >= errorMaxBatches) {
+                res.stats.errorDropped++;
+                return;
+            }
+
+            errorBuffer.push({
+                index: res.stats.errors,
+                objectId: oid,
+                objectIdString: oidStr,
+                message: msg
+            });
+            _flushErrorBuffer(false);
+
+            if (errorVerbose && options && options.onErrorBatch) {
+                try { uiWarn("COMPACT_ITEM_ERROR", { objectId: oid, objectIdString: oidStr, message: msg }, "global-events.js", "_collectCompactData"); } catch (eWarn) {}
+            }
+        }
+
+        var propTable = tables.map["prop"];
+        var propEnabled = !!propTable;
+        var propSeen = {};
+        var propNameBankId = "prop.name";
+        var propValueBankId = "prop.value";
+        var propDynamicLimit = (options && options.propDynamicLimit) ? options.propDynamicLimit : 200;
+        var propDebugLimit = (options && options.propDebugLimit) ? options.propDebugLimit : 3;
+        var propDebugCount = 0;
+
+        var layerValueProps = {
+            Layer: 1, LayerID: 1, LayerId: 1, Layer1: 1, Layer2: 1, LowLayer: 1, HighLayer: 1,
+            StartLayer: 1, StopLayer: 1, UnderlyingLayer: 1, ObjectLayer: 1, CurrentLayer: 1
+        };
+
+        function _isLayerValuePropName(propName) {
+            if (!propName) return false;
+            if (layerValueProps[propName]) return true;
+            if (propName.indexOf("LayerID") >= 0) return true;
+            if (propName.indexOf("LayerId") >= 0) return true;
+            if (propName.length > 5 && propName.substr(propName.length - 5) === "Layer") return true;
+            if (/Layer\\d+$/.test(propName)) return true;
+            return false;
+        }
+
+        function _isNetValuePropName(propName) {
+            if (!propName) return false;
+            return propName.indexOf("Net") >= 0;
+        }
+
+        function _readLayerValue(obj, propName, layerId, diagInfo, diagTag) {
+            var v = null;
+            var err = null;
+            if (!obj) return { value: null, error: null };
+            try {
+                var fn = null;
+                try { fn = obj["GetState_" + propName]; } catch (eFn) { err = eFn; fn = null; }
+                if (fn !== null && fn !== undefined) {
+                    var t = typeof fn;
+                    if (t === "function" || t === "unknown") {
+                        v = fn.apply(obj, [layerId]);
+                    } else {
+                        v = fn;
+                    }
+                } else {
+                    var prop = null;
+                    try { prop = obj[propName]; } catch (eProp) { err = eProp; prop = null; }
+                    if (prop !== null && prop !== undefined) {
+                        var t2 = typeof prop;
+                        if (t2 === "function" || t2 === "unknown") {
+                            v = prop.apply(obj, [layerId]);
+                        } else {
+                            v = null;
+                        }
+                    }
+                }
+            } catch (e1) {
+                err = e1;
+            }
+            if ((v === null || v === undefined) && err && debug && propDebugCount < propDebugLimit) {
+                propDebugCount++;
+                try {
+                    uiDebug("COMPACT_LAYER_PROP_FAIL", {
+                        tag: diagTag || "",
+                        prop: propName,
+                        layerId: layerId,
+                        objectId: diagInfo ? diagInfo.oid : null,
+                        objectIdString: diagInfo ? diagInfo.oidStr : "",
+                        error: (err && err.message) ? String(err.message) : String(err)
+                    }, "global-events.js", "_collectCompactData");
+                } catch (eLog) {}
+            }
+            return { value: v, error: err };
+        }
+
+        function _normalizePropValue(propName, value, obj, layerId) {
+            if (value === null || value === undefined) return null;
+            var t = typeof value;
+            if (t === "boolean") return { type: propValBool, num: value ? 1 : 0, strId: 0 };
+            if (t === "number") {
+                if (_isLayerValuePropName(propName)) return { type: propValLayer, num: value, strId: 0 };
+                return { type: propValNum, num: value, strId: 0 };
+            }
+            if (t === "string") {
+                if (_isNetValuePropName(propName)) {
+                    var netId = _getNetId(value, tables, banks, netMap, ids);
+                    return { type: propValNet, num: netId, strId: 0 };
+                }
+                var strId = _addStringToBank(banks, propValueBankId, value);
+                return { type: propValStr, num: 0, strId: strId };
+            }
+
+            if (t === "object" || t === "unknown") {
+                var lid = _readLayerIdFromObject(value);
+                if (lid !== null && lid !== undefined) {
+                    return { type: propValLayer, num: lid, strId: 0 };
+                }
+                if (_isNetValuePropName(propName)) {
+                    var netName = "";
+                    try {
+                        if (value && value.Net && value.Net.Name) netName = String(value.Net.Name);
+                    } catch (eNet1) {}
+                    if (!netName) {
+                        try { if (value && value.Name !== undefined) netName = String(value.Name); } catch (eNet2) {}
+                    }
+                    if (netName) {
+                        var netId2 = _getNetId(netName, tables, banks, netMap, ids);
+                        return { type: propValNet, num: netId2, strId: 0 };
+                    }
+                }
+                try {
+                    if (value && value.Name !== undefined) {
+                        var nameStr = String(value.Name);
+                        var nameId = _addStringToBank(banks, propValueBankId, nameStr);
+                        return { type: propValStr, num: 0, strId: nameId };
+                    }
+                } catch (eName) {}
+            }
+
+            if (layerId !== null && layerId !== undefined) {
+                return { type: propValNum, num: 0, strId: 0 };
+            }
+            return null;
+        }
+
+        function _pushPropRow(objectId, rowId, propName, valueType, valueNum, valueStrId, layerId) {
+            if (!propEnabled) return;
+            if (!objectId || !rowId) return;
+            if (!propName) return;
+            var propId = _addStringToBank(banks, propNameBankId, propName);
+            if (!propId) return;
+            propTable.rows.push([
+                objectId,
+                rowId,
+                propId,
+                valueType || 0,
+                valueNum || 0,
+                valueStrId || 0,
+                layerId || 0
+            ]);
+        }
+
+        function _collectPlainProp(obj, info, rowId, propName) {
+            var v = _readPropOrCall(obj, propName, null);
+            if (v === null || v === undefined) return;
+            var norm = _normalizePropValue(propName, v, obj, null);
+            if (!norm) return;
+            _pushPropRow(info.oid, rowId, propName, norm.type, norm.num, norm.strId, 0);
+        }
+
+        function _dedupeLayerList(list) {
+            if (!list || !list.length) return [];
+            var out = [];
+            var seen = {};
+            var i;
+            for (i = 0; i < list.length; i++) {
+                var lid = list[i];
+                if (lid === null || lid === undefined) continue;
+                var key = String(lid);
+                if (seen[key]) continue;
+                seen[key] = 1;
+                out.push(lid);
+            }
+            return out;
+        }
+
+        function _getPadCandidateLayers(obj) {
+            if (!layerInfo) return [];
+            var layerId = _readNumber(obj, "Layer", null);
+            var topLayer = (typeof eTopLayer !== "undefined") ? eTopLayer : null;
+            var bottomLayer = (typeof eBottomLayer !== "undefined") ? eBottomLayer : null;
+            var multiLayer = (typeof eMultiLayer !== "undefined") ? eMultiLayer : null;
+            var mode = _readNumber(obj, "Mode", 0);
+            var modeSimple = (typeof ePadMode_Simple !== "undefined" && mode === ePadMode_Simple);
+            var modeLocal = (typeof ePadMode_LocalStack !== "undefined" && mode === ePadMode_LocalStack);
+            var modeExternal = (typeof ePadMode_ExternalStack !== "undefined" && mode === ePadMode_ExternalStack);
+            var list = [];
+            if (modeSimple) {
+                if (layerId === null || layerId === undefined || (multiLayer !== null && layerId === multiLayer)) {
+                    if (topLayer !== null) list.push(topLayer);
+                    else if (bottomLayer !== null) list.push(bottomLayer);
+                    else if (layerInfo.layerIds && layerInfo.layerIds.length) list.push(layerInfo.layerIds[0]);
+                } else {
+                    list.push(layerId);
+                }
+            } else if (modeLocal) {
+                var listAll = layerInfo.signalLayerIds && layerInfo.signalLayerIds.length ? layerInfo.signalLayerIds : layerInfo.layerIds;
+                var mid = null;
+                var j;
+                for (j = 0; j < listAll.length; j++) {
+                    var lid = listAll[j];
+                    if (lid !== topLayer && lid !== bottomLayer && lid !== multiLayer) {
+                        mid = lid;
+                        break;
+                    }
+                }
+                if (topLayer !== null) list.push(topLayer);
+                if (mid !== null) list.push(mid);
+                if (bottomLayer !== null) list.push(bottomLayer);
+            } else if (modeExternal) {
+                list = layerInfo.signalLayerIds && layerInfo.signalLayerIds.length ? layerInfo.signalLayerIds : layerInfo.layerIds;
+            } else {
+                list = layerInfo.signalLayerIds && layerInfo.signalLayerIds.length ? layerInfo.signalLayerIds : layerInfo.layerIds;
+            }
+            return _dedupeLayerList(list);
+        }
+
+        function _collectLayeredProp(obj, info, rowId, propName) {
+            if (!layerInfo) return;
+            var list = null;
+            if (info && info.oidStr === "Pad") {
+                list = _getPadCandidateLayers(obj);
+            }
+            if (!list || !list.length) {
+                list = layerInfo.layerIds && layerInfo.layerIds.length ? layerInfo.layerIds : [];
+            }
+            var i;
+            for (i = 0; i < list.length; i++) {
+                var lid = list[i];
+                var resVal = _readLayerValue(obj, propName, lid, info, "prop.layer");
+                if (resVal.value === null || resVal.value === undefined) continue;
+                var norm = _normalizePropValue(propName, resVal.value, obj, lid);
+                if (!norm) continue;
+                _pushPropRow(info.oid, rowId, propName, norm.type, norm.num, norm.strId, lid);
+            }
+        }
+
+        function _collectDynamicProps(obj, info, rowId) {
+            if (!obj) return;
+            var count = 0;
+            var k;
+            for (k in obj) {
+                if (!k) continue;
+                if (k.indexOf("GetState_") === 0) continue;
+                if (k.indexOf("SetState_") === 0) continue;
+                if (k.indexOf("_") === 0) continue;
+                _collectPlainProp(obj, info, rowId, k);
+                count++;
+                if (count >= propDynamicLimit) break;
+            }
+        }
+
+        function _addExtraProps(obj, info, rowId) {
+            if (!propEnabled) return;
+            if (!obj || !rowId) return;
+            if (!info) info = _readObjectIdInfo(obj);
+            if (!info || !info.oid) return;
+            var key = String(info.oid) + "|" + String(rowId);
+            if (propSeen[key]) return;
+            propSeen[key] = true;
+            var list = _getObjectPropList(info.oidStr);
+            if (list && list.length) {
+                var i;
+                for (i = 0; i < list.length; i++) {
+                    var propName = list[i];
+                    if (_isLayeredPropName(propName)) {
+                        _collectLayeredProp(obj, info, rowId, propName);
+                    } else {
+                        _collectPlainProp(obj, info, rowId, propName);
+                    }
+                }
+            }
+            if (OBJECT_PROP_DYNAMIC[info.oidStr]) {
+                _collectDynamicProps(obj, info, rowId);
+            }
+        }
+
+        function _readCoord(obj, prop1, prop2) {
+            var v = _readNumber(obj, prop1, null);
+            if (v === null || v === undefined) v = _readNumber(obj, prop2, 0);
+            return v;
+        }
+
+        function _readLayerNumber(obj, propName, def, layerId, diagInfo, diagTag) {
+            var v = null;
+            var err = null;
+            if (!obj) return def;
+            try {
+                var fn = null;
+                try {
+                    fn = obj["GetState_" + propName];
+                } catch (eFn) {
+                    err = eFn;
+                    fn = null;
+                }
+                if (fn !== null && fn !== undefined) {
+                    var t = typeof fn;
+                    if (t === "function" || t === "unknown") {
+                        v = fn.apply(obj, [layerId]);
+                    } else {
+                        v = fn;
+                    }
+                } else {
+                    var prop = null;
+                    try {
+                        prop = obj[propName];
+                    } catch (eProp) {
+                        err = eProp;
+                        prop = null;
+                    }
+                    if (prop !== null && prop !== undefined) {
+                        var t2 = typeof prop;
+                        if (t2 === "function" || t2 === "unknown") {
+                            v = prop.apply(obj, [layerId]);
+                        } else {
+                            v = null;
+                        }
+                    }
+                }
+            } catch (e1) {
+                err = e1;
+            }
+            if (v === null || v === undefined || v === "") {
+                if (err && debug && debugCounts.layerRead < debugLimit) {
+                    debugCounts.layerRead++;
+                    try {
+                        uiDebug("COMPACT_LAYER_READ_FAIL", {
+                            tag: diagTag || "",
+                            prop: propName,
+                            layerId: layerId,
+                            layerType: typeof layerId,
+                            objectId: diagInfo ? diagInfo.oid : null,
+                            objectIdString: diagInfo ? diagInfo.oidStr : "",
+                            error: (err && err.message) ? String(err.message) : String(err)
+                        }, "global-events.js", "_collectCompactData");
+                    } catch (eLog1) {}
+                }
+                return def;
+            }
+            var n = def;
+            try {
+                n = Number(v);
+            } catch (e3) {
+                err = err || e3;
+                n = def;
+            }
+            if (isNaN(n)) {
+                if (!err) err = "nan";
+                n = def;
+            }
+            if (err && debug && debugCounts.layerRead < debugLimit) {
+                debugCounts.layerRead++;
+                try {
+                    uiDebug("COMPACT_LAYER_READ_FAIL", {
+                        tag: diagTag || "",
+                        prop: propName,
+                        layerId: layerId,
+                        layerType: typeof layerId,
+                        objectId: diagInfo ? diagInfo.oid : null,
+                        objectIdString: diagInfo ? diagInfo.oidStr : "",
+                        error: (err && err.message) ? String(err.message) : String(err)
+                    }, "global-events.js", "_collectCompactData");
+                } catch (eLog2) {}
+            }
+            return n;
+        }
+
+        function _hasLayerGetter(obj, propName) {
+            if (!obj) return false;
+            var fn = null;
+            try {
+                fn = obj["GetState_" + propName];
+            } catch (e1) {
+                return false;
+            }
+            if (fn === null || fn === undefined) return false;
+            var t = typeof fn;
+            return (t === "function" || t === "unknown");
+        }
+
+        function _readLayerIdFromObject(layerObj) {
+            if (!layerObj) return null;
+            var id = null;
+            try { if (layerObj.LayerID !== undefined) id = layerObj.LayerID; } catch (e1) {}
+            if (id === null || id === undefined) {
+                try { if (layerObj.Layer !== undefined) id = layerObj.Layer; } catch (e2) {}
+            }
+            if (id === null || id === undefined) {
+                try { if (layerObj.Id !== undefined) id = layerObj.Id; } catch (e3) {}
+            }
+            if (id === null || id === undefined) return null;
+            var n = null;
+            try { n = Number(id); } catch (e4) { return null; }
+            if (isNaN(n)) return null;
+            return n;
+        }
+
+        function _isRoundedShape(shape) {
+            if (shape === null || shape === undefined) return false;
+            if (typeof eRoundRectShape !== "undefined" && shape === eRoundRectShape) return true;
+            if (typeof eRoundedRectangular !== "undefined" && shape === eRoundedRectangular) return true;
+            if (typeof eRounded !== "undefined" && shape === eRounded) return true;
+            return false;
+        }
+
+        function _registerPadHandle(obj, padId) {
+            var h = _readHandleNumber(obj);
+            if (h !== null && h !== undefined) {
+                padHandleMap[String(h)] = padId;
+            }
+        }
+
+        function _safePropType(obj, propName) {
+            try {
+                if (obj && obj[propName] !== undefined && obj[propName] !== null) return typeof obj[propName];
+                return "missing";
+            } catch (e1) {
+                return "error";
+            }
+        }
+
+        function _buildPadErrorDetail(obj) {
+            var detail = {};
+            try { detail.mode = _readNumber(obj, "Mode", null); } catch (e1) {}
+            try { detail.layer = _readNumber(obj, "Layer", null); } catch (e2) {}
+            try { detail.plated = _readBool(obj, "Plated", 0); } catch (e3) {}
+            try { detail.hole = _readNumber(obj, "HoleSize", null); } catch (e4) {}
+            try { detail.drillType = _readNumber(obj, "DrillType", null); } catch (e5) {}
+            try { detail.holeType = _readNumber(obj, "HoleType", null); } catch (e6) {}
+            try { detail.holeWidth = _readNumber(obj, "HoleWidth", null); } catch (e7) {}
+            try { detail.holeRotation = _readNumber(obj, "HoleRotation", null); } catch (e8) {}
+            detail.propTypes = {
+                XStackSizeOnLayer: _safePropType(obj, "XStackSizeOnLayer"),
+                YStackSizeOnLayer: _safePropType(obj, "YStackSizeOnLayer"),
+                StackShapeOnLayer: _safePropType(obj, "StackShapeOnLayer"),
+                XSizeOnLayer: _safePropType(obj, "XSizeOnLayer"),
+                YSizeOnLayer: _safePropType(obj, "YSizeOnLayer"),
+                ShapeOnLayer: _safePropType(obj, "ShapeOnLayer"),
+                TopXSize: _safePropType(obj, "TopXSize"),
+                TopYSize: _safePropType(obj, "TopYSize"),
+                TopShape: _safePropType(obj, "TopShape"),
+                MidXSize: _safePropType(obj, "MidXSize"),
+                MidYSize: _safePropType(obj, "MidYSize"),
+                MidShape: _safePropType(obj, "MidShape"),
+                BotXSize: _safePropType(obj, "BotXSize"),
+                BotYSize: _safePropType(obj, "BotYSize"),
+                BotShape: _safePropType(obj, "BotShape"),
+                XPadOffsetOnLayer: _safePropType(obj, "XPadOffsetOnLayer"),
+                YPadOffsetOnLayer: _safePropType(obj, "YPadOffsetOnLayer"),
+                StackCRPctOnLayer: _safePropType(obj, "StackCRPctOnLayer"),
+                CRPercentageOnLayer: _safePropType(obj, "CRPercentageOnLayer")
+            };
+            return detail;
+        }
+
+        function _buildViaErrorDetail(obj) {
+            var detail = {};
+            try { detail.lowLayer = _readNumber(obj, "LowLayer", null); } catch (e1) {}
+            try { detail.highLayer = _readNumber(obj, "HighLayer", null); } catch (e2) {}
+            try { detail.startLayer = _readNumber(obj, "StartLayer", null); } catch (e3) {}
+            try { detail.stopLayer = _readNumber(obj, "StopLayer", null); } catch (e4) {}
+            try { detail.hole = _readNumber(obj, "HoleSize", null); } catch (e5) {}
+            try { detail.size = _readNumber(obj, "Size", null); } catch (e6) {}
+            detail.propTypes = {
+                SizeOnLayer: _safePropType(obj, "SizeOnLayer"),
+                ShapeOnLayer: _safePropType(obj, "ShapeOnLayer")
+            };
+            return detail;
+        }
+
+        function _resolvePadId(obj) {
+            if (!obj) return 0;
+            var h = _readHandleNumber(obj);
+            if (h === null || h === undefined) return 0;
+            var key = String(h);
+            return padHandleMap.hasOwnProperty(key) ? padHandleMap[key] : 0;
+        }
+
+        function _readNetNameFromProp(obj, propName) {
+            var v = _readPropOrCall(obj, propName, null);
+            if (v && v.Net && v.Net.Name) return String(v.Net.Name);
+            if (v && (v.Name !== undefined || v.GetState_Name !== undefined)) return _readStringValue(v, "Name", "");
+            if (v !== null && v !== undefined) return String(v);
+            return "";
+        }
+
+        function _getClassId(className, classKind) {
+            if (!className) return 0;
+            if (classKind === null || classKind === undefined) classKind = 0;
+            var key = String(classKind) + "|" + className;
+            if (classMap.hasOwnProperty(key)) return classMap[key];
+            var t = tables.map["class"];
+            if (!t) return 0;
+            var bankId = (ids.classObj !== null && ids.classObj !== undefined) ? String(ids.classObj) : "class";
+            var nameId = _addStringToBank(banks, bankId, className);
+            t.rows.push([classKind, nameId]);
+            var id = t.rows.length;
+            classMap[key] = id;
+            return id;
+        }
+
+        function _getRuleId(ruleName, ruleKind, enabled) {
+            if (!ruleName && (ruleKind === null || ruleKind === undefined)) return 0;
+            if (ruleKind === null || ruleKind === undefined) ruleKind = 0;
+            if (enabled === null || enabled === undefined) enabled = 1;
+            var key = String(ruleKind) + "|" + String(ruleName || "");
+            if (ruleMap.hasOwnProperty(key)) return ruleMap[key];
+            var t = tables.map["rule"];
+            if (!t) return 0;
+            var bankId = (ids.rule !== null && ids.rule !== undefined) ? String(ids.rule) : "rule";
+            var nameId = _addStringToBank(banks, bankId, ruleName || "");
+            t.rows.push([ruleKind, nameId, enabled ? 1 : 0]);
+            var id = t.rows.length;
+            ruleMap[key] = id;
+            return id;
+        }
+
+        function _addBoardRow() {
+            var t = tables.map["board"];
+            if (!t || boardRowAdded) return;
+            var name = _readStringValue(board, "FileName", "");
+            if (!name) name = _readStringValue(board, "Name", "");
+            if (!name && options && options.boardName) name = options.boardName;
+            var bankId = (ids.board !== null && ids.board !== undefined) ? String(ids.board) : "board";
+            var nameId = _addStringToBank(banks, bankId, name);
+            var originX = _readNumber(board, "XOrigin", 0);
+            var originY = _readNumber(board, "YOrigin", 0);
+            t.rows.push([nameId, originX, originY]);
+            try {
+                _addExtraProps(board, { oid: ids.board, oidStr: "Board" }, t.rows.length);
+            } catch (eProp) {
+                _recordError(ids.board, "Board", (eProp && eProp.message) ? String(eProp.message) : String(eProp));
+            }
+            boardRowAdded = true;
+        }
+
+        function _addNetObject(obj) {
+            var name = _readStringValue(obj, "Name", "");
+            if (!name) name = _readStringValue(obj, "NetName", "");
+            var netId = _getNetId(name, tables, banks, netMap, ids);
+            _addExtraProps(obj, null, netId);
+        }
+
+        function _addClass(obj) {
+            var className = _readStringValue(obj, "Name", "");
+            var classKind = _readNumber(obj, "MemberKind", null);
+            if (classKind === null || classKind === undefined) classKind = _readNumber(obj, "ClassKind", 0);
+            var classId = _getClassId(className, classKind);
+            _addExtraProps(obj, null, classId);
+        }
+
+        function _addRule(obj) {
+            var ruleName = _readStringValue(obj, "Name", "");
+            if (!ruleName) ruleName = _readStringValue(obj, "RuleName", "");
+            var ruleKind = _readNumber(obj, "RuleKind", null);
+            if (ruleKind === null || ruleKind === undefined) ruleKind = _readNumber(obj, "Kind", 0);
+            var enabled = _readBool(obj, "Enabled", 1);
+            var ruleId = _getRuleId(ruleName, ruleKind, enabled);
+            _addExtraProps(obj, null, ruleId);
+        }
+
+        function _addDiffPair(obj) {
+            var t = tables.map["diffpair"];
+            if (!t) return;
+            var name = _readStringValue(obj, "Name", "");
+            if (!name) name = _readStringValue(obj, "PairName", "");
+            if (!name) name = _readStringValue(obj, "DifferentialPairName", "");
+            if (!name) return;
+            if (diffMap.hasOwnProperty(name)) return;
+            var netP = _readNetNameFromProp(obj, "PositiveNet");
+            if (!netP) netP = _readNetNameFromProp(obj, "NetP");
+            if (!netP) netP = _readNetNameFromProp(obj, "Net1");
+            var netN = _readNetNameFromProp(obj, "NegativeNet");
+            if (!netN) netN = _readNetNameFromProp(obj, "NetN");
+            if (!netN) netN = _readNetNameFromProp(obj, "Net2");
+            var netPId = _getNetId(netP, tables, banks, netMap, ids);
+            var netNId = _getNetId(netN, tables, banks, netMap, ids);
+            var bankId = (ids.diffPair !== null && ids.diffPair !== undefined) ? String(ids.diffPair) : "diffpair";
+            var nameId = _addStringToBank(banks, bankId, name);
+            t.rows.push([nameId, netPId, netNId]);
+            diffMap[name] = t.rows.length;
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addFromTo(obj) {
+            var t = tables.map["fromto"];
+            if (!t) return;
+            var netName = _readNetName(obj);
+            if (!netName) netName = _readNetNameFromProp(obj, "Net");
+            var netId = _getNetId(netName, tables, banks, netMap, ids);
+            var fromPad = _readPropOrCall(obj, "FromPad", null);
+            if (!fromPad) fromPad = _readPropOrCall(obj, "Pad1", null);
+            var toPad = _readPropOrCall(obj, "ToPad", null);
+            if (!toPad) toPad = _readPropOrCall(obj, "Pad2", null);
+            var fromPadId = _resolvePadId(fromPad);
+            var toPadId = _resolvePadId(toPad);
+            var key = String(netId) + "|" + String(fromPadId) + "|" + String(toPadId);
+            if (fromToMap.hasOwnProperty(key)) return;
+            t.rows.push([netId, fromPadId, toPadId]);
+            fromToMap[key] = t.rows.length;
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addCoordinate(obj) {
+            var t = tables.map["coordinate"];
+            if (!t) return;
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var layerId = _readNumber(obj, "Layer", 0);
+            t.rows.push([x, y, layerId]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addDimension(obj) {
+            var t = tables.map["dimension"];
+            if (!t) return;
+            var dimType = _readNumber(obj, "DimensionType", null);
+            if (dimType === null || dimType === undefined) dimType = _readNumber(obj, "DimType", null);
+            if (dimType === null || dimType === undefined) dimType = _readNumber(obj, "Type", 0);
+            var x1 = _readNumber(obj, "X1", 0);
+            var y1 = _readNumber(obj, "Y1", 0);
+            var x2 = _readNumber(obj, "X2", 0);
+            var y2 = _readNumber(obj, "Y2", 0);
+            if (x1 === 0 && y1 === 0 && x2 === 0 && y2 === 0) {
+                x1 = _readNumber(obj, "StartX", 0);
+                y1 = _readNumber(obj, "StartY", 0);
+                x2 = _readNumber(obj, "EndX", 0);
+                y2 = _readNumber(obj, "EndY", 0);
+            }
+            var textStr = _readTextString(obj);
+            var bankId = (ids.dimension !== null && ids.dimension !== undefined) ? String(ids.dimension) : "dimension";
+            var textId = _addStringToBank(banks, bankId, textStr);
+            t.rows.push([dimType, x1, y1, x2, y2, textId]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addViolation(obj) {
+            var t = tables.map["violation"];
+            if (!t) return;
+            var ruleName = "";
+            var ruleKind = 0;
+            var enabled = 1;
+            var ruleObj = _readPropOrCall(obj, "Rule", null);
+            if (ruleObj) {
+                ruleName = _readStringValue(ruleObj, "Name", "");
+                if (!ruleName) ruleName = _readStringValue(ruleObj, "RuleName", "");
+                ruleKind = _readNumber(ruleObj, "RuleKind", 0);
+                enabled = _readBool(ruleObj, "Enabled", 1);
+            }
+            if (!ruleName) ruleName = _readStringValue(obj, "RuleName", "");
+            if (ruleKind === 0) ruleKind = _readNumber(obj, "RuleKind", 0);
+            var ruleId = _getRuleId(ruleName, ruleKind, enabled);
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var key = String(ruleId) + "|" + String(x) + "|" + String(y);
+            if (violationMap.hasOwnProperty(key)) return;
+            t.rows.push([ruleId, 0, 0, x, y]);
+            violationMap[key] = t.rows.length;
+            _addExtraProps(obj, null, t.rows.length);
+            if (debug) {
+                try { uiDebug("COMPACT_VIOLATION_REF", { ruleId: ruleId, objAId: 0, objBId: 0 }, "global-events.js", "_collectCompactData"); } catch (eV) {}
+            }
+        }
+
+        function _addEmbedded(obj) {
+            var t = tables.map["embedded"];
+            if (!t) return;
+            var name = _readStringValue(obj, "Name", "");
+            if (!name) name = _readStringValue(obj, "ComponentName", "");
+            var bankId = (ids.embedded !== null && ids.embedded !== undefined) ? String(ids.embedded) : "embedded";
+            var nameId = _addStringToBank(banks, bankId, name);
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var rotation = _readNumber(obj, "Rotation", 0);
+            var scaleX = _readNumber(obj, "ScaleX", 0);
+            var scaleY = _readNumber(obj, "ScaleY", 0);
+            if (!scaleX) scaleX = _readNumber(obj, "Scale", 0);
+            if (!scaleY) scaleY = scaleX;
+            t.rows.push([nameId, x, y, rotation, scaleX, scaleY]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addEmbeddedBoard(obj) {
+            var t = tables.map["embedded.board"];
+            if (!t) return;
+            var name = _readStringValue(obj, "Name", "");
+            if (!name) name = _readStringValue(obj, "BoardName", "");
+            var bankId = (ids.embeddedBoard !== null && ids.embeddedBoard !== undefined) ? String(ids.embeddedBoard) : "embedded.board";
+            var nameId = _addStringToBank(banks, bankId, name);
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var rotation = _readNumber(obj, "Rotation", 0);
+            var scaleX = _readNumber(obj, "ScaleX", 0);
+            var scaleY = _readNumber(obj, "ScaleY", 0);
+            if (!scaleX) scaleX = _readNumber(obj, "Scale", 0);
+            if (!scaleY) scaleY = scaleX;
+            t.rows.push([nameId, x, y, rotation, scaleX, scaleY]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addTrace(obj) {
+            var t = tables.map["trace"];
+            if (!t) return;
+            var x1 = _readNumber(obj, "X1", 0);
+            var y1 = _readNumber(obj, "Y1", 0);
+            var x2 = _readNumber(obj, "X2", 0);
+            var y2 = _readNumber(obj, "Y2", 0);
+            var w = _readTrackWidth(obj);
+            var layerId = _readNumber(obj, "Layer", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([x1, y1, x2, y2, w, layerId, netId]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addSpareVia(obj) {
+            var t = tables.map["sparevia"];
+            if (!t) return;
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var low = _readNumber(obj, "LowLayer", null);
+            if (low === null || low === undefined) low = _readNumber(obj, "StartLayer", 0);
+            var high = _readNumber(obj, "HighLayer", null);
+            if (high === null || high === undefined) high = _readNumber(obj, "StopLayer", 0);
+            var hole = _readNumber(obj, "HoleSize", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([x, y, low, high, hole, netId]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addTrack(obj) {
+            var t = tables.map["track"];
+            if (!t) return;
+            var x1 = _readNumber(obj, "X1", 0);
+            var y1 = _readNumber(obj, "Y1", 0);
+            var x2 = _readNumber(obj, "X2", 0);
+            var y2 = _readNumber(obj, "Y2", 0);
+            var w = _readTrackWidth(obj);
+            var layerId = _readNumber(obj, "Layer", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([x1, y1, x2, y2, w, layerId, netId]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addArc(obj) {
+            var t = tables.map["arc"];
+            if (!t) return;
+            var cx = _readNumber(obj, "XCenter", 0);
+            var cy = _readNumber(obj, "YCenter", 0);
+            var r = _readNumber(obj, "Radius", 0);
+            var sa = _readNumber(obj, "StartAngle", 0);
+            var ea = _readNumber(obj, "EndAngle", 0);
+            var w = _readNumber(obj, "LineWidth", 0);
+            var layerId = _readNumber(obj, "Layer", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([cx, cy, r, sa, ea, w, layerId, netId]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addVia(obj) {
+            var t = tables.map["via"];
+            if (!t) return;
+            var info = _readObjectIdInfo(obj);
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var low = _readNumber(obj, "LowLayer", null);
+            if (low === null || low === undefined) {
+                var startLayerObj = _readPropOrCall(obj, "StartLayer", null);
+                low = _readLayerIdFromObject(startLayerObj);
+            }
+            if (low === null || low === undefined) low = _readNumber(obj, "StartLayer", 0);
+            var high = _readNumber(obj, "HighLayer", null);
+            if (high === null || high === undefined) {
+                var stopLayerObj = _readPropOrCall(obj, "StopLayer", null);
+                high = _readLayerIdFromObject(stopLayerObj);
+            }
+            if (high === null || high === undefined) high = _readNumber(obj, "StopLayer", 0);
+            var hole = _readNumber(obj, "HoleSize", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([x, y, low, high, hole, netId]);
+            var viaId = t.rows.length;
+
+            var tLayer = tables.map["via.layer"];
+            if (tLayer && layerInfo && layerInfo.layerIndexMap) {
+                var lowIdx = layerInfo.layerIndexMap[String(low)];
+                var highIdx = layerInfo.layerIndexMap[String(high)];
+                if (debug && (lowIdx === undefined || highIdx === undefined) && debugCounts.viaRange < debugLimit) {
+                    debugCounts.viaRange++;
+                    try {
+                        uiDebug("COMPACT_VIA_LAYER_RANGE", {
+                            lowLayer: low,
+                            highLayer: high,
+                            lowIdx: lowIdx,
+                            highIdx: highIdx
+                        }, "global-events.js", "_collectCompactData");
+                    } catch (eRange) {}
+                }
+                if (lowIdx === undefined || highIdx === undefined) return;
+                var canSize = _hasLayerGetter(obj, "SizeOnLayer");
+                var canShape = _hasLayerGetter(obj, "ShapeOnLayer");
+                if (!canSize && !canShape) return;
+                var list = layerInfo.signalLayerIds && layerInfo.signalLayerIds.length ? layerInfo.signalLayerIds : layerInfo.layerIds;
+                var i;
+                for (i = 0; i < list.length; i++) {
+                    var lid = list[i];
+                    var idx = layerInfo.layerIndexMap[String(lid)];
+                    if (lowIdx !== undefined && highIdx !== undefined) {
+                        if (idx < lowIdx || idx > highIdx) continue;
+                    }
+                    var size = canSize ? _readLayerNumber(obj, "SizeOnLayer", null, lid, info, "via.size") : null;
+                    var shape = canShape ? _readLayerNumber(obj, "ShapeOnLayer", 0, lid, info, "via.shape") : 0;
+                    if (size === null || size === undefined) size = _readNumber(obj, "Size", 0);
+                    tLayer.rows.push([viaId, lid, shape, size]);
+                }
+            }
+            _addExtraProps(obj, info, viaId);
+        }
+
+        function _addPad(obj) {
+            var t = tables.map["pad"];
+            if (!t) return;
+            var info = _readObjectIdInfo(obj);
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var rotation = _readNumber(obj, "Rotation", 0);
+            var mode = _readNumber(obj, "Mode", 0);
+            var plated = _readBool(obj, "Plated", 0);
+            var hole = _readNumber(obj, "HoleSize", 0);
+            var drillType = _readNumber(obj, "DrillType", 0);
+            var holeType = _readNumber(obj, "HoleType", 0);
+            var holeWidth = _readNumber(obj, "HoleWidth", 0);
+            var holeRotation = _readNumber(obj, "HoleRotation", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            var ownerPartId = _readNumber(obj, "OwnerPart_ID", 0);
+            var name = _readStringValue(obj, "Name", "");
+            var bankId = (ids.pad !== null && ids.pad !== undefined) ? String(ids.pad) : "pad";
+            var nameId = _addStringToBank(banks, bankId, name);
+            t.rows.push([x, y, rotation, mode, plated, hole, drillType, holeType, holeWidth, holeRotation, netId, ownerPartId, nameId]);
+
+            var padId = t.rows.length;
+            _addExtraProps(obj, info, padId);
+            _registerPadHandle(obj, padId);
+            var tLayer = tables.map["pad.layer"];
+            if (tLayer && layerInfo) {
+                var layerId = _readNumber(obj, "Layer", 0);
+                var topLayer = (typeof eTopLayer !== "undefined") ? eTopLayer : null;
+                var bottomLayer = (typeof eBottomLayer !== "undefined") ? eBottomLayer : null;
+                var multiLayer = (typeof eMultiLayer !== "undefined") ? eMultiLayer : null;
+                var hasPad2CR = _hasLayerGetter(obj, "CRPercentageOnLayer") || _hasLayerGetter(obj, "StackCRPctOnLayer");
+                var candidateLayers = [];
+                var modeSimple = (typeof ePadMode_Simple !== "undefined" && mode === ePadMode_Simple);
+                var modeLocal = (typeof ePadMode_LocalStack !== "undefined" && mode === ePadMode_LocalStack);
+                var modeExternal = (typeof ePadMode_ExternalStack !== "undefined" && mode === ePadMode_ExternalStack);
+                if (modeSimple) {
+                    if (layerId === null || layerId === undefined || (multiLayer !== null && layerId === multiLayer)) {
+                        if (topLayer !== null) candidateLayers.push(topLayer);
+                        else if (bottomLayer !== null) candidateLayers.push(bottomLayer);
+                        else if (layerInfo.layerIds && layerInfo.layerIds.length) candidateLayers.push(layerInfo.layerIds[0]);
+                    } else {
+                        candidateLayers.push(layerId);
+                    }
+                } else if (modeLocal) {
+                    var top = topLayer;
+                    var bottom = bottomLayer;
+                    var mid = null;
+                    var list = layerInfo.signalLayerIds && layerInfo.signalLayerIds.length ? layerInfo.signalLayerIds : layerInfo.layerIds;
+                    var j;
+                    for (j = 0; j < list.length; j++) {
+                        var lid = list[j];
+                        if (lid !== top && lid !== bottom && lid !== multiLayer) {
+                            mid = lid;
+                            break;
+                        }
+                    }
+                    if (top !== null) candidateLayers.push(top);
+                    if (mid !== null) candidateLayers.push(mid);
+                    if (bottom !== null) candidateLayers.push(bottom);
+                } else {
+                    candidateLayers = layerInfo.signalLayerIds && layerInfo.signalLayerIds.length ? layerInfo.signalLayerIds : layerInfo.layerIds;
+                }
+
+                if (debug && layerInfo.layerIndexMap && layerId !== null && layerId !== undefined) {
+                    if (layerInfo.layerIndexMap[String(layerId)] === undefined && debugCounts.padLayer < debugLimit) {
+                        debugCounts.padLayer++;
+                        try {
+                            uiDebug("COMPACT_PAD_LAYER_UNKNOWN", { layerId: layerId, mode: mode }, "global-events.js", "_collectCompactData");
+                        } catch (ePadLayer) {}
+                    }
+                }
+
+                var k;
+                for (k = 0; k < candidateLayers.length; k++) {
+                    var lid2 = candidateLayers[k];
+                    if (lid2 === null || lid2 === undefined) continue;
+                    var xSize = null;
+                    var ySize = null;
+                    var shape = null;
+                    var cr = 0;
+                    var isRounded = false;
+                    var canStackX = false;
+                    var canStackY = false;
+                    var canStackShape = false;
+                    var canStackCr = false;
+                    var canCr = false;
+
+                    if (modeExternal) {
+                        canStackX = _hasLayerGetter(obj, "XStackSizeOnLayer");
+                        canStackY = _hasLayerGetter(obj, "YStackSizeOnLayer");
+                        canStackShape = _hasLayerGetter(obj, "StackShapeOnLayer");
+                        canStackCr = _hasLayerGetter(obj, "StackCRPctOnLayer");
+                        canCr = _hasLayerGetter(obj, "CRPercentageOnLayer");
+                        xSize = canStackX ? _readLayerNumber(obj, "XStackSizeOnLayer", null, lid2, info, "pad.stack.x") : null;
+                        ySize = canStackY ? _readLayerNumber(obj, "YStackSizeOnLayer", null, lid2, info, "pad.stack.y") : null;
+                        shape = canStackShape ? _readLayerNumber(obj, "StackShapeOnLayer", null, lid2, info, "pad.stack.shape") : null;
+                        isRounded = _isRoundedShape(shape);
+                        if (hasPad2CR && isRounded) {
+                            if (canStackCr) {
+                                cr = _readLayerNumber(obj, "StackCRPctOnLayer", null, lid2, info, "pad.stack.cr");
+                            } else if (canCr) {
+                                cr = _readLayerNumber(obj, "CRPercentageOnLayer", null, lid2, info, "pad.cr");
+                            }
+                        }
+                    } else {
+                        if (modeLocal) {
+                            if (topLayer !== null && lid2 === topLayer) {
+                                xSize = _readNumber(obj, "TopXSize", 0);
+                                ySize = _readNumber(obj, "TopYSize", 0);
+                                shape = _readNumber(obj, "TopShape", 0);
+                            } else if (bottomLayer !== null && lid2 === bottomLayer) {
+                                xSize = _readNumber(obj, "BotXSize", 0);
+                                ySize = _readNumber(obj, "BotYSize", 0);
+                                shape = _readNumber(obj, "BotShape", 0);
+                            } else {
+                                xSize = _readNumber(obj, "MidXSize", 0);
+                                ySize = _readNumber(obj, "MidYSize", 0);
+                                shape = _readNumber(obj, "MidShape", 0);
+                            }
+                        } else {
+                            xSize = _readNumber(obj, "TopXSize", 0);
+                            ySize = _readNumber(obj, "TopYSize", 0);
+                            shape = _readNumber(obj, "TopShape", 0);
+                        }
+                        isRounded = _isRoundedShape(shape);
+                        canCr = _hasLayerGetter(obj, "CRPercentageOnLayer");
+                        if (hasPad2CR && isRounded && canCr) {
+                            cr = _readLayerNumber(obj, "CRPercentageOnLayer", null, lid2, info, "pad.cr");
+                        }
+                    }
+
+                    if (xSize === null || xSize === undefined) xSize = 0;
+                    if (ySize === null || ySize === undefined) ySize = 0;
+                    if (shape === null || shape === undefined) shape = 0;
+                    if (cr === null || cr === undefined) cr = 0;
+
+                    var offsetX = 0;
+                    var offsetY = 0;
+                    tLayer.rows.push([padId, lid2, shape, xSize, ySize, offsetX, offsetY, cr]);
+                }
+            }
+        }
+
+        function _addPolygon(obj) {
+            var t = tables.map["polygon"];
+            if (!t) return;
+            var layerId = _readNumber(obj, "Layer", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            var polygonType = _readNumber(obj, "PolygonType", 0);
+            var pourOver = _readNumber(obj, "PourOver", 0);
+            var grid = _readNumber(obj, "Grid", 0);
+            var trackSize = _readNumber(obj, "TrackSize", 0);
+            var minTrack = _readNumber(obj, "MinTrack", 0);
+            var borderWidth = _readNumber(obj, "BorderWidth", 0);
+            var removeDead = _readBool(obj, "RemoveDead", 0);
+            var removeIslands = _readBool(obj, "RemoveIslandsByArea", 0);
+            var islandArea = _readNumber(obj, "IslandAreaThreshold", 0);
+            var removeNecks = _readBool(obj, "RemoveNarrowNecks", 0);
+            var neckWidth = _readNumber(obj, "NeckWidthThreshold", 0);
+            var arcApprox = _readNumber(obj, "ArcApproximation", 0);
+            t.rows.push([layerId, netId, polygonType, pourOver, grid, trackSize, minTrack, borderWidth, removeDead, removeIslands, islandArea, removeNecks, neckWidth, arcApprox]);
+
+            var polyId = t.rows.length;
+            _addExtraProps(obj, null, polyId);
+            _addGroupSegments(obj, polyId, "polygon.seg.track", "polygon.seg.arc");
+        }
+
+        function _addBoardOutline(obj) {
+            var t = tables.map["board.outline"];
+            if (!t) return;
+            t.rows.push([t.rows.length + 1]);
+            var outlineId = t.rows.length;
+            _addExtraProps(obj, null, outlineId);
+            _addGroupSegments(obj, outlineId, "board.outline.seg.track", "board.outline.seg.arc");
+        }
+
+        function _addFill(obj) {
+            var t = tables.map["fill"];
+            if (!t) return;
+            var x1 = _readNumber(obj, "X1", 0);
+            var y1 = _readNumber(obj, "Y1", 0);
+            var x2 = _readNumber(obj, "X2", 0);
+            var y2 = _readNumber(obj, "Y2", 0);
+            var rotation = _readNumber(obj, "Rotation", 0);
+            var layerId = _readNumber(obj, "Layer", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([x1, y1, x2, y2, rotation, layerId, netId]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addRegion(obj) {
+            var t = tables.map["region"];
+            if (!t) return;
+            var layerId = _readNumber(obj, "Layer", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([layerId, netId]);
+            var regionId = t.rows.length;
+            _addExtraProps(obj, null, regionId);
+            _addGroupSegments(obj, regionId, "region.seg.track", "region.seg.arc");
+        }
+
+        function _addSplitPlane(obj) {
+            var t = tables.map["splitplane"];
+            if (!t) return;
+            var layerId = _readNumber(obj, "Layer", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([layerId, netId]);
+            var planeId = t.rows.length;
+            _addExtraProps(obj, null, planeId);
+            _addGroupSegments(obj, planeId, "splitplane.seg.track", "splitplane.seg.arc");
+        }
+
+        function _addText(obj) {
+            var t = tables.map["text"];
+            if (!t) return;
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var layerId = _readNumber(obj, "Layer", 0);
+            var rotation = _readNumber(obj, "Rotation", 0);
+            var height = _readNumber(obj, "Height", 0);
+            var width = _readNumber(obj, "Width", 0);
+            var stroke = _readNumber(obj, "StrokeWidth", null);
+            if (stroke === null || stroke === undefined) stroke = _readNumber(obj, "LineWidth", 0);
+            var textStr = _readTextString(obj);
+            var fontName = _readStringValue(obj, "FontName", "");
+            var inverted = _readBool(obj, "Inverted", 0);
+            var mirrored = _readBool(obj, "Mirror", 0);
+            var bankId = (ids.text !== null && ids.text !== undefined) ? String(ids.text) : "text";
+            var textId = _addStringToBank(banks, bankId, textStr);
+            var fontId = _addStringToBank(banks, bankId, fontName);
+            t.rows.push([x, y, layerId, rotation, height, width, stroke, textId, fontId, inverted, mirrored]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _readNestedText(obj, propName) {
+            var s = "";
+            try {
+                var v = obj[propName];
+                if (v && v.Text !== undefined) s = String(v.Text);
+                if (!s && v && v.String !== undefined) s = String(v.String);
+            } catch (e1) {}
+            if (!s) s = _readStringValue(obj, propName, "");
+            return s;
+        }
+
+        function _getComponentKey(obj) {
+            var handle = _readHandleNumber(obj);
+            if (handle) return "H:" + String(handle);
+            var d = _readNestedText(obj, "Designator");
+            if (d) return "D:" + d;
+            return null;
+        }
+
+        function _addComponent(obj) {
+            var t = tables.map["component"];
+            if (!t) return;
+            var x = _readCoord(obj, "X", "XLocation");
+            var y = _readCoord(obj, "Y", "YLocation");
+            var layerId = _readNumber(obj, "Layer", 0);
+            var rotation = _readNumber(obj, "Rotation", 0);
+            var designator = _readNestedText(obj, "Designator");
+            var comment = _readNestedText(obj, "Comment");
+            var pattern = _readStringValue(obj, "Pattern", "");
+            if (!pattern) pattern = _readStringValue(obj, "PatternName", "");
+            var sourceLib = _readStringValue(obj, "SourceLibReference", "");
+            var locked = _readBool(obj, "Locked", 0);
+            var bankId = (ids.component !== null && ids.component !== undefined) ? String(ids.component) : "component";
+            var designatorId = _addStringToBank(banks, bankId, designator);
+            var commentId = _addStringToBank(banks, bankId, comment);
+            var patternId = _addStringToBank(banks, bankId, pattern);
+            var sourceLibId = _addStringToBank(banks, bankId, sourceLib);
+            t.rows.push([x, y, layerId, rotation, designatorId, commentId, patternId, sourceLibId, locked]);
+            _addExtraProps(obj, null, t.rows.length);
+            var compKey = _getComponentKey(obj);
+            if (compKey) compMap[compKey] = t.rows.length;
+        }
+
+        function _addComponentBody(obj) {
+            var t = tables.map["component.body"];
+            if (!t) return;
+            var compId = 0;
+            try {
+                if (obj.Component) {
+                    var key = _getComponentKey(obj.Component);
+                    if (key && compMap[key]) compId = compMap[key];
+                }
+            } catch (e1) {}
+            if (!compId) {
+                try {
+                    if (obj.Owner) {
+                        var key2 = _getComponentKey(obj.Owner);
+                        if (key2 && compMap[key2]) compId = compMap[key2];
+                    }
+                } catch (e2) {}
+            }
+            var layerId = _readNumber(obj, "Layer", 0);
+            var bounds = _readBounds(obj);
+            var x1 = bounds ? bounds.x1 : 0;
+            var y1 = bounds ? bounds.y1 : 0;
+            var x2 = bounds ? bounds.x2 : 0;
+            var y2 = bounds ? bounds.y2 : 0;
+            var bodyType = _readNumber(obj, "BodyType", 0);
+            t.rows.push([compId, layerId, x1, y1, x2, y2, bodyType]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addConnection(obj) {
+            var t = tables.map["connection"];
+            if (!t) return;
+            var x1 = _readNumber(obj, "X1", 0);
+            var y1 = _readNumber(obj, "Y1", 0);
+            var x2 = _readNumber(obj, "X2", 0);
+            var y2 = _readNumber(obj, "Y2", 0);
+            var layerId = _readNumber(obj, "Layer", 0);
+            var netId = _getNetId(_readNetName(obj), tables, banks, netMap, ids);
+            t.rows.push([x1, y1, x2, y2, layerId, netId]);
+            _addExtraProps(obj, null, t.rows.length);
+        }
+
+        function _addGroupSegments(obj, parentId, trackTableName, arcTableName) {
+            var it = _createGroupIterator(obj);
+            if (!it) return;
+            var trackTable = tables.map[trackTableName];
+            var arcTable = tables.map[arcTableName];
+            var cursor = it.first();
+            while (cursor) {
+                var info = _readObjectIdInfo(cursor);
+                var oid = info.oid;
+                var oidStr = info.oidStr;
+                if ((ids.track !== null && oid === ids.track) || oidStr === "Track") {
+                    if (trackTable) {
+                        var x1 = _readNumber(cursor, "X1", 0);
+                        var y1 = _readNumber(cursor, "Y1", 0);
+                        var x2 = _readNumber(cursor, "X2", 0);
+                        var y2 = _readNumber(cursor, "Y2", 0);
+                        var w = _readTrackWidth(cursor);
+                        trackTable.rows.push([parentId, x1, y1, x2, y2, w]);
+                    }
+                } else if ((ids.arc !== null && oid === ids.arc) || oidStr === "Arc") {
+                    if (arcTable) {
+                        var cx = _readNumber(cursor, "XCenter", 0);
+                        var cy = _readNumber(cursor, "YCenter", 0);
+                        var r = _readNumber(cursor, "Radius", 0);
+                        var sa = _readNumber(cursor, "StartAngle", 0);
+                        var ea = _readNumber(cursor, "EndAngle", 0);
+                        var w2 = _readNumber(cursor, "LineWidth", 0);
+                        arcTable.rows.push([parentId, cx, cy, r, sa, ea, w2]);
+                    }
+                }
+                cursor = it.next();
+            }
+            it.destroy();
+        }
+
+        function _scanObjectSet(objectId, handler, label) {
+            if (!board || typeof board.BoardIterator_Create === "undefined") return 0;
+            if (objectId === null || objectId === undefined) return 0;
+            if (typeof MkSet !== "function") return 0;
+            var it = null;
+            try { it = board.BoardIterator_Create(); } catch (e1) { it = null; }
+            if (!it) return 0;
+            try {
+                if (typeof it.AddFilter_ObjectSet !== "undefined") {
+                    it.AddFilter_ObjectSet(MkSet(objectId));
+                }
+                if (typeof it.AddFilter_LayerSet !== "undefined" && typeof AllLayers !== "undefined") {
+                    it.AddFilter_LayerSet(AllLayers);
+                } else if (typeof it.AddFilter_IPCB_LayerSet !== "undefined" && typeof AllLayers !== "undefined") {
+                    it.AddFilter_IPCB_LayerSet(AllLayers);
+                }
+                if (typeof it.AddFilter_Method !== "undefined" && typeof eProcessAll !== "undefined") {
+                    it.AddFilter_Method(eProcessAll);
+                }
+            } catch (e2) {}
+
+            var count = 0;
+            var aborted = false;
+            var cursor = null;
+            try {
+                if (typeof it.FirstPCBObject !== "undefined") {
+                    cursor = it.FirstPCBObject();
+                } else if (typeof it.First !== "undefined") {
+                    cursor = (typeof it.First === "function") ? it.First() : it.First;
+                }
+            } catch (e3) { cursor = null; }
+
+            while (cursor) {
+                if (_checkAbort(label ? ("scan.set." + label) : "scan.set")) {
+                    aborted = true;
+                    break;
+                }
+                count++;
+                _yieldIfNeeded(count);
+                try {
+                    handler(cursor);
+                } catch (eRun) {
+                    var info = _readObjectIdInfo(cursor);
+                    var msg = (eRun && eRun.message) ? String(eRun.message) : String(eRun);
+                    _recordError(info.oid, info.oidStr, msg);
+                }
+                try {
+                    if (typeof it.NextPCBObject !== "undefined") {
+                        cursor = it.NextPCBObject();
+                    } else if (typeof it.Next !== "undefined") {
+                        cursor = (typeof it.Next === "function") ? it.Next() : it.Next;
+                    } else {
+                        cursor = null;
+                    }
+                } catch (e4) { cursor = null; }
+            }
+
+            try {
+                if (typeof board.BoardIterator_Destroy !== "undefined") {
+                    board.BoardIterator_Destroy(it);
+                }
+            } catch (e5) {}
+
+            if (aborted) {
+                res.ok = false;
+                res.aborted = true;
+                res.abortReason = abortReason || "stop.requested";
+                res.error = res.abortReason ? ("aborted:" + res.abortReason) : "aborted";
+            }
+            if (debug && label) {
+                try { uiDebug("COMPACT_SCAN_SET", { label: label, count: count }, "global-events.js", "_collectCompactData"); } catch (e6) {}
+            }
+            return count;
+        }
+
+        _addBoardRow();
+        var iter = _createBoardIterator(board);
+        if (!iter) {
+            res.error = "BoardIterator_Create not available";
+            return res;
+        }
+
+        var cursor = iter.first();
+        while (cursor) {
+            if (_checkAbort("scan.all")) break;
+            res.stats.total++;
+            if (progressStep && (res.stats.total % progressStep === 0)) {
+                var now = new Date().getTime();
+                var elapsed = now - scanStartedAt;
+                var delta = now - lastProgressAt;
+                var deltaCount = res.stats.total - lastProgressCount;
+                var rate = elapsed ? (res.stats.total * 1000 / elapsed) : 0;
+                var batchRate = delta ? (deltaCount * 1000 / delta) : 0;
+                try {
+                    uiInfo("COMPACT_PROGRESS", {
+                        stage: "scan.all",
+                        count: res.stats.total,
+                        elapsedMs: elapsed,
+                        ratePerSec: Math.round(rate * 100) / 100,
+                        batchRatePerSec: Math.round(batchRate * 100) / 100,
+                        batchMs: delta
+                    }, "global-events.js", "_collectCompactData");
+                } catch (e0) {}
+                lastProgressAt = now;
+                lastProgressCount = res.stats.total;
+                if (debug) {
+                    try { uiDebug("COMPACT_SCAN_PROGRESS", { count: res.stats.total }, "global-events.js", "_collectCompactData"); } catch (e1) {}
+                }
+            }
+            _yieldIfNeeded(res.stats.total);
+            var info = _readObjectIdInfo(cursor);
+            var oid = info.oid;
+            var oidStr = info.oidStr;
+
+            try {
+                if ((ids.track !== null && oid === ids.track) || oidStr === "Track") {
+                    _perfWrap("Track", cursor, _addTrack);
+                } else if ((ids.arc !== null && oid === ids.arc) || oidStr === "Arc") {
+                    _perfWrap("Arc", cursor, _addArc);
+                } else if ((ids.via !== null && oid === ids.via) || oidStr === "Via") {
+                    _perfWrap("Via", cursor, _addVia);
+                } else if ((ids.pad !== null && oid === ids.pad) || oidStr === "Pad") {
+                    _perfWrap("Pad", cursor, _addPad);
+                } else if ((ids.poly !== null && oid === ids.poly) || oidStr === "Polygon") {
+                    _perfWrap("Polygon", cursor, _addPolygon);
+                } else if ((ids.boardOutline !== null && oid === ids.boardOutline) || oidStr === "BoardOutline") {
+                    _perfWrap("BoardOutline", cursor, _addBoardOutline);
+                } else if ((ids.fill !== null && oid === ids.fill) || oidStr === "Fill") {
+                    _perfWrap("Fill", cursor, _addFill);
+                } else if ((ids.region !== null && oid === ids.region) || oidStr === "Region") {
+                    _perfWrap("Region", cursor, _addRegion);
+                } else if ((ids.splitPlane !== null && oid === ids.splitPlane) || oidStr === "SplitPlane" || oidStr === "SplitPlaneRegion") {
+                    _perfWrap("SplitPlane", cursor, _addSplitPlane);
+                } else if ((ids.text !== null && oid === ids.text) || oidStr === "Text") {
+                    _perfWrap("Text", cursor, _addText);
+                } else if ((ids.component !== null && oid === ids.component) || oidStr === "Component") {
+                    _perfWrap("Component", cursor, _addComponent);
+                } else if ((ids.componentBody !== null && oid === ids.componentBody) || oidStr === "ComponentBody") {
+                    _perfWrap("ComponentBody", cursor, _addComponentBody);
+                } else if ((ids.connection !== null && oid === ids.connection) || oidStr === "Connection") {
+                    _perfWrap("Connection", cursor, _addConnection);
+                } else if ((ids.coordinate !== null && oid === ids.coordinate) || oidStr === "Coordinate") {
+                    _perfWrap("Coordinate", cursor, _addCoordinate);
+                } else if ((ids.dimension !== null && oid === ids.dimension) || oidStr === "Dimension") {
+                    _perfWrap("Dimension", cursor, _addDimension);
+                } else if ((ids.net !== null && oid === ids.net) || oidStr === "Net") {
+                    _perfWrap("Net", cursor, _addNetObject);
+                } else if ((ids.classObj !== null && oid === ids.classObj) || oidStr === "Class") {
+                    _perfWrap("Class", cursor, _addClass);
+                } else if ((ids.rule !== null && oid === ids.rule) || oidStr === "Rule") {
+                    _perfWrap("Rule", cursor, _addRule);
+                } else if ((ids.diffPair !== null && oid === ids.diffPair) || oidStr === "DifferentialPair") {
+                    _perfWrap("DifferentialPair", cursor, _addDiffPair);
+                } else if ((ids.fromTo !== null && oid === ids.fromTo) || oidStr === "FromTo") {
+                    _perfWrap("FromTo", cursor, _addFromTo);
+                } else if ((ids.violation !== null && oid === ids.violation) || oidStr === "Violation") {
+                    _perfWrap("Violation", cursor, _addViolation);
+                } else if ((ids.embedded !== null && oid === ids.embedded) || oidStr === "Embedded") {
+                    _perfWrap("Embedded", cursor, _addEmbedded);
+                } else if ((ids.embeddedBoard !== null && oid === ids.embeddedBoard) || oidStr === "EmbeddedBoard") {
+                    _perfWrap("EmbeddedBoard", cursor, _addEmbeddedBoard);
+                } else if ((ids.trace !== null && oid === ids.trace) || oidStr === "Trace") {
+                    _perfWrap("Trace", cursor, _addTrace);
+                } else if ((ids.spareVia !== null && oid === ids.spareVia) || oidStr === "SpareVia") {
+                    _perfWrap("SpareVia", cursor, _addSpareVia);
+                } else if ((ids.board !== null && oid === ids.board) || oidStr === "Board") {
+                    _countType("Board");
+                    if (perfEnabled && (perfSample <= 1 || (res.stats.total % perfSample === 0))) {
+                        var tBoard = new Date().getTime();
+                        _addBoardRow();
+                        _recordPerf("Board", tBoard);
+                    } else {
+                        _addBoardRow();
+                    }
+                } else {
+                    var key = oidStr || String(oid);
+                    _countType(key);
+                    _markUnsupported(key);
+                }
+            } catch (eObj) {
+                var msg = (eObj && eObj.message) ? String(eObj.message) : String(eObj);
+                _recordError(oid, oidStr, msg);
+                if (debugCounts.errorDetail < debugLimit) {
+                    debugCounts.errorDetail++;
+                    try {
+                        if ((ids.pad !== null && oid === ids.pad) || oidStr === "Pad") {
+                            uiWarn("COMPACT_PAD_ERROR_DETAIL", _buildPadErrorDetail(cursor), "global-events.js", "_collectCompactData");
+                        } else if ((ids.via !== null && oid === ids.via) || oidStr === "Via") {
+                            uiWarn("COMPACT_VIA_ERROR_DETAIL", _buildViaErrorDetail(cursor), "global-events.js", "_collectCompactData");
+                        }
+                    } catch (eDiag) {}
+                }
+            }
+
+            cursor = iter.next();
+        }
+        iter.destroy();
+
+        if (abortRequested) {
+            _flushErrorBuffer(true);
+            res.ok = false;
+            res.aborted = true;
+            res.abortReason = abortReason || "stop.requested";
+            res.error = res.abortReason ? ("aborted:" + res.abortReason) : "aborted";
+            return res;
+        }
+
+        _scanObjectSet(ids.net, _addNetObject, "net");
+        if (abortRequested) {
+            _flushErrorBuffer(true);
+            res.ok = false;
+            res.aborted = true;
+            res.abortReason = abortReason || "stop.requested";
+            res.error = res.abortReason ? ("aborted:" + res.abortReason) : "aborted";
+            return res;
+        }
+        _scanObjectSet(ids.classObj, _addClass, "class");
+        if (abortRequested) {
+            _flushErrorBuffer(true);
+            res.ok = false;
+            res.aborted = true;
+            res.abortReason = abortReason || "stop.requested";
+            res.error = res.abortReason ? ("aborted:" + res.abortReason) : "aborted";
+            return res;
+        }
+        _scanObjectSet(ids.rule, _addRule, "rule");
+        if (abortRequested) {
+            _flushErrorBuffer(true);
+            res.ok = false;
+            res.aborted = true;
+            res.abortReason = abortReason || "stop.requested";
+            res.error = res.abortReason ? ("aborted:" + res.abortReason) : "aborted";
+            return res;
+        }
+        _scanObjectSet(ids.diffPair, _addDiffPair, "diffpair");
+        if (abortRequested) {
+            _flushErrorBuffer(true);
+            res.ok = false;
+            res.aborted = true;
+            res.abortReason = abortReason || "stop.requested";
+            res.error = res.abortReason ? ("aborted:" + res.abortReason) : "aborted";
+            return res;
+        }
+        _scanObjectSet(ids.fromTo, _addFromTo, "fromto");
+        if (abortRequested) {
+            _flushErrorBuffer(true);
+            res.ok = false;
+            res.aborted = true;
+            res.abortReason = abortReason || "stop.requested";
+            res.error = res.abortReason ? ("aborted:" + res.abortReason) : "aborted";
+            return res;
+        }
+        _scanObjectSet(ids.violation, _addViolation, "violation");
+        if (abortRequested) {
+            _flushErrorBuffer(true);
+            res.ok = false;
+            res.aborted = true;
+            res.abortReason = abortReason || "stop.requested";
+            res.error = res.abortReason ? ("aborted:" + res.abortReason) : "aborted";
+            return res;
+        }
+        _flushErrorBuffer(true);
+
+        var i;
+        for (i = 0; i < tables.list.length; i++) {
+            _touchTableCount(tables.list[i].name);
+        }
+        if (debug && res.stats.unsupported > 0 && debugCounts.unsupported < debugLimit) {
+            debugCounts.unsupported++;
+            try {
+                uiDebug("COMPACT_UNSUPPORTED_TYPES", {
+                    total: res.stats.unsupported,
+                    types: res.stats.unsupportedTypes
+                }, "global-events.js", "_collectCompactData");
+            } catch (eUnsup) {}
+        }
+        if (debug && res.stats.errors > 0 && res.stats.errorSamples.length && debugCounts.errorSample < debugLimit) {
+            debugCounts.errorSample++;
+            try {
+                uiDebug("COMPACT_ERROR_SAMPLES", {
+                    total: res.stats.errors,
+                    samples: res.stats.errorSamples
+                }, "global-events.js", "_collectCompactData");
+            } catch (eSamp) {}
+        }
+        if (perfEnabled) {
+            res.stats.perfSample = perfSample || 1;
+            res.stats.perfSamples = perfSampleCount;
+            res.stats.perfTotalMs = perfTotalMs;
+            res.stats.perfTop = _buildPerfTop(perfTypes, perfTopLimit);
+            try {
+                uiInfo("COMPACT_PERF_TOP", {
+                    sample: res.stats.perfSample,
+                    samples: res.stats.perfSamples,
+                    totalMs: res.stats.perfTotalMs,
+                    types: res.stats.perfTop
+                }, "global-events.js", "_collectCompactData");
+            } catch (ePerf) {}
+        }
+        res.ok = true;
+        return res;
+    }
+
+    function _uploadEnvelope(client, url, envelope, label, extra) {
+        if (!client || !client.request) {
+            uiWarn(label, { ok: false, reason: "request not available" }, "global-events.js", "_uploadEnvelope");
+            return { ok: false, status: 0, error: "request not available" };
+        }
+        var body = _safeJson(envelope);
+        var resp = client.request("POST", url, body, { "Content-Type": "application/json" });
+        var ok = resp && resp.ok;
+        var payload = { ok: ok, status: resp ? resp.status : 0 };
+        if (extra) {
+            var k;
+            for (k in extra) {
+                if (extra.hasOwnProperty(k)) payload[k] = extra[k];
+            }
+        }
+        uiInfo(label, payload, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+        return { ok: ok, resp: resp };
+    }
+
+    function _readMemLogLine(lines, idx) {
+        var line = "";
+        try { line = lines.Strings(idx); } catch (e1) {}
+        if (line === "" || line === null || line === undefined) {
+            try { line = lines.Item(idx); } catch (e2) {}
+        }
+        if (line === "" || line === null || line === undefined) {
+            try { line = lines[idx]; } catch (e3) {}
+        }
+        if (line === null || line === undefined) line = "";
+        return String(line);
+    }
+
+    function _collectUILogLines(maxLines) {
+        var res = { ok: false, total: 0, start: 0, lines: [], truncated: false };
+        if (typeof memLog === "undefined" || !memLog || !memLog.Lines) return res;
+        var count = 0;
+        try { count = memLog.Lines.Count; } catch (e1) { count = 0; }
+        res.total = count;
+        if (!count) return res;
+        var take = maxLines && maxLines > 0 ? maxLines : count;
+        var start = count > take ? (count - take) : 0;
+        res.start = start;
+        res.truncated = count > take;
+        var i;
+        for (i = start; i < count; i++) {
+            res.lines.push(_readMemLogLine(memLog.Lines, i));
+        }
+        res.ok = true;
+        return res;
+    }
+
+    function _uploadUILog(client, baseUrl, options) {
+        var maxLines = (options && options.maxLines) ? options.maxLines : 2000;
+        var snapshot = _collectUILogLines(maxLines);
+        if (!snapshot.ok) {
+            uiWarn("UPLOAD_UI_LOG", { ok: false, reason: "memLog unavailable" }, "global-events.js", "_uploadUILog");
+            return { ok: false, reason: "memLog unavailable" };
+        }
+        var env = {
+            schema: "spec/0.1",
+            type: "ad.ui.log",
+            id: "ad.ui.log-" + String(new Date().getTime()),
+            payload: {
+                total: snapshot.total,
+                start: snapshot.start,
+                count: snapshot.lines.length,
+                truncated: snapshot.truncated,
+                lines: snapshot.lines
+            },
+            meta: {
+                ts: new Date().getTime(),
+                source: "AD",
+                rev: 0.1,
+                detail: { schema: "spec/0.1", build: "ad21-js" }
+            }
+        };
+        return _uploadEnvelope(client, baseUrl + "/api/upload-logs", env, "UPLOAD_UI_LOG", {
+            count: snapshot.lines.length,
+            total: snapshot.total,
+            truncated: snapshot.truncated ? true : false
+        });
+    }
+
+    function _uploadDeclSummary(client, baseUrl, declInfo, layerInfo, boardSummary) {
+        var summary = {
+            schema: "spec/0.1",
+            type: "ad.decl.summary",
+            id: "ad.decl.summary-" + String(new Date().getTime()),
+            payload: {
+                format: declInfo.format,
+                declId: declInfo.declId,
+                declHash: declInfo.declHash,
+                stackSig: layerInfo && layerInfo.stackSig ? layerInfo.stackSig : "",
+                boardName: boardSummary ? boardSummary.name : ""
+            },
+            meta: {
+                ts: new Date().getTime(),
+                source: "AD",
+                rev: 0.1,
+                detail: { schema: "spec/0.1", build: "ad21-js" }
+            }
+        };
+        var resp = _uploadEnvelope(client, baseUrl + "/api/decl-summary", summary, "DECL_SUMMARY");
+        var needDecl = true;
+        var needStack = true;
+        if (resp && resp.resp && resp.resp.json) {
+            try {
+                if (resp.resp.json.needDecl === false) needDecl = false;
+                if (resp.resp.json.needStack === false) needStack = false;
+            } catch (e1) {}
+        }
+        return { ok: resp.ok, needDecl: needDecl, needStack: needStack };
+    }
+
+    function _uploadDecl(client, baseUrl, declInfo) {
+        var decl = {
+            schema: "spec/0.1",
+            type: "ad.decl",
+            id: "ad.decl-" + String(new Date().getTime()),
+            payload: {
+                format: declInfo.format,
+                declId: declInfo.declId,
+                declHash: declInfo.declHash,
+                rowIdMode: declInfo.rowIdMode,
+                tables: declInfo.defs,
+                stringBanks: declInfo.stringBanks
+            },
+            meta: {
+                ts: new Date().getTime(),
+                source: "AD",
+                rev: 0.1,
+                detail: { schema: "spec/0.1", build: "ad21-js" }
+            }
+        };
+        return _uploadEnvelope(client, baseUrl + "/api/upload-decl", decl, "DECL_UPLOAD");
+    }
+
+    function _uploadLayerStack(client, baseUrl, layerInfo) {
+        var env = {
+            schema: "spec/0.1",
+            type: "ad.layer.stack",
+            id: "ad.layer.stack-" + String(new Date().getTime()),
+            payload: {
+                stackSig: layerInfo.stackSig,
+                fields: layerInfo.fields,
+                layers: layerInfo.layers
+            },
+            meta: {
+                ts: new Date().getTime(),
+                source: "AD",
+                rev: 0.1,
+                detail: { schema: "spec/0.1", build: "ad21-js" }
+            }
+        };
+        return _uploadEnvelope(client, baseUrl + "/api/upload-layer-stack", env, "LAYER_STACK_UPLOAD", { count: layerInfo.layers.length });
+    }
+
+    function _uploadStringBanks(client, baseUrl, banks, options) {
+        var ok = true;
+        var totalBanks = 0;
+        var batchSize = (options && options.stringBatchSize) ? options.stringBatchSize : 1000;
+        var shouldAbort = (options && options.shouldAbort) ? options.shouldAbort : null;
+        var abortReason = "";
+        var k;
+        for (k in banks) {
+            if (!banks.hasOwnProperty(k)) continue;
+            var bank = banks[k];
+            var list = bank.list || [];
+            if (list.length === 0) continue;
+            totalBanks++;
+            var offset = 1;
+            var idx = 0;
+            while (idx < list.length) {
+                if (shouldAbort) {
+                    var stop = false;
+                    try { stop = shouldAbort("string.bank." + String(bank.bankId || k), offset, list.length); } catch (eStop) { stop = false; }
+                    if (stop) {
+                        abortReason = (typeof stop === "string") ? stop : "stop.requested";
+                        return { ok: false, totalBanks: totalBanks, aborted: true, abortReason: abortReason };
+                    }
+                }
+                var take = list.slice(idx, idx + batchSize);
+                var env = {
+                    schema: "spec/0.1",
+                    type: "ad.string.bank",
+                    id: "ad.string.bank-" + String(new Date().getTime()) + "-" + String(k),
+                    payload: {
+                        bankId: bank.bankId,
+                        offset: offset,
+                        strings: take
+                    },
+                    meta: {
+                        ts: new Date().getTime(),
+                        source: "AD",
+                        rev: 0.1,
+                        detail: { schema: "spec/0.1", build: "ad21-js" }
+                    }
+                };
+                var resp = _uploadEnvelope(client, baseUrl + "/api/upload-strings", env, "STRING_BANK_UPLOAD", {
+                    bankId: bank.bankId,
+                    count: take.length
+                });
+                if (!resp.ok) ok = false;
+                idx += take.length;
+                offset += take.length;
+            }
+        }
+        return { ok: ok, totalBanks: totalBanks };
+    }
+
+    function _uploadErrorBatch(client, baseUrl, context, batchIndex, items, isFinal) {
+        var payload = {
+            stage: context && context.stage ? context.stage : "",
+            boardName: context && context.boardName ? context.boardName : "",
+            format: context && context.format ? context.format : "",
+            declId: context && context.declId ? context.declId : "",
+            declHash: context && context.declHash ? context.declHash : "",
+            stackSig: context && context.stackSig ? context.stackSig : "",
+            batchIndex: batchIndex,
+            count: items ? items.length : 0,
+            isFinal: !!isFinal,
+            items: items || []
+        };
+        var env = {
+            schema: "spec/0.1",
+            type: "ad.error.batch",
+            id: "ad.error.batch-" + String(new Date().getTime()) + "-" + String(batchIndex),
+            payload: payload,
+            meta: {
+                ts: new Date().getTime(),
+                source: "AD",
+                rev: 0.1,
+                detail: { schema: "spec/0.1", build: "ad21-js" }
+            }
+        };
+        return _uploadEnvelope(client, baseUrl + "/api/upload-errors", env, "ERROR_BATCH_UPLOAD", {
+            count: payload.count,
+            batchIndex: batchIndex,
+            isFinal: !!isFinal
+        });
+    }
+
+    function _uploadCompactTables(client, baseUrl, declInfo, layerInfo, boardSummary, tables, options) {
+        var batchSize = (options && options.batchSize) ? options.batchSize : 5000;
+        var totalRows = 0;
+        var i;
+        for (i = 0; i < tables.list.length; i++) {
+            totalRows += tables.list[i].rows.length;
+        }
+        if (totalRows === 0) {
+            uiInfo("UPLOAD_OBJECTS", {
+                ok: true,
+                status: 0,
+                count: 0,
+                total: 0,
+                batchIndex: 0,
+                batchCount: 0,
+                isFinal: true
+            }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+            return { ok: true, batches: 0, okBatches: 0, totalRows: 0 };
+        }
+
+        var rowPos = {};
+        for (i = 0; i < tables.list.length; i++) {
+            rowPos[tables.list[i].name] = 0;
+        }
+        var batchCount = Math.ceil(totalRows / batchSize);
+        var batchIndex = 0;
+        var sent = 0;
+        var ok = true;
+        var okBatches = 0;
+        var shouldAbort = (options && options.shouldAbort) ? options.shouldAbort : null;
+        var aborted = false;
+        var abortReason = "";
+
+        while (sent < totalRows) {
+            if (shouldAbort) {
+                var stop = false;
+                try { stop = shouldAbort("upload.objects", sent, totalRows); } catch (eStop) { stop = false; }
+                if (stop) {
+                    aborted = true;
+                    abortReason = (typeof stop === "string") ? stop : "stop.requested";
+                    break;
+                }
+            }
+            batchIndex++;
+            var batchTables = [];
+            var batchCountRows = 0;
+            for (i = 0; i < tables.list.length; i++) {
+                if (batchCountRows >= batchSize) break;
+                var table = tables.list[i];
+                var pos = rowPos[table.name];
+                if (pos >= table.rows.length) continue;
+                var remain = table.rows.length - pos;
+                var take = batchSize - batchCountRows;
+                if (take > remain) take = remain;
+                if (take > 0) {
+                    batchTables.push({
+                        tableId: table.tableId,
+                        rows: table.rows.slice(pos, pos + take)
+                    });
+                    rowPos[table.name] = pos + take;
+                    batchCountRows += take;
+                }
+            }
+
+            var isFinal = (sent + batchCountRows) >= totalRows;
+            var payload = {
+                format: declInfo.format,
+                declId: declInfo.declId,
+                declHash: declInfo.declHash,
+                stackSig: layerInfo && layerInfo.stackSig ? layerInfo.stackSig : "",
+                boardName: boardSummary ? boardSummary.name : "",
+                count: batchCountRows,
+                total: isFinal ? totalRows : null,
+                offset: sent,
+                batchIndex: batchIndex,
+                batchCount: isFinal ? batchCount : 0,
+                isFinal: isFinal,
+                tables: batchTables
+            };
+            var env = {
+                schema: "spec/0.1",
+                type: "ad.object.index",
+                id: "ad.object.index-" + String(new Date().getTime()) + "-" + String(batchIndex),
+                payload: payload,
+                meta: {
+                    ts: new Date().getTime(),
+                    source: "AD",
+                    rev: 0.1,
+                    detail: { schema: "spec/0.1", build: "ad21-js" }
+                }
+            };
+            var resp = _uploadEnvelope(client, baseUrl + "/api/upload-objects", env, "UPLOAD_OBJECTS", {
+                count: batchCountRows,
+                offset: sent,
+                batchIndex: batchIndex,
+                batchCount: isFinal ? batchCount : 0,
+                isFinal: isFinal
+            });
+            if (!resp.ok) ok = false;
+            if (resp.ok) okBatches++;
+            sent += batchCountRows;
+        }
+
+        if (aborted) {
+            return { ok: false, batches: batchIndex, okBatches: okBatches, totalRows: totalRows, aborted: true, abortReason: abortReason };
+        }
+        return { ok: ok, batches: batchCount, okBatches: okBatches, totalRows: totalRows };
+    }
+
+    function _runCompactTransfer(board, boardSummary, client, baseUrl, options) {
+        var result = {
+            ok: false,
+            declSummaryOk: false,
+            declUploadOk: false,
+            layerStackOk: false,
+            stringBanksOk: false,
+            objectUploadOk: false,
+            objectBatches: 0,
+            objectOkBatches: 0,
+            totalRows: 0,
+            stats: null,
+            aborted: false,
+            abortReason: "",
+            format: "",
+            declId: "",
+            declHash: "",
+            stackSig: "",
+            timing: {}
+        };
+        if (!board) {
+            result.error = "board missing";
+            return result;
+        }
+
+        function _checkAbort(stage) {
+            if (!options || !options.shouldAbort) return false;
+            var stop = false;
+            try { stop = options.shouldAbort(stage, 0, result.stats ? result.stats.errors : 0); } catch (eStop) { stop = false; }
+            if (stop) {
+                result.aborted = true;
+                result.abortReason = (typeof stop === "string") ? stop : "stop.requested";
+                return true;
+            }
+            return false;
+        }
+
+        var declInfo = _buildDeclInfo(options && options.format ? options.format : specAllFormat);
+        result.format = declInfo.format;
+        result.declId = declInfo.declId;
+        result.declHash = declInfo.declHash;
+        var banks = {};
+        var layerInfo = _buildLayerStackInfo(board, banks);
+        result.stackSig = layerInfo && layerInfo.stackSig ? layerInfo.stackSig : "";
+        if (options && options.debug) {
+            try { uiDebug("DECL_BUILD", { tables: declInfo.defs.length, declHash: declInfo.declHash }, "global-events.js", "_runCompactTransfer"); } catch (e0) {}
+            try { uiDebug("LAYER_STACK_BUILD", { count: layerInfo.layers.length, stackSig: layerInfo.stackSig }, "global-events.js", "_runCompactTransfer"); } catch (e1) {}
+        }
+
+        var tDeclSummary = new Date().getTime();
+        var summaryResp = _uploadDeclSummary(client, baseUrl, declInfo, layerInfo, boardSummary);
+        result.timing.declSummaryMs = new Date().getTime() - tDeclSummary;
+        result.declSummaryOk = summaryResp.ok;
+        uiInfo("COMPACT_STAGE", {
+            stage: "decl.summary",
+            ok: summaryResp.ok,
+            needDecl: summaryResp.needDecl,
+            needStack: summaryResp.needStack,
+            ms: result.timing.declSummaryMs
+        }, "global-events.js", "_runCompactTransfer");
+        if (_checkAbort("decl.summary")) return result;
+
+        var forceDecl = !(options && options.forceDecl === false);
+        var forceStack = !(options && options.forceStack === false);
+        var tDeclUpload = new Date().getTime();
+        if (summaryResp.needDecl || forceDecl) {
+            var declResp = _uploadDecl(client, baseUrl, declInfo);
+            result.declUploadOk = declResp.ok;
+        } else {
+            result.declUploadOk = true;
+        }
+        result.timing.declUploadMs = new Date().getTime() - tDeclUpload;
+        uiInfo("COMPACT_STAGE", {
+            stage: "decl.upload",
+            ok: result.declUploadOk,
+            ms: result.timing.declUploadMs
+        }, "global-events.js", "_runCompactTransfer");
+        if (_checkAbort("decl.upload")) return result;
+
+        var tLayerStack = new Date().getTime();
+        if (layerInfo.ok && (summaryResp.needStack || forceStack)) {
+            var layerBank = banks["layer"];
+            if (layerBank && layerBank.list && layerBank.list.length) {
+                _uploadStringBanks(client, baseUrl, { layer: layerBank }, options);
+            }
+            var layerResp = _uploadLayerStack(client, baseUrl, layerInfo);
+            result.layerStackOk = layerResp.ok;
+        } else {
+            result.layerStackOk = layerInfo.ok;
+        }
+        result.timing.layerStackMs = new Date().getTime() - tLayerStack;
+        uiInfo("COMPACT_STAGE", {
+            stage: "layer.stack",
+            ok: result.layerStackOk,
+            count: layerInfo.layers.length,
+            ms: result.timing.layerStackMs
+        }, "global-events.js", "_runCompactTransfer");
+        if (_checkAbort("layer.stack")) return result;
+
+        var collectOptions = {};
+        if (options) {
+            var k;
+            for (k in options) {
+                if (options.hasOwnProperty(k)) collectOptions[k] = options[k];
+            }
+        }
+        collectOptions.boardName = boardSummary ? boardSummary.name : "";
+        if (!(options && options.reportErrors === false)) {
+            var errorContext = {
+                stage: "collect",
+                boardName: boardSummary ? boardSummary.name : "",
+                format: declInfo.format,
+                declId: declInfo.declId,
+                declHash: declInfo.declHash,
+                stackSig: layerInfo && layerInfo.stackSig ? layerInfo.stackSig : ""
+            };
+            collectOptions.onErrorBatch = function (items, batchIndex, isFinal) {
+                _uploadErrorBatch(client, baseUrl, errorContext, batchIndex, items, isFinal);
+            };
+        }
+        var tCollect = new Date().getTime();
+        var collect = _collectCompactData(board, declInfo, layerInfo, banks, collectOptions);
+        result.timing.collectMs = new Date().getTime() - tCollect;
+        result.stats = collect.stats;
+        uiInfo("COMPACT_STAGE", {
+            stage: "collect",
+            ok: collect.ok,
+            total: collect.stats ? collect.stats.total : null,
+            unsupported: collect.stats ? collect.stats.unsupported : null,
+            errors: collect.stats ? collect.stats.errors : null,
+            errorDropped: collect.stats ? collect.stats.errorDropped : null,
+            aborted: collect.aborted,
+            abortReason: collect.abortReason,
+            ms: result.timing.collectMs
+        }, "global-events.js", "_runCompactTransfer");
+        if (collect.aborted) {
+            result.aborted = true;
+            result.abortReason = collect.abortReason || "stop.requested";
+            result.error = collect.error || "aborted";
+            return result;
+        }
+        if (collect.ok) {
+            if (options && options.debug) {
+                try { uiDebug("COMPACT_SCAN_SUMMARY", { total: collect.stats.total, unsupported: collect.stats.unsupported }, "global-events.js", "_runCompactTransfer"); } catch (e2) {}
+                try { uiDebug("COMPACT_TABLE_STATS", collect.stats.tableCounts, "global-events.js", "_runCompactTransfer"); } catch (e3) {}
+            }
+            var tStringBanks = new Date().getTime();
+            var stringResp = _uploadStringBanks(client, baseUrl, banks, options);
+            result.timing.stringBanksMs = new Date().getTime() - tStringBanks;
+            result.stringBanksOk = stringResp.ok;
+            uiInfo("COMPACT_STAGE", {
+                stage: "string.banks",
+                ok: stringResp.ok,
+                totalBanks: stringResp.totalBanks,
+                ms: result.timing.stringBanksMs
+            }, "global-events.js", "_runCompactTransfer");
+            if (stringResp.aborted) {
+                result.aborted = true;
+                result.abortReason = stringResp.abortReason || "stop.requested";
+                result.error = "aborted";
+                return result;
+            }
+            var tObjectUpload = new Date().getTime();
+            var uploadResp = _uploadCompactTables(client, baseUrl, declInfo, layerInfo, boardSummary, collect.tables, options);
+            result.timing.objectUploadMs = new Date().getTime() - tObjectUpload;
+            result.objectUploadOk = uploadResp.ok;
+            result.objectBatches = uploadResp.batches;
+            result.objectOkBatches = uploadResp.okBatches;
+            result.totalRows = uploadResp.totalRows;
+            uiInfo("COMPACT_STAGE", {
+                stage: "object.upload",
+                ok: uploadResp.ok,
+                batches: uploadResp.batches,
+                okBatches: uploadResp.okBatches,
+                totalRows: uploadResp.totalRows,
+                ms: result.timing.objectUploadMs
+            }, "global-events.js", "_runCompactTransfer");
+            if (uploadResp.aborted) {
+                result.aborted = true;
+                result.abortReason = uploadResp.abortReason || "stop.requested";
+                result.error = "aborted";
+                return result;
+            }
+        }
+
+        result.ok = result.declSummaryOk && result.declUploadOk && result.layerStackOk && result.stringBanksOk && result.objectUploadOk;
+        return result;
     }
 
     function _adObjectGet(params) {
@@ -26290,6 +29252,7 @@ function 测试_AD_Spec_0_1_一键验证() {
         return wrapper || null;
     }
 
+    var finalSummary = null;
     try {
         var client = null;
         if (typeof HTTPClientModule !== "undefined") {
@@ -26339,31 +29302,53 @@ function 测试_AD_Spec_0_1_一键验证() {
         uiInfo("BOARD_SUMMARY", boardSummary, "global-events.js", "测试_AD_Spec_0_1_一键验证");
 
         var resolved = _resolveBoardRef();
-        var objectIndexResult = null;
-        var uploadObjectsOk = false;
-        var uploadObjectsBatches = 0;
-        var uploadObjectsOkBatches = 0;
-        var objectIndexBatchSize = 5000;
-        var objectIndexIncludeBounds = false;
-        var objectIndexIncludeLayerName = true;
+        var compactResult = null;
+        var opt = options || {};
         try {
-            objectIndexResult = _streamObjectIndexUpload(resolved.board, {
-                client: client,
-                baseUrl: baseUrl,
-                boardName: boardSummary ? boardSummary.name : "",
-                batchSize: objectIndexBatchSize,
-                includeBounds: objectIndexIncludeBounds,
-                includeLayerName: objectIndexIncludeLayerName
+            compactResult = _runCompactTransfer(resolved.board, boardSummary, client, baseUrl, {
+                batchSize: opt.batchSize || 10000,
+                stringBatchSize: opt.stringBatchSize || 5000,
+                progressStep: opt.progressStep || 5000,
+                yieldStep: opt.yieldStep || 5000,
+                perfSample: (opt.perfSample === 0) ? 0 : (opt.perfSample || 100),
+                perfTopLimit: opt.perfTopLimit || 8,
+                perfTypes: (opt.perfTypes === true) ? true : false,
+                format: opt.format || specAllFormat,
+                shouldAbort: abortCheck,
+                debug: (opt.debug === false) ? false : true,
+                forceDecl: (opt.forceDecl === false) ? false : true,
+                forceStack: (opt.forceStack === false) ? false : true,
+                reportErrors: (opt.reportErrors === false) ? false : true,
+                errorBatchSize: opt.errorBatchSize || 100,
+                errorMaxBatches: opt.errorMaxBatches || 50,
+                errorVerbose: opt.errorVerbose ? true : false
             });
+            uiInfo("COMPACT_SUMMARY", {
+                ok: compactResult && compactResult.ok,
+                declSummaryOk: compactResult && compactResult.declSummaryOk,
+                declUploadOk: compactResult && compactResult.declUploadOk,
+                layerStackOk: compactResult && compactResult.layerStackOk,
+                stringBanksOk: compactResult && compactResult.stringBanksOk,
+                objectUploadOk: compactResult && compactResult.objectUploadOk,
+                objectBatches: compactResult && compactResult.objectBatches,
+                objectOkBatches: compactResult && compactResult.objectOkBatches,
+                totalRows: compactResult && compactResult.totalRows,
+                totalObjects: compactResult && compactResult.stats ? compactResult.stats.total : null,
+                unsupported: compactResult && compactResult.stats ? compactResult.stats.unsupported : null,
+                unsupportedTypes: compactResult && compactResult.stats ? compactResult.stats.unsupportedTypes : null,
+                errors: compactResult && compactResult.stats ? compactResult.stats.errors : null,
+                errorDropped: compactResult && compactResult.stats ? compactResult.stats.errorDropped : null,
+                aborted: compactResult && compactResult.aborted,
+                abortReason: compactResult && compactResult.abortReason,
+                format: compactResult && compactResult.format,
+                declId: compactResult && compactResult.declId,
+                declHash: compactResult && compactResult.declHash,
+                stackSig: compactResult && compactResult.stackSig,
+                timing: compactResult && compactResult.timing
+            }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
         } catch (eObjIdx) {
-            objectIndexResult = { ok: false, error: String(eObjIdx) };
-        }
-        if (objectIndexResult && objectIndexResult.ok) {
-            uploadObjectsOk = objectIndexResult.uploadOk;
-            uploadObjectsBatches = objectIndexResult.uploadBatches || 0;
-            uploadObjectsOkBatches = objectIndexResult.uploadOkBatches || 0;
-        } else {
-            uiWarn("UPLOAD_OBJECTS", { ok: false, reason: objectIndexResult ? objectIndexResult.error : "unknown" }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+            compactResult = { ok: false, error: String(eObjIdx), format: opt.format || specAllFormat };
+            uiWarn("COMPACT_SUMMARY", { ok: false, reason: compactResult.error }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
         }
         var wrapper = _createWrapperFromBoard(resolved.board);
         var objGet = _tryObjectGet(wrapper, resolved.board);
@@ -26393,24 +29378,344 @@ function 测试_AD_Spec_0_1_一键验证() {
             uiWarn("UPLOAD_REPORT", { ok: false, reason: "request not available" }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
         }
 
-        uiInfo("FINAL_SUMMARY", {
+        finalSummary = {
             echoOk: r1 && r1.ok,
             summaryOk: r2 && r2.ok,
             unknownOkFalse: r3 && (r3.ok === false),
             hasBoardSummary: !!boardSummary,
             uploadOk: uploadOk,
-            objectIndexOk: objectIndexResult && objectIndexResult.ok,
-            uploadObjectsOk: uploadObjectsOk,
-            uploadObjectsBatches: uploadObjectsBatches,
-            uploadObjectsOkBatches: uploadObjectsOkBatches,
+            compactOk: compactResult && compactResult.ok,
+            declSummaryOk: compactResult && compactResult.declSummaryOk,
+            declUploadOk: compactResult && compactResult.declUploadOk,
+            layerStackOk: compactResult && compactResult.layerStackOk,
+            stringBanksOk: compactResult && compactResult.stringBanksOk,
+            uploadObjectsOk: compactResult && compactResult.objectUploadOk,
+            uploadObjectsBatches: compactResult && compactResult.objectBatches,
+            uploadObjectsOkBatches: compactResult && compactResult.objectOkBatches,
+            uploadObjectsRows: compactResult && compactResult.totalRows,
+            compactErrors: compactResult && compactResult.stats ? compactResult.stats.errors : null,
+            compactErrorDropped: compactResult && compactResult.stats ? compactResult.stats.errorDropped : null,
+            compactAborted: compactResult && compactResult.aborted,
+            compactAbortReason: compactResult && compactResult.abortReason,
             objectGetOk: objGet && objGet.ok
-        }, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+        };
+        uiInfo("FINAL_SUMMARY", finalSummary, "global-events.js", "测试_AD_Spec_0_1_一键验证");
+        if (opt.uploadUiLog === false) {
+            // skip
+        } else {
+            try {
+                _uploadUILog(client, baseUrl, { maxLines: opt.logMaxLines || 2000 });
+            } catch (eLog) {}
+        }
+        return finalSummary;
     } catch (error) {
         showErrorInUI("测试_AD_Spec_0_1_一键验证", error, {
             baseUrl: baseUrl,
             timestamp: new Date().toLocaleString()
         });
+        finalSummary = { ok: false, error: String(error) };
+        return finalSummary;
+    } finally {
+        if (useRunControl && typeof _endAdRun === "function") _endAdRun(runId);
     }
+}
+
+/**
+ * Spec v0.1 任务轮询入口
+ * 在 AD 中直接运行：测试_AD_任务轮询()
+ */
+function 测试_AD_任务轮询() {
+    var baseUrl = "http://127.0.0.1:8080";
+    var runId = 0;
+    if (typeof _beginAdRun === "function") {
+        runId = _beginAdRun("TaskPoll");
+    }
+    var pollSummary = {
+        ok: false,
+        reason: "",
+        polls: 0,
+        tasks: 0,
+        startedAt: new Date().getTime(),
+        stoppedAt: 0
+    };
+    var client = null;
+    var abortCheck = function (stage, total, errors) {
+        if (typeof _shouldAdStop !== "function") return false;
+        return _shouldAdStop(runId, stage) ? "stop.requested" : false;
+    };
+
+    function _safeJson(obj) {
+        try {
+            if (typeof JsonUtil !== "undefined" && JsonUtil && JsonUtil.stringify) return JsonUtil.stringify(obj);
+        } catch (e0) {}
+        try { if (typeof JSON !== "undefined" && JSON && JSON.stringify) return JSON.stringify(obj); } catch (e1) {}
+        return "";
+    }
+
+    function _postJson(url, obj) {
+        if (!client || !client.request || typeof client.request !== "function") {
+            return { ok: false, status: 0, error: "request not available", json: null };
+        }
+        var body = _safeJson(obj);
+        try {
+            return client.request("POST", url, body, { "Content-Type": "application/json" });
+        } catch (eReq) {
+            return { ok: false, status: 0, error: String(eReq), json: null };
+        }
+    }
+
+    function _pollNext(ctx) {
+        var reqObj = {
+            clientId: ctx.clientId,
+            sessionId: ctx.sessionId,
+            lastTaskId: ctx.lastTaskId || "",
+            wants: ["ad.tasks"]
+        };
+        var resp = _postJson(baseUrl + "/api/task/poll", reqObj);
+        if (!resp || !resp.ok) {
+            return {
+                ok: false,
+                status: resp ? resp.status : 0,
+                error: resp ? (resp.error || resp.parseError) : "request failed"
+            };
+        }
+        if (!resp.json) {
+            return {
+                ok: false,
+                status: resp.status,
+                error: resp.parseError || "json missing"
+            };
+        }
+        var action = resp.json.action || resp.json.state || "";
+        if (resp.json.sessionId && !ctx.sessionId) ctx.sessionId = resp.json.sessionId;
+        if (resp.json.pollIntervalMs) ctx.pollIntervalMs = resp.json.pollIntervalMs;
+        return {
+            ok: true,
+            action: action,
+            task: resp.json.task || null,
+            stop: resp.json.stop === true,
+            pollIntervalMs: resp.json.pollIntervalMs || 0,
+            raw: resp.json
+        };
+    }
+
+    function _executeTask(task, ctx) {
+        var result = {
+            ok: false,
+            error: "",
+            data: null,
+            aborted: false,
+            abortReason: "",
+            startedAt: new Date().getTime(),
+            finishedAt: 0,
+            durationMs: 0
+        };
+
+        if (!task) {
+            result.error = "task missing";
+            result.finishedAt = new Date().getTime();
+            result.durationMs = result.finishedAt - result.startedAt;
+            return result;
+        }
+
+        var stop = abortCheck("task.before", 0, 0);
+        if (stop) {
+            result.aborted = true;
+            result.abortReason = stop;
+            result.finishedAt = new Date().getTime();
+            result.durationMs = result.finishedAt - result.startedAt;
+            return result;
+        }
+
+        var taskType = task.type || task.action || task.cmd || task.name || "";
+        var taskParams = task.params || {};
+
+        try {
+            if (taskType === "spec0.1" || taskType === "run.spec0.1" || taskType === "spec-0.1" || taskType === "spec0_1") {
+                var specOpt = { skipRunControl: true, shouldAbort: abortCheck };
+                var k;
+                for (k in taskParams) {
+                    if (taskParams.hasOwnProperty(k)) specOpt[k] = taskParams[k];
+                }
+                var summary = 测试_AD_Spec_0_1_一键验证(specOpt);
+                result.ok = summary ? (summary.compactOk !== false && summary.uploadOk !== false && summary.echoOk !== false) : false;
+                result.data = summary || null;
+                if (summary && summary.compactAborted) {
+                    result.aborted = true;
+                    result.abortReason = summary.compactAbortReason || "aborted";
+                }
+            } else if (taskType === "ping") {
+                var pong = false;
+                if (client && client.ping) {
+                    pong = client.ping(baseUrl);
+                }
+                result.ok = pong ? true : false;
+                result.data = { ok: pong };
+            } else if (taskType === "command") {
+                var cmdName = task.cmd || task.name || "";
+                if (!cmdName) {
+                    result.ok = false;
+                    result.error = "command missing";
+                } else if (client && client.sendCommand) {
+                    var cmdResp = client.sendCommand(baseUrl, cmdName, taskParams || {});
+                    result.ok = cmdResp && cmdResp.ok;
+                    result.data = cmdResp || null;
+                } else {
+                    result.ok = false;
+                    result.error = "sendCommand unavailable";
+                }
+            } else {
+                result.ok = false;
+                result.error = "unknown task: " + taskType;
+            }
+        } catch (eTask) {
+            result.ok = false;
+            result.error = String(eTask);
+        }
+
+        result.finishedAt = new Date().getTime();
+        result.durationMs = result.finishedAt - result.startedAt;
+        return result;
+    }
+
+    function _reportTask(ctx, task, result) {
+        var payload = {
+            clientId: ctx.clientId,
+            sessionId: ctx.sessionId,
+            taskId: task && task.id ? task.id : "",
+            taskType: task && (task.type || task.action || task.cmd || task.name) ? (task.type || task.action || task.cmd || task.name) : "",
+            ok: result && result.ok ? true : false,
+            error: result && result.error ? String(result.error) : "",
+            aborted: result && result.aborted ? true : false,
+            abortReason: result && result.abortReason ? String(result.abortReason) : "",
+            startedAt: result && result.startedAt ? result.startedAt : 0,
+            finishedAt: result && result.finishedAt ? result.finishedAt : 0,
+            durationMs: result && result.durationMs ? result.durationMs : 0,
+            result: result && result.data ? result.data : null
+        };
+        var env = {
+            schema: "spec/0.1",
+            type: "ad.task.report",
+            id: "ad.task.report-" + String(new Date().getTime()) + "-" + String(payload.taskId || ""),
+            payload: payload,
+            meta: {
+                ts: new Date().getTime(),
+                source: "AD",
+                rev: 0.1,
+                detail: { schema: "spec/0.1", build: "ad21-js" }
+            }
+        };
+        var resp = _postJson(baseUrl + "/api/task/report", env);
+        uiInfo("TASK_REPORT", {
+            ok: resp && resp.ok,
+            status: resp ? resp.status : 0,
+            taskId: payload.taskId,
+            taskType: payload.taskType
+        }, "global-events.js", "测试_AD_任务轮询");
+        return { ok: resp && resp.ok, stop: resp && resp.json && resp.json.stop === true };
+    }
+
+    try {
+        if (typeof HTTPClientModule !== "undefined") {
+            client = HTTPClientModule;
+        } else if (typeof HTTP客户端 !== "undefined") {
+            client = HTTP客户端;
+        }
+
+        if (!client) {
+            showErrorInUI("测试_AD_任务轮询", new Error("HTTPClientModule 未加载"), {
+                HTTPClientModule: typeof HTTPClientModule,
+                HTTP客户端: typeof HTTP客户端
+            });
+            pollSummary.reason = "client missing";
+            return pollSummary;
+        }
+
+        if (client.setBaseUrl) {
+            try { client.setBaseUrl(baseUrl); } catch (e7) {}
+        }
+
+        var ctx = {
+            clientId: "ad-" + String(new Date().getTime()) + "-" + String(Math.floor(Math.random() * 100000)),
+            sessionId: "",
+            pollIntervalMs: 1000,
+            lastPollAt: 0,
+            lastTaskId: ""
+        };
+
+        uiInfo("TASK_POLL_BEGIN", {
+            clientId: ctx.clientId,
+            baseUrl: baseUrl
+        }, "global-events.js", "测试_AD_任务轮询");
+
+        while (true) {
+            if (typeof _shouldAdStop === "function" && _shouldAdStop(runId, "poll.loop")) {
+                pollSummary.reason = "stop.requested";
+                break;
+            }
+
+            var now = new Date().getTime();
+            if (ctx.lastPollAt && (now - ctx.lastPollAt < ctx.pollIntervalMs)) {
+                _processMessagesSafe();
+                continue;
+            }
+            ctx.lastPollAt = now;
+            pollSummary.polls++;
+
+            var pollResp = _pollNext(ctx);
+            if (!pollResp.ok) {
+                uiWarn("TASK_POLL_FAIL", {
+                    status: pollResp.status || 0,
+                    error: pollResp.error || "poll failed"
+                }, "global-events.js", "测试_AD_任务轮询");
+                _processMessagesSafe();
+                continue;
+            }
+
+            if (pollResp.pollIntervalMs) ctx.pollIntervalMs = pollResp.pollIntervalMs;
+            if (pollResp.action === "stop" || pollResp.stop) {
+                pollSummary.reason = "server.stop";
+                break;
+            }
+            if (pollResp.action === "wait" || !pollResp.task) {
+                _processMessagesSafe();
+                continue;
+            }
+
+            var task = pollResp.task;
+            pollSummary.tasks++;
+            uiInfo("TASK_RECEIVED", {
+                taskId: task && task.id ? task.id : "",
+                taskType: task && (task.type || task.action || task.cmd || task.name) ? (task.type || task.action || task.cmd || task.name) : ""
+            }, "global-events.js", "测试_AD_任务轮询");
+
+            var taskResult = _executeTask(task, ctx);
+            ctx.lastTaskId = task && task.id ? task.id : ctx.lastTaskId;
+            var reportResp = _reportTask(ctx, task, taskResult);
+            if (reportResp && reportResp.stop) {
+                pollSummary.reason = "server.stop";
+                break;
+            }
+            if (taskResult && taskResult.aborted) {
+                pollSummary.reason = taskResult.abortReason || "aborted";
+                break;
+            }
+        }
+
+        pollSummary.ok = true;
+    } catch (ePoll) {
+        pollSummary.ok = false;
+        pollSummary.reason = String(ePoll);
+        showErrorInUI("测试_AD_任务轮询", ePoll, {
+            baseUrl: baseUrl,
+            timestamp: new Date().toLocaleString()
+        });
+    } finally {
+        pollSummary.stoppedAt = new Date().getTime();
+        uiInfo("TASK_POLL_END", pollSummary, "global-events.js", "测试_AD_任务轮询");
+        if (typeof _endAdRun === "function") _endAdRun(runId);
+    }
+    return pollSummary;
 }
 
 /**
